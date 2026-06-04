@@ -1,6 +1,6 @@
 use super::account_lib;
 use super::constants;
-use sqlx::AnyPool;
+use sqlx::SqlitePool;
 
 #[derive(Debug, Clone)]
 pub struct AccountInsert {
@@ -16,7 +16,7 @@ pub struct AccountResult {
     pub password_secret: Vec<u8>,
     pub access_token_secret: Vec<u8>,
     pub refresh_token_secret: Vec<u8>,
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl AccountResult {
@@ -25,7 +25,10 @@ impl AccountResult {
     }
 }
 
-pub async fn insert(pool: &AnyPool, insert: AccountInsert) -> Result<AccountResult, sqlx::Error> {
+pub async fn insert(
+    pool: &SqlitePool,
+    insert: AccountInsert,
+) -> Result<AccountResult, sqlx::Error> {
     let (password_hash, password_secret) =
         super::account_lib::hash_password(&insert.password).await;
     sqlx::query_as::<_, AccountResult>(
