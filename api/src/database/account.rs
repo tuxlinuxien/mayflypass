@@ -3,7 +3,7 @@ use super::constants;
 use sqlx::AnyPool;
 
 #[derive(Debug, Clone)]
-pub struct InsertAccount {
+pub struct AccountInsert {
     pub email: String,
     pub password: String,
 }
@@ -25,7 +25,7 @@ impl AccountResult {
     }
 }
 
-pub async fn insert(pool: &AnyPool, insert: InsertAccount) -> Result<AccountResult, sqlx::Error> {
+pub async fn insert(pool: &AnyPool, insert: AccountInsert) -> Result<AccountResult, sqlx::Error> {
     let (password_hash, password_secret) =
         super::account_lib::hash_password(&insert.password).await;
     sqlx::query_as::<_, AccountResult>(
@@ -57,7 +57,7 @@ mod test {
         super::super::run_migrations(&pool).await.unwrap();
         let result = insert(
             &pool,
-            InsertAccount {
+            AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
