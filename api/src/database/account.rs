@@ -1,4 +1,5 @@
 use super::account_lib;
+use super::constants;
 use sqlx::AnyPool;
 
 #[derive(Debug, Clone)]
@@ -38,15 +39,14 @@ pub async fn insert(pool: &AnyPool, insert: InsertAccount) -> Result<AccountResu
     .bind(&insert.email)
     .bind(&password_hash)
     .bind(&password_secret)
-    .bind(&super::account_lib::gen_bytes(super::constants::ACCESS_TOKEN_SECRET_LEN))
-    .bind(&super::account_lib::gen_bytes(super::constants::REFRESH_TOKEN_SECRET_LEN))
+    .bind(&super::account_lib::gen_bytes(constants::ACCESS_TOKEN_SECRET_LEN))
+    .bind(&super::account_lib::gen_bytes(constants::REFRESH_TOKEN_SECRET_LEN))
     .fetch_one(pool)
     .await
 }
 
 #[cfg(test)]
 mod test {
-    use super::super::constants;
     use super::*;
 
     #[tokio::test]
