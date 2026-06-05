@@ -41,7 +41,10 @@ pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> anyhow::Re
     // That's right, sqlite can return on a row from a delete query so we save
     // one query and the operation is atomic.
     let row = sqlx::query_as::<_, (String,)>(
-        r"DELETE FROM capchat_token WHERE id = ? AND valid_until > datetime('now') RETURNING code",
+        r"
+        DELETE FROM capchat_token
+        WHERE id = ? AND valid_until > datetime('now')
+        RETURNING code",
     )
     .bind(id)
     .fetch_optional(pool)
