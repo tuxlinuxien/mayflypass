@@ -10,6 +10,8 @@ pub struct CaptchatResult {
 
 pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult> {
     let id = uuid::Uuid::now_v7().to_string();
+    // Even easy ones are hard to read so let's build one
+    // from scratch.
     let mut cap = cap::Captcha::new();
     cap.set_chars(&[
         '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'C', 'F', 'H', 'Z', 'X',
@@ -24,6 +26,7 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult>
     let image = cap
         .as_base64()
         .ok_or(anyhow::format_err!("couldn't generate captchat"))?;
+
     sqlx::query(
         r"
         INSERT INTO capchat_token (id, code)
@@ -34,6 +37,9 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult>
     .bind(&code)
     .execute(pool)
     .await?;
+
+    // No need to store the image because it will directly be passed to the
+    // UI.
     Ok(CaptchatResult { id, code, image })
 }
 
