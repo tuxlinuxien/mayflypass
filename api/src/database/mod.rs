@@ -1,6 +1,7 @@
 pub mod account;
-mod account_lib;
+pub mod captchat;
 mod constants;
+mod password;
 
 pub async fn create_pool(
     conn: &str,
