@@ -46,6 +46,7 @@ pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> anyhow::Re
     .bind(id)
     .fetch_optional(pool)
     .await?;
+
     let stored_code = if let Some((code,)) = row {
         code
     } else {
