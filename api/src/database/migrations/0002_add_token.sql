@@ -1,6 +1,5 @@
-CREATE TABLE token (
-    type TEXT NOT NULL,
-    account TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    signature TEXT NOT NULL UNIQUE,
-    valid_until TEXT NOT NULL
+CREATE TABLE refresh_token (
+    token_hash TEXT NOT NULL,
+    account_id TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    valid_until TEXT NOT NULL DEFAULT (datetime('now', '+720 hours'))
 );

@@ -23,7 +23,6 @@ pub async fn init(interface: &str, pool: sqlx::SqlitePool) {
     let state = state::AppState {
         pool: pool,
         access_token_key: [0u8; 32],
-        refresh_token_key: [0u8; 32],
     };
     let router = create_routes();
     let router = router.with_state(state);

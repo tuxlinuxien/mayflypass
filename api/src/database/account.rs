@@ -13,6 +13,7 @@ pub struct AccountResult {
     pub id: String,
     pub email: String,
     pub password_hash: String,
+    pub password_updated_at: DateTime<Utc>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -29,9 +30,9 @@ pub async fn insert(
     let hash = super::password::hash_password(&insert.password).await;
     sqlx::query_as::<_, AccountResult>(
         r"
-        INSERT INTO account (id, email, password_hash, created_at)
-        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-        RETURNING id, email, password_hash, created_at
+        INSERT INTO account (id, email, password_hash)
+        VALUES (?, ?, ?)
+        RETURNING id, email, password_hash, password_updated_at, created_at
         ",
     )
     .bind(&uuid::Uuid::now_v7().to_string())
@@ -44,7 +45,7 @@ pub async fn insert(
 pub async fn get(pool: &SqlitePool, email: &str) -> Result<Option<AccountResult>, sqlx::Error> {
     sqlx::query_as::<_, AccountResult>(
         r"
-        SELECT id, email, password_hash, created_at
+        SELECT id, email, password_hash, password_updated_at, created_at
         FROM account 
         WHERE email = ? 
         ",

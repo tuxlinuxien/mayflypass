@@ -3,7 +3,14 @@ use super::state::AppState;
 use crate::database;
 use axum::Json;
 use axum::extract::State;
+use chrono::DateTime;
+use chrono::Duration;
+use chrono::Utc;
+use hmac::{Hmac, Mac};
+use jwt::{SignWithKey, VerifyWithKey};
 use serde::{Deserialize, Serialize};
+use sha2::Sha256;
+use std::collections::BTreeMap;
 use validator::ValidateEmail;
 
 fn trimmed<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
@@ -125,17 +132,73 @@ pub async fn login(
     };
     // Verify the password.
     // Note: return the same error as above so we can't know if
-    // the account exist or if the password is invalid.
+    // the account exists or if the password is invalid.
     if !account.verify_password(&payload.password).await {
         return Err(ApiError::InvalidField {
             field: "email".into(),
             message: "invalid credentials".into(),
         });
     }
+    // create access_token
+    let access_token = generate_access_token(&state.access_token_key, &account.id, Utc::now())?;
+    // create refresh_token
+    let refresh_token = database::token::generate(&state.pool, &account.id).await?;
     return Ok(Json(LoginReponse {
-        access_token: "".into(),
-        refresh_token: "".into(),
+        access_token: access_token,
+        refresh_token: refresh_token,
     }));
+}
+
+pub fn generate_access_token(
+    key: &[u8; 32],
+    account_id: &str,
+    iat: DateTime<Utc>,
+) -> anyhow::Result<String> {
+    let exp = iat.clone() + Duration::minutes(15); // now + 15 minute
+    let key: Hmac<Sha256> = Hmac::new_from_slice(&key.to_vec())?;
+    let mut claims = BTreeMap::new();
+    claims.insert("sub", account_id.into());
+    claims.insert("exp", exp.timestamp_millis().to_string());
+    claims.insert("iat", iat.timestamp_millis().to_string());
+    let access_token = claims.sign_with_key(&key)?;
+    Ok(access_token)
+}
+
+pub fn verify_access_token(
+    key: &[u8; 32],
+    token: &str,
+    password_updated_at: DateTime<Utc>,
+) -> Result<String, ApiError> {
+    let key: Hmac<Sha256> =
+        Hmac::new_from_slice(&key.to_vec()).map_err(|_| ApiError::InternalError)?;
+    let claims: BTreeMap<String, String> = token
+        .verify_with_key(&key)
+        .map_err(|_| ApiError::InvalidTokenError)?;
+    let account_id = claims.get("sub").ok_or(ApiError::InvalidTokenError)?;
+    // check if the token has expired
+    let exp = claims
+        .get("exp")
+        .and_then(|exp| exp.parse::<i64>().ok())
+        .and_then(|exp| DateTime::from_timestamp_millis(exp))
+        .map(|exp| exp.to_utc())
+        .ok_or(ApiError::InvalidTokenError)?;
+    if Utc::now() > exp {
+        return Err(ApiError::InvalidTokenError);
+    }
+    // check if the account password has been updated.
+    // if password_updated_at > iat then the token becomes
+    // invalid. This will force all other session to expire at
+    // the same time.
+    let iat = claims
+        .get("iat")
+        .and_then(|iat| iat.parse::<i64>().ok())
+        .and_then(|iat| DateTime::from_timestamp_millis(iat))
+        .map(|iat| iat.to_utc())
+        .ok_or(ApiError::InvalidTokenError)?;
+    if password_updated_at > iat {
+        return Err(ApiError::InvalidTokenError);
+    }
+    Ok(account_id.clone())
 }
 
 #[tokio::test]
@@ -405,11 +468,71 @@ async fn test_login() {
         .await;
     response.assert_status_ok();
     let body = response.json::<serde_json::Value>();
+    assert!(body.get("access_token").is_some());
+    assert!(body.get("refresh_token").is_some());
+}
+
+#[tokio::test]
+async fn test_access_token() {
+    let (_, pool) = super::testing::init_test_server().await;
+    // create a test user
+    let account = database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    let key = [0u8; 32];
+    let access_token = generate_access_token(&key, &account.id, Utc::now()).unwrap();
     assert_eq!(
-        body,
-        serde_json::json!({
-            "access_token": "",
-            "refresh_token": "",
-        })
+        account.id,
+        verify_access_token(&key, &access_token, account.password_updated_at).unwrap()
+    );
+}
+
+#[tokio::test]
+async fn test_access_token_expired() {
+    let (_, pool) = super::testing::init_test_server().await;
+    // create a test user
+    let account = database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    let key = [0u8; 32];
+    let past_iat = Utc::now() - Duration::days(1);
+    let access_token = generate_access_token(&key, &account.id, past_iat).unwrap();
+    assert!(verify_access_token(&key, &access_token, account.password_updated_at,).is_err());
+}
+
+#[tokio::test]
+async fn test_access_token_password_change() {
+    let (_, pool) = super::testing::init_test_server().await;
+    // create a test user
+    let account = database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    let key = [0u8; 32];
+    let access_token = generate_access_token(&key, &account.id, Utc::now()).unwrap();
+    assert!(
+        verify_access_token(
+            &key,
+            &access_token,
+            account.password_updated_at + Duration::minutes(1)
+        )
+        .is_err()
     );
 }
