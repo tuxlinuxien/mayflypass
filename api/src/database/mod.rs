@@ -7,9 +7,13 @@ pub async fn create_pool(
     conn: &str,
     max_connections: u32,
 ) -> Result<sqlx::SqlitePool, sqlx::Error> {
+    use std::str::FromStr;
+    let opts = sqlx::sqlite::SqliteConnectOptions::from_str(conn)?
+        .pragma("foreign_keys", "true")
+        .create_if_missing(true);
     sqlx::sqlite::SqlitePoolOptions::new()
         .max_connections(max_connections)
-        .connect(conn)
+        .connect_with(opts)
         .await
 }
 

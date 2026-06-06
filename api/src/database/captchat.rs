@@ -26,7 +26,7 @@ fn make_captcha() -> anyhow::Result<(String, String)> {
     Ok((code, image))
 }
 
-pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult> {
+pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<(CaptchatResult, String)> {
     let id = uuid::Uuid::now_v7().to_string();
     // Captcha::new is not Send so we need to spawn it into another thread.
     let (code, image) = tokio::task::spawn_blocking(move || make_captcha()).await??;
@@ -44,7 +44,7 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult>
 
     // No need to store the image because it will directly be passed to the
     // UI.
-    Ok(CaptchatResult { id, image })
+    Ok((CaptchatResult { id, image }, code))
 }
 
 pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> Result<bool, sqlx::Error> {
@@ -78,23 +78,13 @@ mod test {
             .await
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
-        let res = generate(&pool).await.unwrap();
+        let (res, code) = generate(&pool).await.unwrap();
         assert!(!res.id.is_empty());
         assert!(!res.image.is_empty());
         // fetch the code stored in the database
-        let code = sqlx::query_as::<_, (String,)>(
-            r"
-            SELECT code
-            FROM capchat_token
-            WHERE id = ?
-        ",
-        )
-        .bind(&res.id)
-        .fetch_one(&pool)
-        .await
-        .unwrap();
+
         // make sure verify can be used only once.
-        assert!(verify(&pool, &res.id, &code.0).await.unwrap());
-        assert!(!verify(&pool, &res.id, &code.0).await.unwrap()); // single use
+        assert!(verify(&pool, &res.id, &code).await.unwrap());
+        assert!(!verify(&pool, &res.id, &code).await.unwrap()); // single use
     }
 }

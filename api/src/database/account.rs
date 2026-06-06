@@ -41,6 +41,19 @@ pub async fn insert(
     .await
 }
 
+pub async fn get(pool: &SqlitePool, email: &str) -> Result<Option<AccountResult>, sqlx::Error> {
+    sqlx::query_as::<_, AccountResult>(
+        r"
+        SELECT id, email, password_hash, created_at
+        FROM account 
+        WHERE email = ? 
+        ",
+    )
+    .bind(email)
+    .fetch_optional(pool)
+    .await
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -63,5 +76,24 @@ mod test {
         assert_eq!(result.email, "test@example.com");
         assert!(result.password_hash != "password");
         assert!(result.verify_password("password").await);
+    }
+
+    #[tokio::test]
+    async fn test_get_account() {
+        let pool = super::super::create_pool("sqlite::memory:", 1)
+            .await
+            .unwrap();
+        super::super::run_migrations(&pool).await.unwrap();
+        let result = insert(
+            &pool,
+            AccountInsert {
+                email: "test@example.com".into(),
+                password: "password".into(),
+            },
+        )
+        .await
+        .unwrap();
+        let account = get(&pool, &result.email).await.unwrap();
+        assert!(account.is_some())
     }
 }

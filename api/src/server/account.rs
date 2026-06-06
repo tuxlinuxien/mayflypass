@@ -1,9 +1,9 @@
-use crate::database;
-
 use super::error::ApiError;
 use super::state::AppState;
+use crate::database;
 use axum::Json;
 use axum::extract::State;
+use serde::{Deserialize, Serialize};
 use validator::ValidateEmail;
 
 fn trimmed<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
@@ -92,6 +92,52 @@ pub async fn register(
     Ok(())
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct LoginInput {
+    #[serde(default, deserialize_with = "trimmed")]
+    pub email: String,
+    #[serde(default, deserialize_with = "trimmed")]
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct LoginReponse {
+    pub access_token: String,
+    pub refresh_token: String,
+}
+
+pub async fn login(
+    State(state): State<AppState>,
+    Json(payload): Json<LoginInput>,
+) -> Result<Json<LoginReponse>, ApiError> {
+    // normalize the email.
+    let email = payload.email.to_lowercase();
+    // fetch the account by email.
+    let account = database::account::get(&state.pool, &email).await?;
+    let account = match account {
+        Some(account) => account,
+        None => {
+            return Err(ApiError::InvalidField {
+                field: "email".into(),
+                message: "invalid credentials".into(),
+            });
+        }
+    };
+    // Verify the password.
+    // Note: return the same error as above so we can't know if
+    // the account exist or if the password is invalid.
+    if !account.verify_password(&payload.password).await {
+        return Err(ApiError::InvalidField {
+            field: "email".into(),
+            message: "invalid credentials".into(),
+        });
+    }
+    return Ok(Json(LoginReponse {
+        access_token: "".into(),
+        refresh_token: "".into(),
+    }));
+}
+
 #[tokio::test]
 async fn test_register_invalid_email() {
     let (app, _) = super::testing::init_test_server().await;
@@ -150,4 +196,220 @@ async fn test_register_repeat_password() {
     response.assert_status_bad_request();
     let body = response.json::<serde_json::Value>();
     assert_eq!(body, serde_json::json!({"error": {"password": "mismatch"}}));
+}
+
+#[tokio::test]
+async fn test_register_invalid_code() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+    let server = axum_test::TestServer::new(app);
+    let response = server
+        .post("/api/register")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789",
+            "password_repeat": "123456789",
+            "c_id": cap.id.clone(),
+            "c_code": code+"invalid",
+        }))
+        .await;
+    response.assert_status_bad_request();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(body, serde_json::json!({"error": {"code": "invalid"}}));
+}
+
+#[tokio::test]
+async fn test_register_invalid_c_id() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let (_, code) = database::captchat::generate(&pool).await.unwrap();
+    let server = axum_test::TestServer::new(app);
+    let response = server
+        .post("/api/register")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789",
+            "password_repeat": "123456789",
+            "c_id": uuid::Uuid::now_v7().to_string(),
+            "c_code": code,
+        }))
+        .await;
+    response.assert_status_bad_request();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(body, serde_json::json!({"error": {"code": "invalid"}}));
+}
+
+#[tokio::test]
+async fn test_register_reuse_c_id() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+    database::captchat::verify(&pool, &cap.id, &code)
+        .await
+        .unwrap();
+    let server = axum_test::TestServer::new(app);
+    let response = server
+        .post("/api/register")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789",
+            "password_repeat": "123456789",
+            "c_id": &cap.id,
+            "c_code": code,
+        }))
+        .await;
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(body, serde_json::json!({"error": {"code": "invalid"}}));
+}
+
+#[tokio::test]
+async fn test_register_valid() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+    let server = axum_test::TestServer::new(app);
+    let response = server
+        .post("/api/register")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789",
+            "password_repeat": "123456789",
+            "c_id": &cap.id,
+            "c_code": code,
+        }))
+        .await;
+    response.assert_status_ok();
+}
+
+#[tokio::test]
+async fn test_register_duplicated() {
+    let (app, pool) = super::testing::init_test_server().await;
+    // insert account
+    database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+    let server = axum_test::TestServer::new(app);
+    let response = server
+        .post("/api/register")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789",
+            "password_repeat": "123456789",
+            "c_id": &cap.id,
+            "c_code": code,
+        }))
+        .await;
+    response.assert_status_bad_request();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(body, serde_json::json!({"error": {"email": "duplicated"}}));
+}
+
+#[tokio::test]
+async fn test_login_no_payload() {
+    let (app, _) = super::testing::init_test_server().await;
+    let server = axum_test::TestServer::new(app);
+    let response = server.post("/api/login").json(&serde_json::json!({})).await;
+    response.assert_status_bad_request();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(
+        body,
+        serde_json::json!({"error": {"email": "invalid credentials"}})
+    );
+}
+
+#[tokio::test]
+async fn test_login_invalid_email() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let server = axum_test::TestServer::new(app);
+    // create a test user
+    database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    // use an invalid email
+    let response = server
+        .post("/api/login")
+        .json(&serde_json::json!({
+            "email": "invalid@mail.com",
+            "password": "123456789",
+        }))
+        .await;
+    response.assert_status_bad_request();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(
+        body,
+        serde_json::json!({"error": {"email": "invalid credentials"}})
+    );
+}
+
+#[tokio::test]
+async fn test_login_invalid_password() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let server = axum_test::TestServer::new(app);
+    // create a test user
+    database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    // use an invalid password
+    let response = server
+        .post("/api/login")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789_invalid",
+        }))
+        .await;
+    response.assert_status_bad_request();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(
+        body,
+        serde_json::json!({"error": {"email": "invalid credentials"}})
+    );
+}
+
+#[tokio::test]
+async fn test_login() {
+    let (app, pool) = super::testing::init_test_server().await;
+    let server = axum_test::TestServer::new(app);
+    // create a test user
+    database::account::insert(
+        &pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap();
+    // use an invalid password
+    let response = server
+        .post("/api/login")
+        .json(&serde_json::json!({
+            "email": "test@mail.com",
+            "password": "123456789",
+        }))
+        .await;
+    response.assert_status_ok();
+    let body = response.json::<serde_json::Value>();
+    assert_eq!(
+        body,
+        serde_json::json!({
+            "access_token": "",
+            "refresh_token": "",
+        })
+    );
 }
