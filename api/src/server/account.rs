@@ -95,7 +95,6 @@ pub async fn register(
             }
         },
     }
-    println!("{:?}", payload);
     Ok(())
 }
 
