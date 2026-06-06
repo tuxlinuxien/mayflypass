@@ -8,6 +8,8 @@ mod captchat;
 mod error;
 mod extractor;
 mod state;
+#[cfg(test)]
+mod testing;
 
 pub fn create_routes() -> Router<state::AppState> {
     let public = Router::new()

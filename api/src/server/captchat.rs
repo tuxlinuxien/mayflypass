@@ -14,3 +14,16 @@ pub async fn generate(
         .map_err(|_| ApiError::InternalError)?;
     return Ok(Json(res));
 }
+
+#[tokio::test]
+async fn test_generate() {
+    let (app, _) = super::testing::init_test_server().await;
+    let server = axum_test::TestServer::new(app);
+
+    let resp = server.get("/api/captchat").await;
+    resp.assert_status_ok();
+
+    let json = resp.json::<serde_json::Value>();
+    assert!(!json["id"].as_str().unwrap().is_empty());
+    assert!(!json["image"].as_str().unwrap().is_empty());
+}
