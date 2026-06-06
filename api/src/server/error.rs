@@ -1,6 +1,6 @@
 use axum::{
     Json,
-    extract::rejection::{self, JsonRejection},
+    extract::rejection::JsonRejection,
     http,
     response::{IntoResponse, Response},
 };
@@ -13,6 +13,10 @@ pub enum ApiError {
     JsonRejection(#[from] JsonRejection),
     #[error("invalid field")]
     InvalidField { field: String, message: String },
+    #[error("internal error")]
+    InternalError,
+    #[error("database error")]
+    DatabaseError(#[from] sqlx::Error),
 }
 
 impl IntoResponse for ApiError {
@@ -25,8 +29,18 @@ impl IntoResponse for ApiError {
                 (rejection.status(), Json(json!({ "error": detail }))).into_response()
             }
             ApiError::InvalidField { field, message } => (
-                http::status::StatusCode::BAD_REQUEST,
+                http::StatusCode::BAD_REQUEST,
                 Json(json!({"error": {field: message}})),
+            )
+                .into_response(),
+            ApiError::InternalError => (
+                http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "internal error"})),
+            )
+                .into_response(),
+            ApiError::DatabaseError(_) => (
+                http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "internal error"})),
             )
                 .into_response(),
         }

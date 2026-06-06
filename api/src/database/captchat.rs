@@ -1,17 +1,14 @@
 use anyhow;
 use captcha::{self as cap, filters::Dots, filters::Grid, filters::Noise, filters::Wave};
+use serde::Serialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct CaptchatResult {
     pub id: String,
-    pub code: String,
     pub image: String,
 }
 
-pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult> {
-    let id = uuid::Uuid::now_v7().to_string();
-    // Even easy ones are hard to read so let's build one
-    // from scratch.
+fn make_captcha() -> anyhow::Result<(String, String)> {
     let mut cap = cap::Captcha::new();
     cap.set_chars(&[
         '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'C', 'F', 'H', 'Z', 'X',
@@ -26,7 +23,14 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult>
     let image = cap
         .as_base64()
         .ok_or(anyhow::format_err!("couldn't generate captchat"))?;
+    Ok((code, image))
+}
 
+pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult> {
+    let id = uuid::Uuid::now_v7().to_string();
+    // Captcha::new is not Send so we need to spawn it into another thread.
+    let (code, image) = tokio::task::spawn_blocking(move || make_captcha()).await??;
+    // save the code and id.
     sqlx::query(
         r"
         INSERT INTO capchat_token (id, code)
@@ -40,10 +44,10 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<CaptchatResult>
 
     // No need to store the image because it will directly be passed to the
     // UI.
-    Ok(CaptchatResult { id, code, image })
+    Ok(CaptchatResult { id, image })
 }
 
-pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> anyhow::Result<bool> {
+pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> Result<bool, sqlx::Error> {
     // That's right, sqlite can return on a row from a delete query so we save
     // one query and the operation is atomic.
     let row = sqlx::query_as::<_, (String,)>(
@@ -76,8 +80,21 @@ mod test {
         super::super::run_migrations(&pool).await.unwrap();
         let res = generate(&pool).await.unwrap();
         assert!(!res.id.is_empty());
-        assert_eq!(res.code.len(), 5);
-        assert!(verify(&pool, &res.id, &res.code).await.unwrap());
-        assert!(!verify(&pool, &res.id, &res.code).await.unwrap()); // single-use
+        assert!(!res.image.is_empty());
+        // fetch the code stored in the database
+        let code = sqlx::query_as::<_, (String,)>(
+            r"
+            SELECT code
+            FROM capchat_token
+            WHERE id = ?
+        ",
+        )
+        .bind(&res.id)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        // make sure verify can be used only once.
+        assert!(verify(&pool, &res.id, &code.0).await.unwrap());
+        assert!(!verify(&pool, &res.id, &code.0).await.unwrap()); // single use
     }
 }
