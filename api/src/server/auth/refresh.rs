@@ -127,12 +127,10 @@ mod test {
         .await
         .unwrap();
         let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
+        let cookie = RefreshTokenCookie::try_from(refresh_token).unwrap();
         let response = server
             .post("/api/refresh")
-            .add_header(
-                http::header::COOKIE,
-                http::HeaderValue::from_str(&format!("refresh_token={}", refresh_token)).unwrap(),
-            )
+            .add_header(http::header::COOKIE, cookie)
             .await;
         response.assert_status_ok();
         let body = response.json::<RefreshResponse>();
