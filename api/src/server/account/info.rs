@@ -59,8 +59,43 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(body["id"], account.id);
         assert_eq!(body["email"], account.email);
+    }
 
-        let response = server.get("/api/account/info").await;
+    #[tokio::test]
+    async fn test_info_with_valid_token_password_change() {
+        let (app, pool) = testing::init_test_server().await;
+        let account = database::account::insert(
+            &pool,
+            database::account::AccountInsert {
+                email: "test@mail.com".into(),
+                password: "123456789".into(),
+            },
+        )
+        .await
+        .unwrap();
+        let key = [0u8; 32];
+        let access_token = token::new(&key, &account.id, Utc::now()).unwrap();
+        // simulate a password change so the access token should be valid anymore
+        sqlx::query(
+            r"
+            UPDATE account
+            SET password_updated_at = datetime('now', '+1 minute')
+            WHERE id = ?
+        ",
+        )
+        .bind(&account.id)
+        .execute(&pool)
+        .await
+        .unwrap();
+        // now run the query
+        let server = axum_test::TestServer::new(app);
+        let response = server
+            .get("/api/account/info")
+            .add_header(
+                http::header::AUTHORIZATION,
+                http::HeaderValue::from_str(&format!("Bearer {access_token}")).unwrap(),
+            )
+            .await;
         response.assert_status_unauthorized();
     }
 
