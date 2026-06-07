@@ -13,7 +13,7 @@ pub enum ApiError {
     InternalError,
     #[error("internal error: {0}")]
     AnyhowError(#[from] anyhow::Error),
-    #[error("database error")]
+    #[error("database error: {0}")]
     DatabaseError(#[from] sqlx::Error),
     #[error("invalid token")]
     InvalidTokenError,

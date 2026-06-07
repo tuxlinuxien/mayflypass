@@ -24,3 +24,4 @@ sha2 = "0.11.0"
 hex = "0.4.3"
 serde_trim = "1.1.0"
 jsonwebtoken = { version = "10.4.0", features = ["rust_crypto"] }
+cookie = "0.18.1"

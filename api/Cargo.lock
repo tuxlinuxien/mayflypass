@@ -48,6 +48,7 @@ dependencies = [
  "axum-test",
  "captcha",
  "chrono",
+ "cookie",
  "getrandom 0.4.2",
  "hex",
  "jsonwebtoken",

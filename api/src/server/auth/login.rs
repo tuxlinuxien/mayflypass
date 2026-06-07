@@ -3,7 +3,12 @@ use crate::server::error::ApiError;
 use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
+use axum::http;
+use axum::http::HeaderValue;
+use axum::response::IntoResponse;
+use axum::response::Response;
 use chrono::{DateTime, Utc};
+use cookie::time::Duration;
 use jsonwebtoken::DecodingKey;
 use jsonwebtoken::EncodingKey;
 use jsonwebtoken::Validation;
@@ -26,7 +31,7 @@ pub struct LoginReponse {
 pub async fn login(
     State(state): State<AppState>,
     Json(payload): Json<LoginInput>,
-) -> Result<Json<LoginReponse>, ApiError> {
+) -> Result<Response, ApiError> {
     // normalize the email.
     let email = payload.email.to_lowercase();
     // fetch the account by email.
@@ -53,10 +58,25 @@ pub async fn login(
     let access_token = generate_access_token(&state.access_token_key, &account.id, Utc::now())?;
     // create refresh_token
     let refresh_token = database::token::generate(&state.pool, &account.id).await?;
-    return Ok(Json(LoginReponse {
+    let mut response = Json(LoginReponse {
         access_token: access_token,
-        refresh_token: refresh_token,
-    }));
+        refresh_token: refresh_token.clone(),
+    })
+    .into_response();
+    // return the refresh token in a cookie
+    let cookie = cookie::Cookie::build(("refresh_token", refresh_token))
+        .max_age(Duration::days(30))
+        .path("/")
+        .secure(true)
+        .http_only(true);
+    let cookie = cookie
+        .to_string()
+        .parse::<HeaderValue>()
+        .map_err(|_| ApiError::InternalError)?;
+    response
+        .headers_mut()
+        .insert(http::header::SET_COOKIE, cookie);
+    return Ok(response);
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -213,9 +233,21 @@ mod test {
             }))
             .await;
         response.assert_status_ok();
+        // check response
         let body = response.json::<serde_json::Value>();
         assert!(body.get("access_token").is_some());
         assert!(body.get("refresh_token").is_some());
+        // check cookie
+        let cookie = response.maybe_header(http::header::SET_COOKIE).unwrap();
+        let cookie_str = std::string::String::from_utf8_lossy(cookie.as_bytes());
+        let cookie = cookie::Cookie::parse(cookie_str.clone()).unwrap();
+        assert_eq!("refresh_token", cookie.name());
+        // check the refresh_token are the same in the response
+        // and the cookie
+        assert_eq!(
+            body.get("refresh_token").unwrap().as_str().unwrap(),
+            cookie.value()
+        );
     }
 
     #[tokio::test]
