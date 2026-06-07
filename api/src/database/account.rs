@@ -22,7 +22,7 @@ impl AccountResult {
     }
 }
 
-pub async fn insert<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     insert: AccountInsert,
 ) -> Result<AccountResult, sqlx::Error> {
@@ -41,7 +41,7 @@ pub async fn insert<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
     .await
 }
 
-pub async fn get<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     email: &str,
 ) -> Result<Option<AccountResult>, sqlx::Error> {

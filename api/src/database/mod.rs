@@ -4,6 +4,9 @@ mod constants;
 mod password;
 pub mod token;
 
+pub trait SqliteExecutor<'c>: sqlx::Executor<'c, Database = sqlx::Sqlite> {}
+impl<'c, T: sqlx::Executor<'c, Database = sqlx::Sqlite>> SqliteExecutor<'c> for T {}
+
 pub async fn create_pool(
     conn: &str,
     max_connections: u32,

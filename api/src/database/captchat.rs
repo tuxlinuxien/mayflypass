@@ -26,7 +26,7 @@ fn make_captcha() -> anyhow::Result<(String, String)> {
     Ok((code, image))
 }
 
-pub async fn generate<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
 ) -> anyhow::Result<(CaptchatResult, String)> {
     let id = uuid::Uuid::now_v7().to_string();
@@ -49,7 +49,7 @@ pub async fn generate<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
     Ok((CaptchatResult { id, image }, code))
 }
 
-pub async fn verify<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn verify<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     id: &str,
     code: &str,

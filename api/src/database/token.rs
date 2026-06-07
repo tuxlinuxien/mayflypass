@@ -8,7 +8,7 @@ pub struct TokenResult {
     pub valid_until: DateTime<Utc>,
 }
 
-pub async fn generate<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     account_id: &str,
 ) -> Result<String, sqlx::Error> {
@@ -33,7 +33,7 @@ pub async fn generate<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
     Ok(token)
 }
 
-pub async fn get<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     token: &str,
 ) -> Result<Option<TokenResult>, sqlx::Error> {
@@ -55,7 +55,7 @@ pub async fn get<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
     Ok(res)
 }
 
-pub async fn delete<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+pub async fn delete<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     token: &str,
 ) -> Result<(), sqlx::Error> {
@@ -80,6 +80,7 @@ pub async fn delete<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
 mod test {
     use sqlx::Executor;
 
+    use super::super::SqliteExecutor;
     use super::super::account;
     use super::*;
 
@@ -138,7 +139,7 @@ mod test {
         assert!(get(&pool, &refresh_token).await.unwrap().is_none());
     }
 
-    async fn count_tokens<'c, T: Executor<'c, Database = sqlx::Sqlite>>(pool: T) -> i64 {
+    async fn count_tokens<'c, T: SqliteExecutor<'c>>(pool: T) -> i64 {
         sqlx::query_as::<_, (i64,)>("SELECT count(*) FROM refresh_token")
             .fetch_one(pool)
             .await
