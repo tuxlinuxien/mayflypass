@@ -27,7 +27,6 @@ pub async fn info(
 
 #[cfg(test)]
 mod test {
-    use crate::database;
     use crate::server::lib::token;
     use crate::server::testing;
     use axum::http;
@@ -36,15 +35,7 @@ mod test {
     #[tokio::test]
     async fn test_info_with_valid_token() {
         let (app, pool) = testing::init_test_server().await;
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let account = testing::build_default_account(&pool).await;
         let key = [0u8; 32];
         let access_token = token::new(&key, &account.id, Utc::now()).unwrap();
         let server = axum_test::TestServer::new(app);
@@ -64,15 +55,7 @@ mod test {
     #[tokio::test]
     async fn test_info_with_valid_token_password_change() {
         let (app, pool) = testing::init_test_server().await;
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let account = testing::build_default_account(&pool).await;
         let key = [0u8; 32];
         let access_token = token::new(&key, &account.id, Utc::now()).unwrap();
         // simulate a password change so the access token should be valid anymore

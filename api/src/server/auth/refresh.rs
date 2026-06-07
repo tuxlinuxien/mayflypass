@@ -89,15 +89,7 @@ mod test {
     async fn test_refresh_via_json() {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let account = testing::build_default_account(&pool).await;
         let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
         let response = server
             .post("/api/refresh")
@@ -117,15 +109,7 @@ mod test {
     async fn test_refresh_via_cookie() {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let account = testing::build_default_account(&pool).await;
         let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
         let cookie = RefreshTokenCookie::try_from(refresh_token).unwrap();
         let response = server
@@ -142,15 +126,7 @@ mod test {
     async fn test_refresh_token_single_use() {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let account = testing::build_default_account(&pool).await;
         let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
         server
             .post("/api/refresh")

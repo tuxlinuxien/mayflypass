@@ -1,5 +1,5 @@
 use super::state;
-use crate::database;
+use crate::database::{self, account::AccountResult};
 use axum::Router;
 
 pub async fn init_test_server() -> (Router, sqlx::SqlitePool) {
@@ -12,4 +12,16 @@ pub async fn init_test_server() -> (Router, sqlx::SqlitePool) {
     let router = super::create_routes(state.clone());
     let router = router.with_state(state);
     (router, pool)
+}
+
+pub async fn build_default_account(pool: &sqlx::SqlitePool) -> AccountResult {
+    database::account::insert(
+        pool,
+        database::account::AccountInsert {
+            email: "test@mail.com".into(),
+            password: "123456789".into(),
+        },
+    )
+    .await
+    .unwrap()
 }

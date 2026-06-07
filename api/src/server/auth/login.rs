@@ -71,7 +71,6 @@ pub async fn login(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::database;
     use crate::server::testing;
 
     #[tokio::test]
@@ -92,15 +91,7 @@ mod test {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
         // create a test user
-        database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let _ = testing::build_default_account(&pool).await;
         // use an invalid email
         let response = server
             .post("/api/login")
@@ -122,15 +113,7 @@ mod test {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
         // create a test user
-        database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let _ = testing::build_default_account(&pool).await;
         // use an invalid password
         let response = server
             .post("/api/login")
@@ -152,16 +135,7 @@ mod test {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
         // create a test user
-        database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
-
+        let _ = testing::build_default_account(&pool).await;
         let response = server
             .post("/api/login")
             .json(&serde_json::json!({

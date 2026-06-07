@@ -244,15 +244,7 @@ mod test {
     async fn test_register_duplicated() {
         let (app, pool) = testing::init_test_server().await;
         // insert account
-        database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
+        let _ = testing::build_default_account(&pool).await;
         let (cap, code) = database::captchat::generate(&pool).await.unwrap();
         let server = axum_test::TestServer::new(app);
         let response = server
@@ -274,10 +266,8 @@ mod test {
     async fn test_generate() {
         let (app, _) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-
         let resp = server.get("/api/register").await;
         resp.assert_status_ok();
-
         let json = resp.json::<serde_json::Value>();
         assert!(!json["id"].as_str().unwrap().is_empty());
         assert!(!json["image"].as_str().unwrap().is_empty());
