@@ -1,6 +1,5 @@
 use super::password;
 use chrono::{DateTime, Utc};
-use sqlx::SqlitePool;
 
 #[derive(Debug, Clone)]
 pub struct AccountInsert {
@@ -23,8 +22,8 @@ impl AccountResult {
     }
 }
 
-pub async fn insert(
-    pool: &SqlitePool,
+pub async fn insert<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+    executor: E,
     insert: AccountInsert,
 ) -> Result<AccountResult, sqlx::Error> {
     let hash = super::password::hash_password(&insert.password).await;
@@ -38,20 +37,23 @@ pub async fn insert(
     .bind(&uuid::Uuid::now_v7().to_string())
     .bind(&insert.email)
     .bind(&hash)
-    .fetch_one(pool)
+    .fetch_one(executor)
     .await
 }
 
-pub async fn get(pool: &SqlitePool, email: &str) -> Result<Option<AccountResult>, sqlx::Error> {
+pub async fn get<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+    executor: E,
+    email: &str,
+) -> Result<Option<AccountResult>, sqlx::Error> {
     sqlx::query_as::<_, AccountResult>(
         r"
         SELECT id, email, password_hash, password_updated_at, created_at
-        FROM account 
-        WHERE email = ? 
+        FROM account
+        WHERE email = ?
         ",
     )
     .bind(email)
-    .fetch_optional(pool)
+    .fetch_optional(executor)
     .await
 }
 

@@ -26,7 +26,9 @@ fn make_captcha() -> anyhow::Result<(String, String)> {
     Ok((code, image))
 }
 
-pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<(CaptchatResult, String)> {
+pub async fn generate<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+    executor: E,
+) -> anyhow::Result<(CaptchatResult, String)> {
     let id = uuid::Uuid::now_v7().to_string();
     // Captcha::new is not Send so we need to spawn it into another thread.
     let (code, image) = tokio::task::spawn_blocking(move || make_captcha()).await??;
@@ -39,7 +41,7 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<(CaptchatResult
     )
     .bind(&id)
     .bind(&code)
-    .execute(pool)
+    .execute(executor)
     .await?;
 
     // No need to store the image because it will directly be passed to the
@@ -47,7 +49,11 @@ pub async fn generate(pool: &sqlx::SqlitePool) -> anyhow::Result<(CaptchatResult
     Ok((CaptchatResult { id, image }, code))
 }
 
-pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> Result<bool, sqlx::Error> {
+pub async fn verify<'c, E: sqlx::Executor<'c, Database = sqlx::Sqlite>>(
+    executor: E,
+    id: &str,
+    code: &str,
+) -> Result<bool, sqlx::Error> {
     // That's right, sqlite can return on a row from a delete query so we save
     // one query and the operation is atomic.
     let row = sqlx::query_as::<_, (String,)>(
@@ -57,7 +63,7 @@ pub async fn verify(pool: &sqlx::SqlitePool, id: &str, code: &str) -> Result<boo
         RETURNING code",
     )
     .bind(id)
-    .fetch_optional(pool)
+    .fetch_optional(executor)
     .await?;
 
     let stored_code = if let Some((code,)) = row {
