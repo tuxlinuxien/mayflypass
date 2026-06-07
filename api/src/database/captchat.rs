@@ -1,3 +1,4 @@
+use super::error;
 use anyhow;
 use captcha::{self as cap, filters::Dots, filters::Grid, filters::Noise, filters::Wave};
 use serde::Serialize;
@@ -53,7 +54,7 @@ pub async fn verify<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     id: &str,
     code: &str,
-) -> Result<bool, sqlx::Error> {
+) -> Result<bool, error::Error> {
     // That's right, sqlite can return on a row from a delete query so we save
     // one query and the operation is atomic.
     let row = sqlx::query_as::<_, (String,)>(

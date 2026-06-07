@@ -5,6 +5,8 @@ use axum::{
 use serde_json::json;
 use thiserror::Error;
 
+use crate::database;
+
 #[derive(Debug, Error)]
 pub enum ApiError {
     #[error("invalid field")]
@@ -14,7 +16,7 @@ pub enum ApiError {
     #[error("internal error: {0}")]
     AnyhowError(#[from] anyhow::Error),
     #[error("database error: {0}")]
-    DatabaseError(#[from] sqlx::Error),
+    DatabaseError(#[from] database::error::Error),
     #[error("invalid token")]
     InvalidTokenError,
     #[error("unauthorized")]

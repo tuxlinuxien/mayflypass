@@ -67,19 +67,13 @@ pub async fn register(
     match res {
         Ok(_) => {}
         Err(e) => match e {
-            sqlx::Error::Database(db_err)
-                if db_err.kind() == sqlx::error::ErrorKind::UniqueViolation =>
-            {
-                tracing::error!("email {} already exists", payload.email);
+            database::error::Error::UniqueViolation { .. } => {
                 return Err(ApiError::InvalidField {
                     field: "email".into(),
                     message: "duplicated".into(),
                 });
             }
-            _ => {
-                tracing::error!("database error: {e}");
-                return Err(ApiError::InternalError);
-            }
+            _ => return Err(ApiError::InternalError),
         },
     }
     Ok(())

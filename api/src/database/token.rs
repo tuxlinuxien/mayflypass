@@ -1,3 +1,4 @@
+use super::error;
 use chrono::{DateTime, Utc};
 use sha2::Digest;
 
@@ -11,7 +12,7 @@ pub struct TokenResult {
 pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     account_id: &str,
-) -> Result<String, sqlx::Error> {
+) -> Result<String, error::Error> {
     // generate random refresh token
     let token = uuid::Uuid::new_v4().to_string();
     // hash it so if the db is leaked we can't mint new tokens
@@ -36,7 +37,7 @@ pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
 pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     token: &str,
-) -> Result<Option<TokenResult>, sqlx::Error> {
+) -> Result<Option<TokenResult>, error::Error> {
     // hash it so if the db is leaked we can't mint new tokens
     let mut hasher = sha2::Sha256::new();
     hasher.update(token.as_bytes());
@@ -58,7 +59,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
 pub async fn delete<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     token: &str,
-) -> Result<(), sqlx::Error> {
+) -> Result<(), error::Error> {
     // hash it so if the db is leaked we can't mint new tokens
     let mut hasher = sha2::Sha256::new();
     hasher.update(token.as_bytes());

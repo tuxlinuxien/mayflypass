@@ -58,7 +58,7 @@ mod test {
         let account = testing::build_default_account(&pool).await;
         let key = [0u8; 32];
         let access_token = token::new(&key, &account.id, Utc::now()).unwrap();
-        // simulate a password change so the access token should be valid anymore
+        // simulate a password change so the access token shouldn't be valid anymore
         sqlx::query(
             r"
             UPDATE account

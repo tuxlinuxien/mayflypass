@@ -1,3 +1,4 @@
+use super::error;
 use super::password;
 use chrono::{DateTime, Utc};
 
@@ -25,9 +26,9 @@ impl AccountResult {
 pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     insert: AccountInsert,
-) -> Result<AccountResult, sqlx::Error> {
+) -> Result<AccountResult, error::Error> {
     let hash = super::password::hash_password(&insert.password).await;
-    sqlx::query_as::<_, AccountResult>(
+    let res = sqlx::query_as::<_, AccountResult>(
         r"
         INSERT INTO account (id, email, password_hash)
         VALUES (?, ?, ?)
@@ -38,14 +39,15 @@ pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
     .bind(&insert.email)
     .bind(&hash)
     .fetch_one(executor)
-    .await
+    .await?;
+    Ok(res)
 }
 
 pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     email: &str,
-) -> Result<Option<AccountResult>, sqlx::Error> {
-    sqlx::query_as::<_, AccountResult>(
+) -> Result<Option<AccountResult>, error::Error> {
+    let res = sqlx::query_as::<_, AccountResult>(
         r"
         SELECT id, email, password_hash, password_updated_at, created_at
         FROM account
@@ -54,14 +56,15 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     )
     .bind(email)
     .fetch_optional(executor)
-    .await
+    .await?;
+    Ok(res)
 }
 
 pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     id: &str,
-) -> Result<Option<AccountResult>, sqlx::Error> {
-    sqlx::query_as::<_, AccountResult>(
+) -> Result<Option<AccountResult>, error::Error> {
+    let res = sqlx::query_as::<_, AccountResult>(
         r"
         SELECT id, email, password_hash, password_updated_at, created_at
         FROM account
@@ -70,7 +73,8 @@ pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
     )
     .bind(id)
     .fetch_optional(executor)
-    .await
+    .await?;
+    Ok(res)
 }
 
 #[cfg(test)]
