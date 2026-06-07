@@ -78,8 +78,6 @@ pub async fn delete<'c, E: super::SqliteExecutor<'c>>(
 
 #[cfg(test)]
 mod test {
-    use sqlx::Executor;
-
     use super::super::SqliteExecutor;
     use super::super::account;
     use super::*;
