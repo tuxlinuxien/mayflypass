@@ -2,9 +2,7 @@ use axum::{
     Router,
     routing::{get, post},
 };
-
-mod account;
-mod captchat;
+mod auth;
 mod error;
 mod extractor;
 mod state;
@@ -13,9 +11,9 @@ mod testing;
 
 pub fn create_routes() -> Router<state::AppState> {
     let public = Router::new()
-        .route("/api/register", post(account::register))
-        .route("/api/captchat", get(captchat::generate))
-        .route("/api/login", post(account::login));
+        .route("/api/register", post(auth::register))
+        .route("/api/register", get(auth::captchat))
+        .route("/api/login", post(auth::login));
     return public;
 }
 
