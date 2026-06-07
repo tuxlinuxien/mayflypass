@@ -5,6 +5,7 @@ use axum::{
 mod auth;
 mod error;
 mod extractor;
+mod lib;
 mod state;
 #[cfg(test)]
 mod testing;
@@ -13,7 +14,8 @@ pub fn create_routes() -> Router<state::AppState> {
     let public = Router::new()
         .route("/api/register", post(auth::register))
         .route("/api/register", get(auth::captchat))
-        .route("/api/login", post(auth::login));
+        .route("/api/login", post(auth::login))
+        .route("/api/refresh", post(auth::refresh));
     return public;
 }
 

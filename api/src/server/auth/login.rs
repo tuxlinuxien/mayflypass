@@ -1,17 +1,14 @@
 use crate::database;
 use crate::server::error::ApiError;
+use crate::server::lib::cookies::RefreshTokenCookie;
+use crate::server::lib::token;
 use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
 use axum::http;
-use axum::http::HeaderValue;
 use axum::response::IntoResponse;
 use axum::response::Response;
-use chrono::{DateTime, Utc};
-use cookie::time::Duration;
-use jsonwebtoken::DecodingKey;
-use jsonwebtoken::EncodingKey;
-use jsonwebtoken::Validation;
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
@@ -55,7 +52,7 @@ pub async fn login(
         });
     }
     // create access_token
-    let access_token = generate_access_token(&state.access_token_key, &account.id, Utc::now())?;
+    let access_token = token::new(&state.access_token_key, &account.id, Utc::now())?;
     // create refresh_token
     let refresh_token = database::token::generate(&state.pool, &account.id).await?;
     let mut response = Json(LoginReponse {
@@ -64,58 +61,11 @@ pub async fn login(
     })
     .into_response();
     // return the refresh token in a cookie
-    let cookie = cookie::Cookie::build(("refresh_token", refresh_token))
-        .max_age(Duration::days(30))
-        .path("/")
-        .secure(true)
-        .http_only(true);
-    let cookie = cookie
-        .to_string()
-        .parse::<HeaderValue>()
-        .map_err(|_| ApiError::InternalError)?;
+    let cookie = RefreshTokenCookie::try_from(refresh_token).map_err(|e| anyhow::anyhow!("{e}"))?;
     response
         .headers_mut()
-        .insert(http::header::SET_COOKIE, cookie);
+        .insert(http::header::SET_COOKIE, cookie.into());
     return Ok(response);
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-struct JwtClaim {
-    pub sub: String,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub exp: DateTime<Utc>,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub iat: DateTime<Utc>,
-}
-
-pub fn generate_access_token(
-    key: &[u8; 32],
-    account_id: &str,
-    iat: DateTime<Utc>,
-) -> anyhow::Result<String> {
-    let claims = JwtClaim {
-        sub: account_id.into(),
-        iat: iat.clone(),
-        exp: iat,
-    };
-    let header = jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS256);
-    let key = EncodingKey::from_secret(&key.to_vec());
-    let token = jsonwebtoken::encode(&header, &claims, &key)?;
-    Ok(token.to_string())
-}
-
-pub fn verify_access_token(
-    key: &[u8; 32],
-    token: &str,
-    password_updated_at: DateTime<Utc>,
-) -> Result<String, ApiError> {
-    let key = DecodingKey::from_secret(&key.to_vec());
-    let claims = jsonwebtoken::decode::<JwtClaim>(token, &key, &Validation::default())
-        .map_err(|_| ApiError::InvalidTokenError)?;
-    if password_updated_at > claims.claims.iat {
-        return Err(ApiError::InvalidTokenError);
-    }
-    Ok(claims.claims.sub.clone())
 }
 
 #[cfg(test)]
@@ -123,7 +73,6 @@ mod test {
     use super::*;
     use crate::database;
     use crate::server::testing;
-    use chrono::Duration;
 
     #[tokio::test]
     async fn test_login_no_payload() {
@@ -239,79 +188,12 @@ mod test {
         assert!(body.get("refresh_token").is_some());
         // check cookie
         let cookie = response.maybe_header(http::header::SET_COOKIE).unwrap();
-        let cookie_str = std::string::String::from_utf8_lossy(cookie.as_bytes());
-        let cookie = cookie::Cookie::parse(cookie_str.clone()).unwrap();
-        assert_eq!("refresh_token", cookie.name());
+        let cookie = RefreshTokenCookie::try_from(cookie).unwrap();
         // check the refresh_token are the same in the response
         // and the cookie
         assert_eq!(
             body.get("refresh_token").unwrap().as_str().unwrap(),
-            cookie.value()
-        );
-    }
-
-    #[tokio::test]
-    async fn test_access_token() {
-        let (_, pool) = testing::init_test_server().await;
-        // create a test user
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
-        let key = [0u8; 32];
-        let access_token = generate_access_token(&key, &account.id, Utc::now()).unwrap();
-        assert_eq!(
-            account.id,
-            verify_access_token(&key, &access_token, account.password_updated_at).unwrap()
-        );
-    }
-
-    #[tokio::test]
-    async fn test_access_token_expired() {
-        let (_, pool) = testing::init_test_server().await;
-        // create a test user
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
-        let key = [0u8; 32];
-        let past_iat = Utc::now() - Duration::days(1);
-        let access_token = generate_access_token(&key, &account.id, past_iat).unwrap();
-        assert!(verify_access_token(&key, &access_token, account.password_updated_at,).is_err());
-    }
-
-    #[tokio::test]
-    async fn test_access_token_password_change() {
-        let (_, pool) = testing::init_test_server().await;
-        // create a test user
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
-        let key = [0u8; 32];
-        let access_token = generate_access_token(&key, &account.id, Utc::now()).unwrap();
-        assert!(
-            verify_access_token(
-                &key,
-                &access_token,
-                account.password_updated_at + Duration::minutes(1)
-            )
-            .is_err()
+            cookie.token().unwrap()
         );
     }
 }
