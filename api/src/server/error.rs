@@ -17,6 +17,8 @@ pub enum ApiError {
     DatabaseError(#[from] sqlx::Error),
     #[error("invalid token")]
     InvalidTokenError,
+    #[error("unauthorized")]
+    UnauthorizedError,
 }
 
 impl IntoResponse for ApiError {
@@ -43,6 +45,11 @@ impl IntoResponse for ApiError {
             )
                 .into_response(),
             ApiError::InvalidTokenError => (
+                http::StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "unauthorized"})),
+            )
+                .into_response(),
+            ApiError::UnauthorizedError => (
                 http::StatusCode::UNAUTHORIZED,
                 Json(json!({"error": "unauthorized"})),
             )

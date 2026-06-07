@@ -57,6 +57,22 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     .await
 }
 
+pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
+    executor: E,
+    id: &str,
+) -> Result<Option<AccountResult>, sqlx::Error> {
+    sqlx::query_as::<_, AccountResult>(
+        r"
+        SELECT id, email, password_hash, password_updated_at, created_at
+        FROM account
+        WHERE id = ?
+        ",
+    )
+    .bind(id)
+    .fetch_optional(executor)
+    .await
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

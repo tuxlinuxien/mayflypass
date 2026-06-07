@@ -4,7 +4,7 @@ use jsonwebtoken::{DecodingKey, EncodingKey, Validation};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-struct JwtClaim {
+pub struct JwtClaim {
     pub sub: String,
     #[serde(with = "chrono::serde::ts_seconds")]
     pub exp: DateTime<Utc>,
@@ -24,18 +24,11 @@ pub fn new(key: &[u8; 32], account_id: &str, iat: DateTime<Utc>) -> anyhow::Resu
     Ok(token.to_string())
 }
 
-pub fn verify(
-    key: &[u8; 32],
-    token: &str,
-    password_updated_at: DateTime<Utc>,
-) -> Result<String, ApiError> {
+pub fn verify(key: &[u8; 32], token: &str) -> Result<JwtClaim, ApiError> {
     let key = DecodingKey::from_secret(&key.to_vec());
     let claims = jsonwebtoken::decode::<JwtClaim>(token, &key, &Validation::default())
         .map_err(|_| ApiError::InvalidTokenError)?;
-    if password_updated_at > claims.claims.iat {
-        return Err(ApiError::InvalidTokenError);
-    }
-    Ok(claims.claims.sub.clone())
+    Ok(claims.claims)
 }
 
 #[cfg(test)]
@@ -59,10 +52,7 @@ mod test {
         .unwrap();
         let key = [0u8; 32];
         let access_token = new(&key, &account.id, Utc::now()).unwrap();
-        assert_eq!(
-            account.id,
-            verify(&key, &access_token, account.password_updated_at).unwrap()
-        );
+        assert_eq!(account.id, verify(&key, &access_token).unwrap().sub);
     }
 
     #[tokio::test]
@@ -80,30 +70,6 @@ mod test {
         let key = [0u8; 32];
         let past_iat = Utc::now() - Duration::days(1);
         let access_token = new(&key, &account.id, past_iat).unwrap();
-        assert!(verify(&key, &access_token, account.password_updated_at,).is_err());
-    }
-
-    #[tokio::test]
-    async fn test_access_token_password_change() {
-        let (_, pool) = testing::init_test_server().await;
-        let account = database::account::insert(
-            &pool,
-            database::account::AccountInsert {
-                email: "test@mail.com".into(),
-                password: "123456789".into(),
-            },
-        )
-        .await
-        .unwrap();
-        let key = [0u8; 32];
-        let access_token = new(&key, &account.id, Utc::now()).unwrap();
-        assert!(
-            verify(
-                &key,
-                &access_token,
-                account.password_updated_at + Duration::minutes(1)
-            )
-            .is_err()
-        );
+        assert!(verify(&key, &access_token).is_err());
     }
 }
