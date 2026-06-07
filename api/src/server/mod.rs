@@ -2,24 +2,27 @@ use axum::{
     Router,
     routing::{get, post},
 };
+mod account;
 mod auth;
 mod error;
 mod extractor;
 mod lib;
 mod middleware;
-mod private;
 mod state;
 #[cfg(test)]
 mod testing;
 
 pub fn create_routes(state: state::AppState) -> Router<state::AppState> {
+    // public
     let public = Router::new()
         .route("/api/register", post(auth::register))
         .route("/api/register", get(auth::captchat))
         .route("/api/login", post(auth::login))
-        .route("/api/refresh", post(auth::refresh));
+        .route("/api/refresh", post(auth::refresh))
+        .route("/api/logout", post(auth::logout));
+    // authenticated
     let private = Router::new()
-        .route("/api/account/info", get(private::info))
+        .route("/api/account/info", get(account::info))
         .route_layer(axum::middleware::from_fn_with_state(
             state,
             middleware::auth,

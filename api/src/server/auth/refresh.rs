@@ -22,7 +22,7 @@ pub struct RefreshResponse {
     pub refresh_token: String,
 }
 
-fn extract_refresh_token_from_cookie(headers: &http::HeaderMap) -> Option<String> {
+pub fn extract_refresh_token_from_cookie(headers: &http::HeaderMap) -> Option<String> {
     headers
         .get(http::header::COOKIE)
         .and_then(|s| RefreshTokenCookie::try_from(s.clone()).ok())
