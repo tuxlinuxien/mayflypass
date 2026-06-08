@@ -3,6 +3,7 @@ pub mod captchat;
 mod constants;
 pub mod error;
 mod password;
+pub mod storage;
 pub mod token;
 
 pub trait SqliteExecutor<'c>: sqlx::Executor<'c, Database = sqlx::Sqlite> {}

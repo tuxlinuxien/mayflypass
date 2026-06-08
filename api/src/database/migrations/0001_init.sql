@@ -24,10 +24,9 @@ CREATE TABLE refresh_token (
     valid_until TEXT NOT NULL DEFAULT (datetime('now', '+720 hours'))
 );
 
-CREATE TABLE encrypted_storage (
+CREATE TABLE storage (
     id TEXT NOT NULL PRIMARY KEY,
     account_id TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
     version INTEGER NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT False,
     encrypted_dek BLOB NOT NULL,
