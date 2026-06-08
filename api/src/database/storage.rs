@@ -1,3 +1,5 @@
+use chrono::{DateTime, Utc};
+
 use super::error;
 
 #[derive(Debug, Clone, sqlx::FromRow, PartialEq)]
@@ -6,6 +8,7 @@ pub struct Storage {
     pub account_id: String,
     pub version: i64,
     pub deleted: bool,
+    pub deleted_at: Option<DateTime<Utc>>,
     pub encrypted_dek: Vec<u8>,
     pub encrypted_payload: Vec<u8>,
 }
@@ -26,7 +29,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Storage, error::Error> {
     let item = sqlx::query_as::<_, Storage>(
         r#"
-        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
+        SELECT id, account_id, version, deleted, deleted_at, encrypted_dek, encrypted_payload
         FROM storage
         WHERE id = ? AND account_id = ?
         "#,
@@ -44,7 +47,7 @@ pub async fn select<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Vec<Storage>, error::Error> {
     let items = sqlx::query_as::<_, Storage>(
         r#"
-        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
+        SELECT id, account_id, version, deleted, deleted_at, encrypted_dek, encrypted_payload
         FROM storage
         WHERE account_id = ?
         "#,
@@ -58,22 +61,30 @@ pub async fn select<'c, E: super::SqliteExecutor<'c>>(
 pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     account_id: &str,
-    upsert: StorageUpsert,
+    mut upsert: StorageUpsert,
 ) -> Result<Storage, error::Error> {
+    // if delete then return the current time then clean up storage
+    let deleted_at = Some(Utc::now()).take_if(|_| upsert.deleted);
+    if upsert.deleted {
+        upsert.encrypted_dek = vec![];
+        upsert.encrypted_payload = vec![];
+    }
     let res = sqlx::query_as::<_, Storage>(
         r#"
-        INSERT INTO storage (id, account_id, version, deleted, encrypted_dek, encrypted_payload)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO storage (id, account_id, version, deleted, deleted_at, encrypted_dek, encrypted_payload)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(id)
         DO UPDATE SET
             version = excluded.version,
             deleted = excluded.deleted,
+            deleted_at = excluded.deleted_at,
             encrypted_dek = excluded.encrypted_dek,
             encrypted_payload = excluded.encrypted_payload
         WHERE
             storage.account_id = excluded.account_id
             AND storage.version < excluded.version
-        RETURNING id, account_id, version, deleted, encrypted_dek, encrypted_payload
+            AND storage.deleted = False
+        RETURNING id, account_id, version, deleted, deleted_at, encrypted_dek, encrypted_payload
         "#,
     )
     // values
@@ -81,8 +92,9 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     .bind(&account_id)
     .bind(upsert.version)
     .bind(upsert.deleted)
-    .bind(&upsert.encrypted_dek)
-    .bind(&upsert.encrypted_payload)
+    .bind(deleted_at) // if deleted then set the purge_after
+    .bind(upsert.encrypted_dek)
+    .bind(upsert.encrypted_payload)
     // where
     .bind(&account_id)
     .bind(&upsert.version)
@@ -104,7 +116,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
 
-        // Create an account first (foreign key constraint)
+        // Create an account first
         let account = account::insert(
             &pool,
             account::AccountInsert {
@@ -145,7 +157,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
 
-        // Create an account first (foreign key constraint)
+        // Create an account first
         let account = account::insert(
             &pool,
             account::AccountInsert {
@@ -178,7 +190,7 @@ mod test {
             StorageUpsert {
                 id: TEST_STORAGE_ID.to_string(),
                 version: 2,
-                deleted: true,
+                deleted: false,
                 encrypted_dek: vec![7, 8, 9],
                 encrypted_payload: vec![10, 11, 12],
             },
@@ -189,7 +201,7 @@ mod test {
         let result = get(&pool, &account.id, TEST_STORAGE_ID).await.unwrap();
         assert_eq!(result.id, TEST_STORAGE_ID.to_string());
         assert_eq!(result.version, 2);
-        assert_eq!(result.deleted, true);
+        assert_eq!(result.deleted, false);
         assert_eq!(result.encrypted_dek, vec![7, 8, 9]);
         assert_eq!(result.encrypted_payload, vec![10, 11, 12]);
     }
@@ -201,7 +213,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
 
-        // Create an account first (foreign key constraint)
+        // Create an account first
         let account = account::insert(
             &pool,
             account::AccountInsert {
@@ -223,13 +235,56 @@ mod test {
         // Insert initial version
         upsert(&pool, &account.id, item.clone()).await.unwrap();
 
-        // Try to update with same version - should not update
+        // Try to update with same version and should not update
         let result = upsert(&pool, &account.id, item.clone()).await;
         assert!(result.is_err());
 
-        // Try to update with lower version - should not update
+        // Try to update with lower version and should not update
         item.version = 1;
         let result = upsert(&pool, &account.id, item).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_upsert_delete() {
+        let pool = super::super::create_pool("sqlite::memory:", 1)
+            .await
+            .unwrap();
+        super::super::run_migrations(&pool).await.unwrap();
+
+        // Create an account first
+        let account = account::insert(
+            &pool,
+            account::AccountInsert {
+                email: "test@example.com".into(),
+                password: "password".into(),
+            },
+        )
+        .await
+        .unwrap();
+
+        let mut item = StorageUpsert {
+            id: TEST_STORAGE_ID.to_string(),
+            version: 1,
+            deleted: false,
+            encrypted_dek: vec![1, 2, 3],
+            encrypted_payload: vec![4, 5, 6],
+        };
+        // Insert initial version
+        upsert(&pool, &account.id, item.clone()).await.unwrap();
+
+        item.version = item.version + 1;
+        item.deleted = true;
+        // Delete record
+        let deleted_result = upsert(&pool, &account.id, item.clone()).await.unwrap();
+        assert!(deleted_result.deleted_at.is_some());
+        assert!(deleted_result.encrypted_dek.is_empty());
+        assert!(deleted_result.encrypted_dek.is_empty());
+
+        item.version = item.version + 1;
+        item.deleted = false;
+        // Try update deleted record and should fail
+        let result = upsert(&pool, &account.id, item.clone()).await;
         assert!(result.is_err());
     }
 
@@ -240,7 +295,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
 
-        // Create an account first (foreign key constraint)
+        // Create an account first
         let account1 = account::insert(
             &pool,
             account::AccountInsert {
@@ -286,7 +341,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
 
-        // Create an account first (foreign key constraint)
+        // Create an account first
         let account1 = account::insert(
             &pool,
             account::AccountInsert {
