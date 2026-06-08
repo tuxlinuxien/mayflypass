@@ -195,20 +195,16 @@ mod test {
         .await
         .unwrap();
 
+        let mut item = StorageUpsert {
+            id: TEST_STORAGE_ID.to_string(),
+            version: 2,
+            deleted: false,
+            encrypted_dek: vec![1, 2, 3],
+            encrypted_payload: vec![4, 5, 6],
+        };
+
         // Insert initial version
-        upsert(
-            &pool,
-            &account.id,
-            StorageUpsert {
-                id: TEST_STORAGE_ID.to_string(),
-                version: 2,
-                deleted: false,
-                encrypted_dek: vec![1, 2, 3],
-                encrypted_payload: vec![4, 5, 6],
-            },
-        )
-        .await
-        .unwrap();
+        upsert(&pool, &account.id, item.clone()).await.unwrap();
 
         // Try to update with same version - should not update
         let result = upsert(
@@ -225,6 +221,7 @@ mod test {
         .await;
         assert!(result.is_err());
 
+        item.version -= 1;
         // Try to update with lower version - should not update
         let result = upsert(
             &pool,
