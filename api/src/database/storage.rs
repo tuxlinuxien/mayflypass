@@ -207,34 +207,12 @@ mod test {
         upsert(&pool, &account.id, item.clone()).await.unwrap();
 
         // Try to update with same version - should not update
-        let result = upsert(
-            &pool,
-            &account.id,
-            StorageUpsert {
-                id: TEST_STORAGE_ID.to_string(),
-                version: 2,
-                deleted: true,
-                encrypted_dek: vec![7, 8, 9],
-                encrypted_payload: vec![10, 11, 12],
-            },
-        )
-        .await;
+        let result = upsert(&pool, &account.id, item.clone()).await;
         assert!(result.is_err());
 
-        item.version -= 1;
         // Try to update with lower version - should not update
-        let result = upsert(
-            &pool,
-            &account.id,
-            StorageUpsert {
-                id: TEST_STORAGE_ID.to_string(),
-                version: 1,
-                deleted: true,
-                encrypted_dek: vec![7, 8, 9],
-                encrypted_payload: vec![10, 11, 12],
-            },
-        )
-        .await;
+        item.version = 1;
+        let result = upsert(&pool, &account.id, item).await;
         assert!(result.is_err());
     }
 
