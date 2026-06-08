@@ -1,6 +1,6 @@
 use super::error;
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone, sqlx::FromRow, PartialEq)]
 pub struct Storage {
     pub id: String,
     pub account_id: String,
@@ -24,7 +24,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     account_id: &str,
     id: &str,
 ) -> Result<Storage, error::Error> {
-    let storage = sqlx::query_as::<_, Storage>(
+    let item = sqlx::query_as::<_, Storage>(
         r#"
         SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
         FROM storage
@@ -35,7 +35,24 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     .bind(&account_id)
     .fetch_one(executor)
     .await?;
-    Ok(storage)
+    Ok(item)
+}
+
+pub async fn select<'c, E: super::SqliteExecutor<'c>>(
+    executor: E,
+    account_id: &str,
+) -> Result<Vec<Storage>, error::Error> {
+    let items = sqlx::query_as::<_, Storage>(
+        r#"
+        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
+        FROM storage
+        WHERE account_id = ?
+        "#,
+    )
+    .bind(&account_id)
+    .fetch_all(executor)
+    .await?;
+    Ok(items)
 }
 
 pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
@@ -260,5 +277,59 @@ mod test {
         // Update with wrong user
         let res = upsert(&pool, &account2.id, item).await;
         assert!(res.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_select() {
+        let pool = super::super::create_pool("sqlite::memory:", 1)
+            .await
+            .unwrap();
+        super::super::run_migrations(&pool).await.unwrap();
+
+        // Create an account first (foreign key constraint)
+        let account1 = account::insert(
+            &pool,
+            account::AccountInsert {
+                email: "test1@example.com".into(),
+                password: "password".into(),
+            },
+        )
+        .await
+        .unwrap();
+
+        let item1 = StorageUpsert {
+            id: "id1".to_string(),
+            version: 1,
+            deleted: false,
+            encrypted_dek: vec![1, 1, 1],
+            encrypted_payload: vec![2, 2, 2],
+        };
+        let item2 = StorageUpsert {
+            id: "id2".to_string(),
+            version: 1,
+            deleted: false,
+            encrypted_dek: vec![3, 3, 3],
+            encrypted_payload: vec![4, 4, 4],
+        };
+
+        let ret1 = upsert(&pool, &account1.id, item1.clone()).await.unwrap();
+        let ret2 = upsert(&pool, &account1.id, item2.clone()).await.unwrap();
+        let result = select(&pool, &account1.id).await.unwrap();
+        assert_eq!(2, result.len());
+        assert!(result.iter().find(|i| ret1.eq(i)).is_some());
+        assert!(result.iter().find(|i| ret2.eq(i)).is_some());
+
+        // Test with an account that doesn't have any items
+        let account2 = account::insert(
+            &pool,
+            account::AccountInsert {
+                email: "test2@example.com".into(),
+                password: "password".into(),
+            },
+        )
+        .await
+        .unwrap();
+        let result = select(&pool, &account2.id).await.unwrap();
+        assert_eq!(0, result.len());
     }
 }
