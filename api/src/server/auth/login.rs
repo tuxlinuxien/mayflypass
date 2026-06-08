@@ -32,7 +32,7 @@ pub async fn login(
     // normalize the email.
     let email = payload.email.to_lowercase();
     // fetch the account by email.
-    let account = database::account::get(&state.pool, &email).await?;
+    let account = database::account::get_by_email(&state.pool, &email).await?;
     let account = match account {
         Some(account) => account,
         None => {
