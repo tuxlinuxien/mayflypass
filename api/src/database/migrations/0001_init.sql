@@ -27,6 +27,8 @@ CREATE TABLE refresh_token (
 CREATE TABLE storage (
     id TEXT NOT NULL PRIMARY KEY,
     account_id TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     version INTEGER NOT NULL,
     -- Instead of deleting the row from the database, mark it as deleted
     -- and set deleted_at or users that have multiple devices will see the
@@ -35,7 +37,6 @@ CREATE TABLE storage (
     -- so it gives plenty of time for all the devices to be in sync
     -- with the database.
     deleted BOOLEAN NOT NULL DEFAULT False,
-    deleted_at TEXT,
     encrypted_dek BLOB NOT NULL,
     encrypted_payload BLOB NOT NULL
 );
