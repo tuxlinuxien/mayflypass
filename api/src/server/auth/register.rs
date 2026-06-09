@@ -21,7 +21,7 @@ pub struct RegisterInput {
 }
 
 impl RegisterInput {
-    async fn validate(&mut self) -> Result<(), ApiError> {
+    fn validate(&mut self) -> Result<(), ApiError> {
         let mut errors = vec![];
         // email
         self.email = self.email.to_lowercase();
@@ -58,7 +58,7 @@ pub async fn register(
     Json(mut payload): Json<RegisterInput>,
 ) -> Result<(), ApiError> {
     // normalize email and check if it's valid.
-    payload.validate().await?;
+    payload.validate()?;
 
     if !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await? {
         return Err(ApiError::BadRequest(json!({
@@ -96,32 +96,36 @@ pub async fn captchat(
 
 #[cfg(test)]
 mod test {
-    use uuid::Uuid;
-
+    use super::*;
     use crate::database;
     use crate::server::testing;
+    use uuid::Uuid;
 
     #[tokio::test]
-    async fn test_register_all_errors() {
-        let (app, pool) = testing::init_test_server().await;
-        let server = axum_test::TestServer::new(app);
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
-        let response = server
-            .post("/api/register")
-            .json(&serde_json::json!({
-                "email": "",
-                "password": "",
-                "password_repeat": "p",
-                "c_id": cap.id,
-                "c_code": "00000",
-            }))
-            .await;
-        response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-
+    async fn test_register_validate() {
+        let mut v = RegisterInput {
+            email: "".into(),
+            password: "".into(),
+            password_repeat: "".into(),
+            c_id: Uuid::new_v4(),
+            c_code: "".into(),
+        };
+        let res = v.validate();
+        assert!(res.is_err());
+        let ApiError::BadRequest(val) = res.err().unwrap() else {
+            panic!("expected UnprocessableContent");
+        };
         assert_eq!(
-            body,
-            serde_json::json!({"errors": [{"field": "email", "message": "Invalid email."}]})
+            serde_json::json!(
+                {
+                    "errors": [
+                        {"field":"email", "message": "Invalid email."},
+                        {"field": "password", "message": "Must be at least 8 characters long."},
+                        {"field": "c_code", "message": "Field required."}
+                    ]
+                }
+            ),
+            val
         );
     }
 
@@ -294,7 +298,7 @@ mod test {
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
-                "email": "test@mail.com",
+                "email": "Test@MAIL.com",
                 "password": "123456789",
                 "password_repeat": "123456789",
                 "c_id": &cap.id,
