@@ -1,23 +1,56 @@
 use crate::database;
-use crate::server::error::ApiError;
+use crate::server::error::{ApiError, FieldError};
 use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
+use serde_json::json;
 use uuid::Uuid;
 use validator::ValidateEmail;
 
 #[derive(Debug, serde::Deserialize)]
 pub struct RegisterInput {
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
+    #[serde(deserialize_with = "serde_trim::string_trim")]
     pub email: String,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
+    #[serde(deserialize_with = "serde_trim::string_trim")]
     pub password: String,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
+    #[serde(deserialize_with = "serde_trim::string_trim")]
     pub password_repeat: String,
-    #[serde(default)]
     pub c_id: Uuid,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
+    #[serde(deserialize_with = "serde_trim::string_trim")]
     pub c_code: String,
+}
+
+impl RegisterInput {
+    async fn validate(&mut self) -> Result<(), ApiError> {
+        let mut errors = vec![];
+        // email
+        self.email = self.email.to_lowercase();
+        if !self.email.validate_email() {
+            errors.push(FieldError("email", "Invalid email."));
+        }
+        // password
+        if self.password.len() < 8 {
+            errors.push(FieldError(
+                "password",
+                "Must be at least 8 characters long.",
+            ));
+        }
+        // password_repeat
+        if self.password != self.password_repeat {
+            errors.push(FieldError("password_repeat", "Password mismatch."));
+        }
+        //
+        if self.c_code.is_empty() {
+            errors.push(FieldError("c_code", "Field required."));
+        }
+
+        if errors.is_empty() {
+            return Ok(());
+        }
+        Err(ApiError::BadRequest(json!({
+            "errors": errors,
+        })))
+    }
 }
 
 pub async fn register(
@@ -25,54 +58,25 @@ pub async fn register(
     Json(mut payload): Json<RegisterInput>,
 ) -> Result<(), ApiError> {
     // normalize email and check if it's valid.
-    payload.email = payload.email.to_lowercase();
+    payload.validate().await?;
 
-    if !payload.email.validate_email() {
-        return Err(ApiError::InvalidField {
-            field: "email".into(),
-            message: "invalid".into(),
-        });
+    if !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await? {
+        return Err(ApiError::BadRequest(json!({
+            "errors": vec![FieldError("c_code", "Invalid verification code.")],
+        })));
     }
-    // check the password a min lenght.
-    // note: no need to enforce a character set because
-    if payload.password.len() < 8 {
-        return Err(ApiError::InvalidField {
-            field: "password".into(),
-            message: "must be at least 8 char long".into(),
-        });
-    }
-    // check the password has a minimum length
-    if payload.password != payload.password_repeat {
-        return Err(ApiError::InvalidField {
-            field: "password".into(),
-            message: "mismatch".into(),
-        });
-    }
-    // check the captchat is valid
-    let is_valid = database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await?;
-    if !is_valid {
-        return Err(ApiError::InvalidField {
-            field: "code".into(),
-            message: "invalid".into(),
-        });
-    }
-    // insert account into the database
-    let res = database::account::insert(
-        &state.pool,
-        &database::account::AccountInsert {
-            email: payload.email.clone(),
-            password: payload.password.clone(),
-        },
-    )
-    .await;
-    match res {
+
+    let new_user = &database::account::AccountInsert {
+        email: payload.email.clone(),
+        password: payload.password.clone(),
+    };
+    match database::account::insert(&state.pool, new_user).await {
         Ok(_) => {}
         Err(e) => match e {
             database::error::Error::UniqueViolation { .. } => {
-                return Err(ApiError::InvalidField {
-                    field: "email".into(),
-                    message: "duplicated".into(),
-                });
+                return Err(ApiError::BadRequest(json!({
+                    "errors": vec![FieldError("email", "This account already exists.")],
+                })));
             }
             _ => return Err(ApiError::InternalError),
         },
@@ -99,47 +103,99 @@ mod test {
 
     #[tokio::test]
     async fn test_register_invalid_email() {
-        let (app, _) = testing::init_test_server().await;
+        let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
+        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "notanemail",
                 "password": "password123",
                 "password_repeat": "password123",
-                "c_id": &Uuid::new_v4(),
-                "c_code": ""
+                "c_id": cap.id,
+                "c_code": code,
             }))
             .await;
         response.assert_status_bad_request();
         let body = response.json::<serde_json::Value>();
-        assert_eq!(body, serde_json::json!({"error": {"email": "invalid"}}));
+
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "email", "message": "Invalid email."}]})
+        );
     }
 
     #[tokio::test]
     async fn test_register_short_password() {
-        let (app, _) = testing::init_test_server().await;
+        let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
+        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "1234",
                 "password_repeat": "1234",
-                "c_id": &Uuid::new_v4(),
-                "c_code": ""
+                "c_id": cap.id,
+                "c_code": code,
             }))
             .await;
         response.assert_status_bad_request();
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"error": {"password": "must be at least 8 char long"}})
+            serde_json::json!({"errors": [{"field": "password", "message": "Must be at least 8 characters long."}]})
         );
     }
 
     #[tokio::test]
     async fn test_register_repeat_password() {
+        let (app, pool) = testing::init_test_server().await;
+        let server = axum_test::TestServer::new(app);
+        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": "test@mail.com",
+                "password": "123456789",
+                "password_repeat": "1234567890",
+                 "c_id": cap.id,
+                "c_code": code,
+            }))
+            .await;
+        response.assert_status_bad_request();
+        let body = response.json::<serde_json::Value>();
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "password_repeat", "message": "Password mismatch."}]})
+        );
+    }
+
+    #[tokio::test]
+    async fn test_register_invalid_code() {
+        let (app, pool) = testing::init_test_server().await;
+        let server = axum_test::TestServer::new(app);
+        let (cap, _) = database::captchat::generate(&pool).await.unwrap();
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": "test@mail.com",
+                "password": "123456789",
+                "password_repeat": "123456789",
+                 "c_id": cap.id,
+                "c_code": "0000",
+            }))
+            .await;
+        response.assert_status_bad_request();
+        let body = response.json::<serde_json::Value>();
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "c_code", "message": "Invalid verification code."}]})
+        );
+    }
+
+    #[tokio::test]
+    async fn test_register_invalid_c_id() {
         let (app, _) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
         let response = server
@@ -147,54 +203,17 @@ mod test {
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "123456789",
-                "password_repeat": "1234567890",
-                "c_id": &Uuid::new_v4(),
-                "c_code": ""
-            }))
-            .await;
-        response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-        assert_eq!(body, serde_json::json!({"error": {"password": "mismatch"}}));
-    }
-
-    #[tokio::test]
-    async fn test_register_invalid_code() {
-        let (app, pool) = testing::init_test_server().await;
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
-        let server = axum_test::TestServer::new(app);
-        let response = server
-            .post("/api/register")
-            .json(&serde_json::json!({
-                "email": "test@mail.com",
-                "password": "123456789",
                 "password_repeat": "123456789",
-                "c_id": cap.id.clone(),
-                "c_code": code+"invalid",
+                 "c_id": Uuid::new_v4(),
+                "c_code": "0000",
             }))
             .await;
         response.assert_status_bad_request();
         let body = response.json::<serde_json::Value>();
-        assert_eq!(body, serde_json::json!({"error": {"code": "invalid"}}));
-    }
-
-    #[tokio::test]
-    async fn test_register_invalid_c_id() {
-        let (app, pool) = testing::init_test_server().await;
-        let (_, code) = database::captchat::generate(&pool).await.unwrap();
-        let server = axum_test::TestServer::new(app);
-        let response = server
-            .post("/api/register")
-            .json(&serde_json::json!({
-                "email": "test@mail.com",
-                "password": "123456789",
-                "password_repeat": "123456789",
-                "c_id": &Uuid::new_v4(),
-                "c_code": code,
-            }))
-            .await;
-        response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-        assert_eq!(body, serde_json::json!({"error": {"code": "invalid"}}));
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "c_code", "message": "Invalid verification code."}]})
+        );
     }
 
     #[tokio::test]
@@ -215,8 +234,12 @@ mod test {
                 "c_code": code,
             }))
             .await;
+        response.assert_status_bad_request();
         let body = response.json::<serde_json::Value>();
-        assert_eq!(body, serde_json::json!({"error": {"code": "invalid"}}));
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "c_code", "message": "Invalid verification code."}]})
+        );
     }
 
     #[tokio::test]
@@ -256,7 +279,10 @@ mod test {
             .await;
         response.assert_status_bad_request();
         let body = response.json::<serde_json::Value>();
-        assert_eq!(body, serde_json::json!({"error": {"email": "duplicated"}}));
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "email", "message": "This account already exists."}]})
+        );
     }
 
     #[tokio::test]

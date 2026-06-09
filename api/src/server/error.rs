@@ -1,11 +1,26 @@
+use crate::database;
 use axum::{
     Json, http,
     response::{IntoResponse, Response},
 };
+use serde::{
+    Serialize,
+    ser::{SerializeMap, Serializer},
+};
 use serde_json::{Value, json};
 use thiserror::Error;
 
-use crate::database;
+#[derive(Debug, Clone)]
+pub struct FieldError<T>(pub T, pub T);
+
+impl<T: ToString> Serialize for FieldError<T> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut map = serializer.serialize_map(Some(2))?;
+        map.serialize_entry("field", &self.0.to_string())?;
+        map.serialize_entry("message", &self.1.to_string())?;
+        map.end()
+    }
+}
 
 #[derive(Debug, Error)]
 pub enum ApiError {
@@ -21,9 +36,9 @@ pub enum ApiError {
     InvalidTokenError,
     #[error("unauthorized")]
     UnauthorizedError,
-    #[error("bad request")]
+    #[error("bad request: {0}")]
     BadRequest(Value),
-    #[error("unprocessable content")]
+    #[error("unprocessable content: {0}")]
     UnprocessableContent(Value),
 }
 
