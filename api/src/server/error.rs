@@ -2,7 +2,7 @@ use axum::{
     Json, http,
     response::{IntoResponse, Response},
 };
-use serde_json::json;
+use serde_json::{Value, json};
 use thiserror::Error;
 
 use crate::database;
@@ -21,6 +21,10 @@ pub enum ApiError {
     InvalidTokenError,
     #[error("unauthorized")]
     UnauthorizedError,
+    #[error("bad request")]
+    BadRequest(Value),
+    #[error("unprocessable content")]
+    UnprocessableContent(Value),
 }
 
 impl IntoResponse for ApiError {
@@ -56,6 +60,10 @@ impl IntoResponse for ApiError {
                 Json(json!({"error": "unauthorized"})),
             )
                 .into_response(),
+            ApiError::BadRequest(e) => (http::StatusCode::BAD_REQUEST, Json(e)).into_response(),
+            ApiError::UnprocessableContent(e) => {
+                (http::StatusCode::UNPROCESSABLE_ENTITY, Json(e)).into_response()
+            }
         }
     }
 }

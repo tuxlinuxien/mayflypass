@@ -1,5 +1,6 @@
 use crate::database;
 use crate::server::error::ApiError;
+use crate::server::extractor::JsonInput;
 use crate::server::lib::cookies::RefreshTokenCookie;
 use crate::server::lib::token;
 use crate::server::state::AppState;
@@ -27,7 +28,7 @@ pub struct LoginReponse {
 
 pub async fn login(
     State(state): State<AppState>,
-    Json(payload): Json<LoginInput>,
+    JsonInput(payload): JsonInput<LoginInput>,
 ) -> Result<Response, ApiError> {
     // normalize the email.
     let email = payload.email.to_lowercase();
