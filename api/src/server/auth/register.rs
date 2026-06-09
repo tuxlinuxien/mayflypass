@@ -113,7 +113,7 @@ mod test {
         let res = v.validate();
         assert!(res.is_err());
         let ApiError::BadRequest(val) = res.err().unwrap() else {
-            panic!("expected UnprocessableContent");
+            panic!("expected BadRequest");
         };
         assert_eq!(
             serde_json::json!(
