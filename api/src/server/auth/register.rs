@@ -102,6 +102,30 @@ mod test {
     use crate::server::testing;
 
     #[tokio::test]
+    async fn test_register_all_errors() {
+        let (app, pool) = testing::init_test_server().await;
+        let server = axum_test::TestServer::new(app);
+        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": "",
+                "password": "",
+                "password_repeat": "p",
+                "c_id": cap.id,
+                "c_code": "00000",
+            }))
+            .await;
+        response.assert_status_bad_request();
+        let body = response.json::<serde_json::Value>();
+
+        assert_eq!(
+            body,
+            serde_json::json!({"errors": [{"field": "email", "message": "Invalid email."}]})
+        );
+    }
+
+    #[tokio::test]
     async fn test_register_invalid_email() {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
