@@ -6,9 +6,10 @@ use axum::extract::{Request, State};
 use axum::http;
 use axum::middleware::Next;
 use axum::response::Response;
+use uuid::Uuid;
 
 #[derive(Clone)]
-pub struct AuthUserId(pub String);
+pub struct AuthUserId(pub Uuid);
 
 pub async fn auth(
     State(state): State<AppState>,

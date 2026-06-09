@@ -1,17 +1,18 @@
 use super::error;
 use chrono::{DateTime, Utc};
 use sha2::Digest;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct TokenResult {
     pub token_hash: String,
-    pub account_id: String,
+    pub account_id: Uuid,
     pub valid_until: DateTime<Utc>,
 }
 
 pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    account_id: &str,
+    account_id: &Uuid,
 ) -> Result<String, error::Error> {
     // generate random refresh token
     let token = uuid::Uuid::new_v4().to_string();
@@ -28,7 +29,7 @@ pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
     ",
     )
     .bind(token_hash)
-    .bind(account_id)
+    .bind(&account_id)
     .execute(executor)
     .await?;
     Ok(token)
@@ -92,7 +93,7 @@ mod test {
         // create a dummy account since refresh tokens are bound to them
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@email.com".into(),
                 password: "12345678".into(),
             },
@@ -101,7 +102,7 @@ mod test {
         .unwrap();
         let refresh_token = generate(&pool, &account.id).await.unwrap();
         let refresh_token_info = get(&pool, &refresh_token).await.unwrap().unwrap();
-        assert_eq!(&account.id, &refresh_token_info.account_id);
+        assert_eq!(account.id, refresh_token_info.account_id);
         assert!(get(&pool, &refresh_token).await.unwrap().is_none());
     }
 
@@ -114,7 +115,7 @@ mod test {
         // create a dummy account since refresh tokens are bound to them
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@email.com".into(),
                 password: "12345678".into(),
             },
@@ -130,7 +131,7 @@ mod test {
             WHERE account_id = ?
         ",
         )
-        .bind(account.id)
+        .bind(&account.id)
         .execute(&pool)
         .await
         .unwrap();
@@ -155,7 +156,7 @@ mod test {
         // create a dummy account since refresh tokens are bound to them
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@email.com".into(),
                 password: "12345678".into(),
             },

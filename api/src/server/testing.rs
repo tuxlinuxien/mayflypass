@@ -17,7 +17,7 @@ pub async fn init_test_server() -> (Router, sqlx::SqlitePool) {
 pub async fn build_default_account(pool: &sqlx::SqlitePool) -> AccountResult {
     database::account::insert(
         pool,
-        database::account::AccountInsert {
+        &database::account::AccountInsert {
             email: "test@mail.com".into(),
             password: "123456789".into(),
         },

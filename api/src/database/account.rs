@@ -2,6 +2,7 @@ use super::error;
 use super::password;
 use crate::constants;
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct AccountInsert {
@@ -11,7 +12,7 @@ pub struct AccountInsert {
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct AccountResult {
-    pub id: String,
+    pub id: Uuid,
     pub email: String,
     pub password_hash: String,
     pub password_updated_at: DateTime<Utc>,
@@ -31,7 +32,7 @@ impl AccountResult {
 
 pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    insert: AccountInsert,
+    insert: &AccountInsert,
 ) -> Result<AccountResult, error::Error> {
     let hash = super::password::hash_password(&insert.password).await;
 
@@ -42,7 +43,7 @@ pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
         RETURNING id, email, password_hash, password_updated_at, created_at, kek_m_cost, kek_t_cost, kek_p_cost, kek_output_len, kek_salt
         ",
     )
-    .bind(&uuid::Uuid::now_v7().to_string())
+    .bind(uuid::Uuid::now_v7())
     .bind(&insert.email)
     .bind(&hash)
     .bind(&constants::KEK_M_COST)
@@ -74,7 +75,7 @@ pub async fn get_by_email<'c, E: super::SqliteExecutor<'c>>(
 
 pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    id: &str,
+    id: &Uuid,
 ) -> Result<Option<AccountResult>, error::Error> {
     let res = sqlx::query_as::<_, AccountResult>(
         r"
@@ -101,7 +102,7 @@ mod test {
         super::super::run_migrations(&pool).await.unwrap();
         let result = insert(
             &pool,
-            AccountInsert {
+            &AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
@@ -121,7 +122,7 @@ mod test {
         super::super::run_migrations(&pool).await.unwrap();
         let result = insert(
             &pool,
-            AccountInsert {
+            &AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
@@ -142,7 +143,7 @@ mod test {
             email: "test@example.com".into(),
             password: "password".into(),
         };
-        let result = insert(&pool, account_insert.clone()).await.unwrap();
+        let result = insert(&pool, &account_insert).await.unwrap();
         let account = get_by_id(&pool, &result.id).await.unwrap();
         let account = account.unwrap();
         assert_eq!(account.email, account_insert.email);

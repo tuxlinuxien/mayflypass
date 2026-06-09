@@ -1,5 +1,6 @@
 use axum::{Extension, Json, extract::State};
 use serde::Serialize;
+use uuid::Uuid;
 
 use crate::{
     database,
@@ -8,7 +9,7 @@ use crate::{
 
 #[derive(Debug, Serialize)]
 pub struct InfoResponse {
-    id: String,
+    id: Uuid,
     email: String,
 }
 
@@ -48,7 +49,7 @@ mod test {
             .await;
         response.assert_status_ok();
         let body = response.json::<serde_json::Value>();
-        assert_eq!(body["id"], account.id);
+        assert_eq!(body["id"], account.id.to_string());
         assert_eq!(body["email"], account.email);
     }
 

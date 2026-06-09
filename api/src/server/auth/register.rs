@@ -3,6 +3,7 @@ use crate::server::error::ApiError;
 use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
+use uuid::Uuid;
 use validator::ValidateEmail;
 
 #[derive(Debug, serde::Deserialize)]
@@ -13,8 +14,8 @@ pub struct RegisterInput {
     pub password: String,
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub password_repeat: String,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
-    pub c_id: String,
+    #[serde(default)]
+    pub c_id: Uuid,
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub c_code: String,
 }
@@ -58,7 +59,7 @@ pub async fn register(
     // insert account into the database
     let res = database::account::insert(
         &state.pool,
-        database::account::AccountInsert {
+        &database::account::AccountInsert {
             email: payload.email.clone(),
             password: payload.password.clone(),
         },
@@ -91,6 +92,8 @@ pub async fn captchat(
 
 #[cfg(test)]
 mod test {
+    use uuid::Uuid;
+
     use crate::database;
     use crate::server::testing;
 
@@ -104,7 +107,7 @@ mod test {
                 "email": "notanemail",
                 "password": "password123",
                 "password_repeat": "password123",
-                "c_id": "",
+                "c_id": &Uuid::new_v4(),
                 "c_code": ""
             }))
             .await;
@@ -123,7 +126,7 @@ mod test {
                 "email": "test@mail.com",
                 "password": "1234",
                 "password_repeat": "1234",
-                "c_id": "",
+                "c_id": &Uuid::new_v4(),
                 "c_code": ""
             }))
             .await;
@@ -145,7 +148,7 @@ mod test {
                 "email": "test@mail.com",
                 "password": "123456789",
                 "password_repeat": "1234567890",
-                "c_id": "",
+                "c_id": &Uuid::new_v4(),
                 "c_code": ""
             }))
             .await;
@@ -185,7 +188,7 @@ mod test {
                 "email": "test@mail.com",
                 "password": "123456789",
                 "password_repeat": "123456789",
-                "c_id": uuid::Uuid::now_v7().to_string(),
+                "c_id": &Uuid::new_v4(),
                 "c_code": code,
             }))
             .await;

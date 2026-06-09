@@ -2,10 +2,11 @@ use super::error;
 use anyhow;
 use captcha::{self as cap, filters::Dots, filters::Grid, filters::Noise, filters::Wave};
 use serde::Serialize;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct CaptchatResult {
-    pub id: String,
+    pub id: Uuid,
     pub image: String,
 }
 
@@ -30,7 +31,7 @@ fn make_captcha() -> anyhow::Result<(String, String)> {
 pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
 ) -> anyhow::Result<(CaptchatResult, String)> {
-    let id = uuid::Uuid::now_v7().to_string();
+    let id = uuid::Uuid::now_v7();
     // Captcha::new is not Send so we need to spawn it into another thread.
     let (code, image) = tokio::task::spawn_blocking(move || make_captcha()).await??;
     // save the code and id.
@@ -40,7 +41,7 @@ pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
         VALUES (?, ?)
         ",
     )
-    .bind(&id)
+    .bind(id)
     .bind(&code)
     .execute(executor)
     .await?;
@@ -52,7 +53,7 @@ pub async fn generate<'c, E: super::SqliteExecutor<'c>>(
 
 pub async fn verify<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    id: &str,
+    id: &Uuid,
     code: &str,
 ) -> Result<bool, error::Error> {
     // That's right, sqlite can return on a row from a delete query so we save
@@ -86,7 +87,6 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
         let (res, code) = generate(&pool).await.unwrap();
-        assert!(!res.id.is_empty());
         assert!(!res.image.is_empty());
         // fetch the code stored in the database
 

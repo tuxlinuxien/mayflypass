@@ -1,11 +1,12 @@
 use chrono::{DateTime, Utc};
 
 use super::error;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, sqlx::FromRow, PartialEq)]
 pub struct Storage {
-    pub id: String,
-    pub account_id: String,
+    pub id: Uuid,
+    pub account_id: Uuid,
     pub version: i64,
     pub deleted: bool,
     pub deleted_at: Option<DateTime<Utc>>,
@@ -15,7 +16,7 @@ pub struct Storage {
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct StorageUpsert {
-    pub id: String,
+    pub id: Uuid,
     pub version: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
@@ -24,8 +25,8 @@ pub struct StorageUpsert {
 
 pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    account_id: &str,
-    id: &str,
+    account_id: &Uuid,
+    id: &Uuid,
 ) -> Result<Storage, error::Error> {
     let item = sqlx::query_as::<_, Storage>(
         r#"
@@ -34,8 +35,8 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
         WHERE id = ? AND account_id = ?
         "#,
     )
-    .bind(&id)
-    .bind(&account_id)
+    .bind(id)
+    .bind(account_id)
     .fetch_one(executor)
     .await?;
     Ok(item)
@@ -43,7 +44,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
 
 pub async fn select<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    account_id: &str,
+    account_id: &Uuid,
 ) -> Result<Vec<Storage>, error::Error> {
     let items = sqlx::query_as::<_, Storage>(
         r#"
@@ -52,7 +53,7 @@ pub async fn select<'c, E: super::SqliteExecutor<'c>>(
         WHERE account_id = ?
         "#,
     )
-    .bind(&account_id)
+    .bind(account_id)
     .fetch_all(executor)
     .await?;
     Ok(items)
@@ -60,9 +61,10 @@ pub async fn select<'c, E: super::SqliteExecutor<'c>>(
 
 pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    account_id: &str,
-    mut upsert: StorageUpsert,
+    account_id: &Uuid,
+    upsert: &StorageUpsert,
 ) -> Result<Storage, error::Error> {
+    let mut upsert = upsert.clone();
     // if delete then return the current time then clean up storage
     let deleted_at = Some(Utc::now()).take_if(|_| upsert.deleted);
     if upsert.deleted {
@@ -88,16 +90,16 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
         "#,
     )
     // values
-    .bind(&upsert.id)
-    .bind(&account_id)
+    .bind(upsert.id)
+    .bind(account_id)
     .bind(upsert.version)
     .bind(upsert.deleted)
     .bind(deleted_at) // if deleted then set the purge_after
     .bind(upsert.encrypted_dek)
     .bind(upsert.encrypted_payload)
     // where
-    .bind(&account_id)
-    .bind(&upsert.version)
+    .bind(account_id)
+    .bind(upsert.version)
     .fetch_one(executor)
     .await?;
     Ok(res)
@@ -107,7 +109,9 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
 mod test {
     use super::super::account;
     use super::*;
-    const TEST_STORAGE_ID: &str = "test-storage-id";
+    fn test_storage_id() -> Uuid {
+        uuid::Uuid::from_u128(12345678901234567890123456789012)
+    }
 
     #[tokio::test]
     async fn test_upsert_insert() {
@@ -119,7 +123,7 @@ mod test {
         // Create an account first
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
@@ -130,8 +134,8 @@ mod test {
         upsert(
             &pool,
             &account.id,
-            StorageUpsert {
-                id: TEST_STORAGE_ID.to_string(),
+            &StorageUpsert {
+                id: test_storage_id(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -141,8 +145,8 @@ mod test {
         .await
         .unwrap();
 
-        let result = get(&pool, &account.id, TEST_STORAGE_ID).await.unwrap();
-        assert_eq!(result.id, TEST_STORAGE_ID.to_string());
+        let result = get(&pool, &account.id, &test_storage_id()).await.unwrap();
+        assert_eq!(result.id, test_storage_id());
         assert_eq!(result.account_id, account.id);
         assert_eq!(result.version, 1);
         assert_eq!(result.deleted, false);
@@ -160,7 +164,7 @@ mod test {
         // Create an account first
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
@@ -172,8 +176,8 @@ mod test {
         upsert(
             &pool,
             &account.id,
-            StorageUpsert {
-                id: TEST_STORAGE_ID.to_string(),
+            &StorageUpsert {
+                id: test_storage_id(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -187,8 +191,8 @@ mod test {
         upsert(
             &pool,
             &account.id,
-            StorageUpsert {
-                id: TEST_STORAGE_ID.to_string(),
+            &StorageUpsert {
+                id: test_storage_id(),
                 version: 2,
                 deleted: false,
                 encrypted_dek: vec![7, 8, 9],
@@ -198,8 +202,8 @@ mod test {
         .await
         .unwrap();
 
-        let result = get(&pool, &account.id, TEST_STORAGE_ID).await.unwrap();
-        assert_eq!(result.id, TEST_STORAGE_ID.to_string());
+        let result = get(&pool, &account.id, &test_storage_id()).await.unwrap();
+        assert_eq!(result.id, test_storage_id());
         assert_eq!(result.version, 2);
         assert_eq!(result.deleted, false);
         assert_eq!(result.encrypted_dek, vec![7, 8, 9]);
@@ -216,7 +220,7 @@ mod test {
         // Create an account first
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
@@ -225,7 +229,7 @@ mod test {
         .unwrap();
 
         let mut item = StorageUpsert {
-            id: TEST_STORAGE_ID.to_string(),
+            id: test_storage_id(),
             version: 2,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
@@ -233,15 +237,15 @@ mod test {
         };
 
         // Insert initial version
-        upsert(&pool, &account.id, item.clone()).await.unwrap();
+        upsert(&pool, &account.id, &item).await.unwrap();
 
         // Try to update with same version and should not update
-        let result = upsert(&pool, &account.id, item.clone()).await;
+        let result = upsert(&pool, &account.id, &item).await;
         assert!(result.is_err());
 
         // Try to update with lower version and should not update
         item.version = 1;
-        let result = upsert(&pool, &account.id, item).await;
+        let result = upsert(&pool, &account.id, &item).await;
         assert!(result.is_err());
     }
 
@@ -255,7 +259,7 @@ mod test {
         // Create an account first
         let account = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test@example.com".into(),
                 password: "password".into(),
             },
@@ -264,19 +268,19 @@ mod test {
         .unwrap();
 
         let mut item = StorageUpsert {
-            id: TEST_STORAGE_ID.to_string(),
+            id: test_storage_id(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
             encrypted_payload: vec![4, 5, 6],
         };
         // Insert initial version
-        upsert(&pool, &account.id, item.clone()).await.unwrap();
+        upsert(&pool, &account.id, &item).await.unwrap();
 
         item.version = item.version + 1;
         item.deleted = true;
         // Delete record
-        let deleted_result = upsert(&pool, &account.id, item.clone()).await.unwrap();
+        let deleted_result = upsert(&pool, &account.id, &item).await.unwrap();
         assert!(deleted_result.deleted_at.is_some());
         assert!(deleted_result.encrypted_dek.is_empty());
         assert!(deleted_result.encrypted_dek.is_empty());
@@ -284,7 +288,7 @@ mod test {
         item.version = item.version + 1;
         item.deleted = false;
         // Try update deleted record and should fail
-        let result = upsert(&pool, &account.id, item.clone()).await;
+        let result = upsert(&pool, &account.id, &item).await;
         assert!(result.is_err());
     }
 
@@ -298,7 +302,7 @@ mod test {
         // Create an account first
         let account1 = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test1@example.com".into(),
                 password: "password".into(),
             },
@@ -307,7 +311,7 @@ mod test {
         .unwrap();
         let account2 = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test2@example.com".into(),
                 password: "password".into(),
             },
@@ -316,7 +320,7 @@ mod test {
         .unwrap();
 
         let mut item = StorageUpsert {
-            id: TEST_STORAGE_ID.to_string(),
+            id: test_storage_id(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
@@ -324,13 +328,13 @@ mod test {
         };
 
         // Insert initial version
-        upsert(&pool, &account1.id, item.clone()).await.unwrap();
+        upsert(&pool, &account1.id, &item).await.unwrap();
 
         // Bump the version to force the update
         item.version += 1;
 
         // Update with wrong user
-        let res = upsert(&pool, &account2.id, item).await;
+        let res = upsert(&pool, &account2.id, &item).await;
         assert!(res.is_err());
     }
 
@@ -344,7 +348,7 @@ mod test {
         // Create an account first
         let account1 = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test1@example.com".into(),
                 password: "password".into(),
             },
@@ -352,23 +356,25 @@ mod test {
         .await
         .unwrap();
 
+        let item1_id = uuid::Uuid::from_u128(11111111111111111111111111111111);
+        let item2_id = uuid::Uuid::from_u128(22222222222222222222222222222222);
         let item1 = StorageUpsert {
-            id: "id1".to_string(),
+            id: item1_id,
             version: 1,
             deleted: false,
             encrypted_dek: vec![1, 1, 1],
             encrypted_payload: vec![2, 2, 2],
         };
         let item2 = StorageUpsert {
-            id: "id2".to_string(),
+            id: item2_id,
             version: 1,
             deleted: false,
             encrypted_dek: vec![3, 3, 3],
             encrypted_payload: vec![4, 4, 4],
         };
 
-        let ret1 = upsert(&pool, &account1.id, item1.clone()).await.unwrap();
-        let ret2 = upsert(&pool, &account1.id, item2.clone()).await.unwrap();
+        let ret1 = upsert(&pool, &account1.id, &item1).await.unwrap();
+        let ret2 = upsert(&pool, &account1.id, &item2).await.unwrap();
         let result = select(&pool, &account1.id).await.unwrap();
         assert_eq!(2, result.len());
         assert!(result.iter().find(|i| ret1.eq(i)).is_some());
@@ -377,7 +383,7 @@ mod test {
         // Test with an account that doesn't have any items
         let account2 = account::insert(
             &pool,
-            account::AccountInsert {
+            &account::AccountInsert {
                 email: "test2@example.com".into(),
                 password: "password".into(),
             },

@@ -2,19 +2,20 @@ use crate::server::error::ApiError;
 use chrono::{DateTime, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Validation};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct JwtClaim {
-    pub sub: String,
+    pub sub: Uuid,
     #[serde(with = "chrono::serde::ts_seconds")]
     pub exp: DateTime<Utc>,
     #[serde(with = "chrono::serde::ts_seconds")]
     pub iat: DateTime<Utc>,
 }
 
-pub fn new(key: &[u8; 32], account_id: &str, iat: DateTime<Utc>) -> anyhow::Result<String> {
+pub fn new(key: &[u8; 32], account_id: &Uuid, iat: DateTime<Utc>) -> anyhow::Result<String> {
     let claims = JwtClaim {
-        sub: account_id.into(),
+        sub: account_id.clone(),
         iat: iat.clone(),
         exp: iat,
     };
@@ -43,7 +44,7 @@ mod test {
         let (_, pool) = testing::init_test_server().await;
         let account = database::account::insert(
             &pool,
-            database::account::AccountInsert {
+            &database::account::AccountInsert {
                 email: "test@mail.com".into(),
                 password: "123456789".into(),
             },
@@ -60,7 +61,7 @@ mod test {
         let (_, pool) = testing::init_test_server().await;
         let account = database::account::insert(
             &pool,
-            database::account::AccountInsert {
+            &database::account::AccountInsert {
                 email: "test@mail.com".into(),
                 password: "123456789".into(),
             },
