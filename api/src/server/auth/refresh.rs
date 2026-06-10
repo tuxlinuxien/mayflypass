@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct RefreshInput {
-    pub refresh_token: String,
+    pub refresh_token: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -36,7 +36,7 @@ pub async fn refresh(
 ) -> Result<Response, ApiError> {
     // try to get the the token either from the cookie or json
     let token = extract_refresh_token_from_cookie(&headers)
-        .or_else(|| payload.as_ref().map(|p| p.refresh_token.clone()))
+        .or_else(|| payload.and_then(|t| t.refresh_token.clone()))
         .ok_or(ApiError::InvalidTokenError)?;
     // verify the refresh token is still valid
     let token_info = database::token::get(&state.pool, &token)

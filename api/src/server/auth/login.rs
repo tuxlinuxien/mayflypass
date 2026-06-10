@@ -1,5 +1,6 @@
 use crate::database;
 use crate::server::error::ApiError;
+use crate::server::error::FieldError;
 use crate::server::extractor::JsonInput;
 use crate::server::lib::cookies::RefreshTokenCookie;
 use crate::server::lib::token;
@@ -11,6 +12,7 @@ use axum::response::IntoResponse;
 use axum::response::Response;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use validator::ValidateEmail;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct LoginInput {
@@ -18,6 +20,23 @@ pub struct LoginInput {
     pub email: String,
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub password: String,
+}
+
+impl LoginInput {
+    fn validate(&mut self) -> Result<(), ApiError> {
+        self.email = self.email.to_lowercase();
+        let mut errors = vec![];
+        if !self.email.validate_email() {
+            errors.push(FieldError::InvalidEmail("email".into()));
+        }
+        if self.password.is_empty() {
+            errors.push(FieldError::ValueRequired("password".into()));
+        }
+        if errors.is_empty() {
+            return Ok(());
+        }
+        return Err(ApiError::BadRequestFieldErrors(errors));
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -28,29 +47,27 @@ pub struct LoginReponse {
 
 pub async fn login(
     State(state): State<AppState>,
-    JsonInput(payload): JsonInput<LoginInput>,
+    JsonInput(mut payload): JsonInput<LoginInput>,
 ) -> Result<Response, ApiError> {
-    // normalize the email.
-    let email = payload.email.to_lowercase();
+    payload.validate()?;
+
     // fetch the account by email.
-    let account = database::account::get_by_email(&state.pool, &email).await?;
+    let account = database::account::get_by_email(&state.pool, &payload.email).await?;
     let account = match account {
         Some(account) => account,
         None => {
-            return Err(ApiError::InvalidField {
-                field: "email".into(),
-                message: "invalid credentials".into(),
-            });
+            return Err(ApiError::BadRequestFieldErrors(vec![
+                FieldError::InvalidCredentials("email".into()),
+            ]));
         }
     };
     // Verify the password.
     // Note: return the same error as above so we can't know if
     // the account exists or if the password is invalid.
     if !account.verify_password(&payload.password).await {
-        return Err(ApiError::InvalidField {
-            field: "email".into(),
-            message: "invalid credentials".into(),
-        });
+        return Err(ApiError::BadRequestFieldErrors(vec![
+            FieldError::InvalidCredentials("email".into()),
+        ]));
     }
     // create access_token
     let access_token = token::new(&state.access_token_key, &account.id, Utc::now())?;

@@ -11,7 +11,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct LogoutInput {
-    pub refresh_token: String,
+    pub refresh_token: Option<String>,
 }
 
 pub async fn logout(
@@ -22,7 +22,7 @@ pub async fn logout(
     if let Some(token) = extract_refresh_token_from_cookie(&headers) {
         database::token::delete(&state.pool, &token).await?;
     }
-    if let Some(token) = payload.map(|p| p.refresh_token.clone()) {
+    if let Some(token) = payload.and_then(|p| p.refresh_token.clone()) {
         database::token::delete(&state.pool, &token).await?;
     }
     Ok(http::StatusCode::NO_CONTENT.into_response())

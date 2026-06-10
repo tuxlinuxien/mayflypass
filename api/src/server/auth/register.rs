@@ -3,7 +3,6 @@ use crate::server::error::{ApiError, FieldError};
 use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
-use serde_json::json;
 use uuid::Uuid;
 use validator::ValidateEmail;
 
@@ -26,30 +25,25 @@ impl RegisterInput {
         // email
         self.email = self.email.to_lowercase();
         if !self.email.validate_email() {
-            errors.push(FieldError("email", "Invalid email."));
+            errors.push(FieldError::InvalidEmail("email".into()));
         }
         // password
         if self.password.len() < 8 {
-            errors.push(FieldError(
-                "password",
-                "Must be at least 8 characters long.",
-            ));
+            errors.push(FieldError::ValueTooShort("password".into(), 8));
         }
         // password_repeat
         if self.password != self.password_repeat {
-            errors.push(FieldError("password_repeat", "Password mismatch."));
+            errors.push(FieldError::ValueMismatch("password_repeat".into()));
         }
         //
         if self.c_code.is_empty() {
-            errors.push(FieldError("c_code", "Field required."));
+            errors.push(FieldError::ValueRequired("c_code".into()));
         }
 
         if errors.is_empty() {
             return Ok(());
         }
-        Err(ApiError::BadRequest(json!({
-            "errors": errors,
-        })))
+        Err(ApiError::BadRequestFieldErrors(errors))
     }
 }
 
@@ -61,9 +55,9 @@ pub async fn register(
     payload.validate()?;
 
     if !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await? {
-        return Err(ApiError::BadRequest(json!({
-            "errors": vec![FieldError("c_code", "Invalid verification code.")],
-        })));
+        return Err(ApiError::BadRequestFieldErrors(vec![
+            FieldError::InvalidCaptchat("c_code".into()),
+        ]));
     }
 
     let new_user = &database::account::AccountInsert {
@@ -74,9 +68,9 @@ pub async fn register(
         Ok(_) => {}
         Err(e) => match e {
             database::error::Error::UniqueViolation { .. } => {
-                return Err(ApiError::BadRequest(json!({
-                    "errors": vec![FieldError("email", "This account already exists.")],
-                })));
+                return Err(ApiError::BadRequestFieldErrors(vec![
+                    FieldError::ValueDuplicated("email".into()),
+                ]));
             }
             _ => return Err(ApiError::InternalError),
         },
@@ -112,20 +106,16 @@ mod test {
         };
         let res = v.validate();
         assert!(res.is_err());
-        let ApiError::BadRequest(val) = res.err().unwrap() else {
-            panic!("expected BadRequest");
+        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
+            panic!("BadRequestFieldErrors");
         };
         assert_eq!(
-            serde_json::json!(
-                {
-                    "errors": [
-                        {"field":"email", "message": "Invalid email."},
-                        {"field": "password", "message": "Must be at least 8 characters long."},
-                        {"field": "c_code", "message": "Field required."}
-                    ]
-                }
-            ),
-            val
+            serde_json::json!([
+                {"field":"email", "message": "Invalid email."},
+                {"field": "password", "message": "Must be at least 8 characters long."},
+                {"field": "c_code", "message": "Field required."}
+            ]),
+            serde_json::json!(val),
         );
     }
 
