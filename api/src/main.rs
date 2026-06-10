@@ -11,12 +11,12 @@ async fn main() {
     database::run_migrations(&pool).await.unwrap();
 
     if args.dev {
-        tracing::warn!("#########################################");
+        tracing::warn!("#######################################");
         tracing::warn!("");
         tracing::warn!("running server in dev mode");
-        tracing::warn!("  - registration with captchat [DISABLED]");
+        tracing::warn!("* registration with captchat [DISABLED]");
         tracing::warn!("");
-        tracing::warn!("####################################3####");
+        tracing::warn!("#######################################");
     }
 
     // launch the server

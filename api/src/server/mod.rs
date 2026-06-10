@@ -28,23 +28,25 @@ fn fmt_bytes(bytes: u64) -> String {
 }
 
 async fn log(req: Request, next: Next) -> Response {
-    let method = req.method().clone();
-    let uri = req.uri().clone();
-    let start = std::time::Instant::now();
-    let res = next.run(req).await;
-    let size = res
+    let size = req
         .headers()
         .get(http::header::CONTENT_LENGTH)
         .and_then(|v| v.to_str().ok())
         .and_then(|v| v.parse::<u64>().ok())
         .unwrap_or(0);
+
+    let method = req.method().clone();
+    let uri = req.uri().clone();
+    let start = std::time::Instant::now();
+    let res = next.run(req).await;
+
     if res.status().is_success() {
         tracing::info!(
             method = %method,
             uri = %uri,
             status = res.status().as_u16(),
             elapsed_ms = start.elapsed().as_millis(),
-            response_body_len = %fmt_bytes(size),
+            request_body_len = %fmt_bytes(size),
         );
     } else {
         tracing::error!(
@@ -52,7 +54,7 @@ async fn log(req: Request, next: Next) -> Response {
             uri = %uri,
             status = res.status().as_u16(),
             elapsed_ms = start.elapsed().as_millis(),
-            response_body_len = %fmt_bytes(size),
+            request_body_len = %fmt_bytes(size),
         );
     }
     res
