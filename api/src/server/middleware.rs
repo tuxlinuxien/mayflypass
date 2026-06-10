@@ -32,5 +32,6 @@ pub async fn auth(
         return Err(ApiError::InvalidTokenError);
     }
     req.extensions_mut().insert(AuthUserId(account.id));
+    tracing::debug!(authorization = %"jwt", account_id = %account.id);
     Ok(next.run(req).await)
 }
