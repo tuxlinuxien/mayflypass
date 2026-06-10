@@ -21,26 +21,25 @@ pub struct RegisterInput {
 
 impl RegisterInput {
     fn validate(&mut self) -> Result<(), ApiError> {
-        let mut errors = vec![];
-        // email
+        // normalize the email
         self.email = self.email.to_lowercase();
-        if self.email.len() > 50 {
-            errors.push(FieldError::ValueTooLong("email".into(), 30));
-        } else if !self.email.validate_email() {
-            errors.push(FieldError::EmailInvalid("email".into()));
-        }
-        // password
-        if self.password.len() < 8 {
-            errors.push(FieldError::ValueTooShort("password".into(), 8));
-        }
-        // password_repeat
-        if self.password != self.password_repeat {
-            errors.push(FieldError::ValueMismatch("password_repeat".into()));
-        }
-        //
-        if self.c_code.is_empty() {
-            errors.push(FieldError::ValueRequired("c_code".into()));
-        }
+
+        let errors: Vec<FieldError> = vec![
+            // email
+            Some(FieldError::ValueTooLong("email".into(), 30)).filter(|_| self.email.len() > 30),
+            Some(FieldError::EmailInvalid("email".into())).filter(|_| !self.email.validate_email()),
+            // password
+            Some(FieldError::ValueTooShort("password".into(), 8))
+                .filter(|_| self.password.len() < 8),
+            // password_repeat
+            Some(FieldError::ValueMismatch("password_repeat".into()))
+                .filter(|_| self.password != self.password_repeat),
+            // c_code
+            Some(FieldError::ValueRequired("c_code".into())).filter(|_| self.c_code.is_empty()),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
 
         if errors.is_empty() {
             return Ok(());
@@ -118,7 +117,7 @@ mod test {
 
         // email too long
         let mut input = base.clone();
-        input.email = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu@mail.com".into();
+        input.email = "test.tttttttttttttttttttttttttttttttttttttttttt@mail.com".into();
         let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
