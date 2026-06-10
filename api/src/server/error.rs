@@ -9,9 +9,9 @@ use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FieldError {
-    InvalidEmail(String),
-    InvalidCredentials(String),
-    InvalidCaptchat(String),
+    EmailInvalid(String),
+    CredentialsInvalid(String),
+    CaptchatInvalid(String),
     ValueTooShort(String, i64),
     ValueTooLong(String, i64),
     ValueRange(String, i64, i64),
@@ -26,22 +26,22 @@ impl Serialize for FieldError {
         S: serde::Serializer,
     {
         match self {
-            FieldError::InvalidEmail(field) => {
+            FieldError::EmailInvalid(field) => {
                 let mut map = serializer.serialize_map(Some(2))?;
                 map.serialize_entry("field", field)?;
-                map.serialize_entry("code", "INVALID_EMAIL")?;
+                map.serialize_entry("code", "EMAIL_INVALID")?;
                 map.end()
             }
-            FieldError::InvalidCredentials(field) => {
+            FieldError::CredentialsInvalid(field) => {
                 let mut map = serializer.serialize_map(Some(2))?;
                 map.serialize_entry("field", field)?;
-                map.serialize_entry("code", "INVALID_CREDENTIALS")?;
+                map.serialize_entry("code", "CREDENTIALS_INVALID")?;
                 map.end()
             }
-            FieldError::InvalidCaptchat(field) => {
+            FieldError::CaptchatInvalid(field) => {
                 let mut map = serializer.serialize_map(Some(2))?;
                 map.serialize_entry("field", field)?;
-                map.serialize_entry("code", "INVALID_CAPTCHAT")?;
+                map.serialize_entry("code", "CAPTCHAT_INVALID")?;
                 map.end()
             }
             FieldError::ValueTooShort(field, min) => {

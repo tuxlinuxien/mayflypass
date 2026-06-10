@@ -27,7 +27,7 @@ impl LoginInput {
         self.email = self.email.to_lowercase();
         let mut errors = vec![];
         if !self.email.validate_email() {
-            errors.push(FieldError::InvalidEmail("email".into()));
+            errors.push(FieldError::EmailInvalid("email".into()));
         }
         if self.password.is_empty() {
             errors.push(FieldError::ValueRequired("password".into()));
@@ -57,7 +57,7 @@ pub async fn login(
         Some(account) => account,
         None => {
             return Err(ApiError::BadRequestFieldErrors(vec![
-                FieldError::InvalidCredentials("email".into()),
+                FieldError::CredentialsInvalid("email".into()),
             ]));
         }
     };
@@ -66,7 +66,7 @@ pub async fn login(
     // the account exists or if the password is invalid.
     if !account.verify_password(&payload.password).await {
         return Err(ApiError::BadRequestFieldErrors(vec![
-            FieldError::InvalidCredentials("email".into()),
+            FieldError::CredentialsInvalid("email".into()),
         ]));
     }
     // create access_token
@@ -101,7 +101,7 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                FieldError::InvalidEmail("email".into()),
+                FieldError::EmailInvalid("email".into()),
                 FieldError::ValueRequired("password".into())
             ]}),
         );
@@ -126,7 +126,7 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                FieldError::InvalidCredentials("email".into())
+                FieldError::CredentialsInvalid("email".into())
             ]}),
         );
     }
@@ -150,7 +150,7 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                FieldError::InvalidCredentials("email".into())
+                FieldError::CredentialsInvalid("email".into())
             ]}),
         );
     }

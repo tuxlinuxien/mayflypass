@@ -6,7 +6,7 @@ use axum::extract::State;
 use uuid::Uuid;
 use validator::ValidateEmail;
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize)]
 pub struct RegisterInput {
     #[serde(deserialize_with = "serde_trim::string_trim")]
     pub email: String,
@@ -24,8 +24,10 @@ impl RegisterInput {
         let mut errors = vec![];
         // email
         self.email = self.email.to_lowercase();
-        if !self.email.validate_email() {
-            errors.push(FieldError::InvalidEmail("email".into()));
+        if self.email.len() > 50 {
+            errors.push(FieldError::ValueTooLong("email".into(), 30));
+        } else if !self.email.validate_email() {
+            errors.push(FieldError::EmailInvalid("email".into()));
         }
         // password
         if self.password.len() < 8 {
@@ -56,7 +58,7 @@ pub async fn register(
 
     if !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await? {
         return Err(ApiError::BadRequestFieldErrors(vec![
-            FieldError::InvalidCaptchat("c_code".into()),
+            FieldError::CaptchatInvalid("c_code".into()),
         ]));
     }
 
@@ -97,26 +99,66 @@ mod test {
 
     #[tokio::test]
     async fn test_register_validate() {
-        let mut v = RegisterInput {
-            email: "".into(),
-            password: "".into(),
-            password_repeat: "".into(),
+        let base = RegisterInput {
+            email: "test@mail.com".into(),
+            password: "12345678".into(),
+            password_repeat: "12345678".into(),
             c_id: Uuid::new_v4(),
-            c_code: "".into(),
+            c_code: "00000".into(),
         };
-        let res = v.validate();
+        // bad email
+        let mut input = base.clone();
+        input.email = "no email".into();
+        let res = input.validate();
+        assert!(res.is_err());
+        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
+            panic!("BadRequestFieldErrors");
+        };
+        assert_eq!(val, vec![FieldError::EmailInvalid("email".into())]);
+
+        // email too long
+        let mut input = base.clone();
+        input.email = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu@mail.com".into();
+        let res = input.validate();
+        assert!(res.is_err());
+        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
+            panic!("BadRequestFieldErrors");
+        };
+        assert_eq!(val, vec![FieldError::ValueTooLong("email".into(), 30)]);
+
+        // password too short
+        let mut input = base.clone();
+        input.password = "1234567".into();
+        input.password_repeat = "1234567".into();
+        let res = input.validate();
+        assert!(res.is_err());
+        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
+            panic!("BadRequestFieldErrors");
+        };
+        assert_eq!(val, vec![FieldError::ValueTooShort("password".into(), 8)]);
+
+        // password_repeat mistmath
+        let mut input = base.clone();
+        input.password_repeat = "1234567".into();
+        let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
             panic!("BadRequestFieldErrors");
         };
         assert_eq!(
             val,
-            vec![
-                FieldError::InvalidEmail("email".into()),
-                FieldError::ValueTooShort("password".into(), 8),
-                FieldError::ValueRequired("c_code".into()),
-            ]
+            vec![FieldError::ValueMismatch("password_repeat".into())]
         );
+
+        // missing c_code
+        let mut input = base.clone();
+        input.c_code = "".into();
+        let res = input.validate();
+        assert!(res.is_err());
+        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
+            panic!("BadRequestFieldErrors");
+        };
+        assert_eq!(val, vec![FieldError::ValueRequired("c_code".into())]);
     }
 
     #[tokio::test]
@@ -210,7 +252,7 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                &FieldError::InvalidCaptchat("c_code".into())
+                &FieldError::CaptchatInvalid("c_code".into())
             ]}),
         );
     }
@@ -238,7 +280,7 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                &FieldError::InvalidCaptchat("c_code".into())
+                &FieldError::CaptchatInvalid("c_code".into())
             ]}),
         );
     }
