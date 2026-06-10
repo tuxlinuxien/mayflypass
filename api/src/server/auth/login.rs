@@ -100,7 +100,10 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"error": {"email": "invalid credentials"}})
+            serde_json::json!({"errors": [
+                FieldError::InvalidEmail("email".into()),
+                FieldError::ValueRequired("password".into())
+            ]}),
         );
     }
 
@@ -122,7 +125,9 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"error": {"email": "invalid credentials"}})
+            serde_json::json!({"errors": [
+                FieldError::InvalidCredentials("email".into())
+            ]}),
         );
     }
 
@@ -144,7 +149,9 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"error": {"email": "invalid credentials"}})
+            serde_json::json!({"errors": [
+                FieldError::InvalidCredentials("email".into())
+            ]}),
         );
     }
 

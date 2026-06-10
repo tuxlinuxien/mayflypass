@@ -7,7 +7,7 @@ use serde::{Serialize, ser::SerializeMap};
 use serde_json::{Value, json};
 use thiserror::Error;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FieldError {
     InvalidEmail(String),
     InvalidCredentials(String),

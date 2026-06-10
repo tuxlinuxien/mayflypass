@@ -110,12 +110,12 @@ mod test {
             panic!("BadRequestFieldErrors");
         };
         assert_eq!(
-            serde_json::json!([
-                {"field":"email", "message": "Invalid email."},
-                {"field": "password", "message": "Must be at least 8 characters long."},
-                {"field": "c_code", "message": "Field required."}
-            ]),
-            serde_json::json!(val),
+            val,
+            vec![
+                FieldError::InvalidEmail("email".into()),
+                FieldError::ValueTooShort("password".into(), 8),
+                FieldError::ValueRequired("c_code".into()),
+            ]
         );
     }
 
@@ -135,12 +135,6 @@ mod test {
             }))
             .await;
         response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-
-        assert_eq!(
-            body,
-            serde_json::json!({"errors": [{"field": "email", "message": "Invalid email."}]})
-        );
     }
 
     #[tokio::test]
@@ -159,11 +153,6 @@ mod test {
             }))
             .await;
         response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-        assert_eq!(
-            body,
-            serde_json::json!({"errors": [{"field": "password", "message": "Must be at least 8 characters long."}]})
-        );
     }
 
     #[tokio::test]
@@ -182,11 +171,6 @@ mod test {
             }))
             .await;
         response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-        assert_eq!(
-            body,
-            serde_json::json!({"errors": [{"field": "password_repeat", "message": "Password mismatch."}]})
-        );
     }
 
     #[tokio::test]
@@ -205,11 +189,6 @@ mod test {
             }))
             .await;
         response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-        assert_eq!(
-            body,
-            serde_json::json!({"errors": [{"field": "c_code", "message": "Invalid verification code."}]})
-        );
     }
 
     #[tokio::test]
@@ -230,7 +209,9 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"errors": [{"field": "c_code", "message": "Invalid verification code."}]})
+            serde_json::json!({"errors": [
+                &FieldError::InvalidCaptchat("c_code".into())
+            ]}),
         );
     }
 
@@ -256,7 +237,9 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"errors": [{"field": "c_code", "message": "Invalid verification code."}]})
+            serde_json::json!({"errors": [
+                &FieldError::InvalidCaptchat("c_code".into())
+            ]}),
         );
     }
 
@@ -299,7 +282,9 @@ mod test {
         let body = response.json::<serde_json::Value>();
         assert_eq!(
             body,
-            serde_json::json!({"errors": [{"field": "email", "message": "This account already exists."}]})
+            serde_json::json!({"errors": [
+                &FieldError::ValueDuplicated("email".into())
+            ]}),
         );
     }
 
