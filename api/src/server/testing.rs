@@ -8,6 +8,7 @@ pub async fn init_test_server() -> (Router, sqlx::SqlitePool) {
     let state = state::AppState {
         pool: pool.clone(),
         access_token_key: [0u8; 32],
+        dev: false,
     };
     let router = super::create_routes(state.clone());
     let router = router.with_state(state);

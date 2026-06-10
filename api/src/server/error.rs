@@ -14,6 +14,7 @@ pub enum FieldError {
     CaptchatInvalid(String),
     ValueTooShort(String, i64),
     ValueTooLong(String, i64),
+    #[allow(unused)]
     ValueRange(String, i64, i64),
     ValueRequired(String),
     ValueMismatch(String),

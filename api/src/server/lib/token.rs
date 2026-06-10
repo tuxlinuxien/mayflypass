@@ -1,5 +1,5 @@
 use crate::server::error::ApiError;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -17,7 +17,7 @@ pub fn new(key: &[u8; 32], account_id: &Uuid, iat: DateTime<Utc>) -> anyhow::Res
     let claims = JwtClaim {
         sub: account_id.clone(),
         iat: iat.clone(),
-        exp: iat,
+        exp: iat + Duration::minutes(15),
     };
     let header = jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS256);
     let key = EncodingKey::from_secret(&key.to_vec());

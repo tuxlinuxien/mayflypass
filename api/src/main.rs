@@ -1,8 +1,26 @@
-use api::{database, server};
+use api::{app::App, database, server};
+use clap::Parser;
 
 #[tokio::main]
 async fn main() {
-    let pool = database::create_pool("sqlite::memory:", 1).await.unwrap();
+    let args = App::parse();
+    api::init_logger(args.verbosity);
+
+    // create the database and start the migration
+    let pool = database::create_pool(&args.database_url, 1).await.unwrap();
     database::run_migrations(&pool).await.unwrap();
-    server::init("0.0.0.0:8080", pool).await;
+
+    if args.dev {
+        tracing::warn!("#########################################");
+        tracing::warn!("");
+        tracing::warn!("running server in dev mode");
+        tracing::warn!("  - registration with captchat [DISABLED]");
+        tracing::warn!("");
+        tracing::warn!("####################################3####");
+    }
+
+    // launch the server
+    let interface = format!("{}:{}", args.host_interface, args.host_port);
+    tracing::info!("the server will listen in {interface}");
+    server::init(&interface, pool, args.dev).await;
 }

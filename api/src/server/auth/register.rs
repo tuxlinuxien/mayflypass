@@ -8,14 +8,14 @@ use validator::ValidateEmail;
 
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct RegisterInput {
-    #[serde(deserialize_with = "serde_trim::string_trim")]
+    #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub email: String,
-    #[serde(deserialize_with = "serde_trim::string_trim")]
+    #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub password: String,
-    #[serde(deserialize_with = "serde_trim::string_trim")]
+    #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub password_repeat: String,
     pub c_id: Uuid,
-    #[serde(deserialize_with = "serde_trim::string_trim")]
+    #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub c_code: String,
 }
 
@@ -55,7 +55,10 @@ pub async fn register(
     // normalize email and check if it's valid.
     payload.validate()?;
 
-    if !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await? {
+    // only test the captchat is dev is false
+    if !state.dev
+        && !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await?
+    {
         return Err(ApiError::BadRequestFieldErrors(vec![
             FieldError::CaptchatInvalid("c_code".into()),
         ]));
