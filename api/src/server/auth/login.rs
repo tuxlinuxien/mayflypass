@@ -79,7 +79,7 @@ pub async fn login(
     })
     .into_response();
     // return the refresh token in a cookie
-    let cookie = RefreshTokenCookie::try_from(refresh_token).map_err(|e| anyhow::anyhow!("{e}"))?;
+    let cookie = RefreshTokenCookie::build(&refresh_token, !state.dev)?;
     response
         .headers_mut()
         .insert(http::header::SET_COOKIE, cookie.into());

@@ -43,17 +43,16 @@ pub async fn refresh(
         .await?
         .ok_or(ApiError::InvalidTokenError)?;
     // build new tokens
-    let access_token = token::new(&state.access_token_key, &token_info.account_id, Utc::now())?;
+    let new_access_token = token::new(&state.access_token_key, &token_info.account_id, Utc::now())?;
     let new_refresh_token = database::token::generate(&state.pool, &token_info.account_id).await?;
     // add tokens to the response body
     let mut response = Json(RefreshResponse {
-        access_token,
+        access_token: new_access_token,
         refresh_token: new_refresh_token.clone(),
     })
     .into_response();
     // add the refresh token to the cookie
-    let cookie =
-        RefreshTokenCookie::try_from(new_refresh_token).map_err(|e| anyhow::anyhow!("{e}"))?;
+    let cookie = RefreshTokenCookie::build(&new_refresh_token, !state.dev)?;
     response
         .headers_mut()
         .insert(http::header::SET_COOKIE, cookie.into());

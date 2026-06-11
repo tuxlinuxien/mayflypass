@@ -127,6 +127,7 @@ pub enum ApiError {
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
+        tracing::error!("api error: {:?}", self);
         match self {
             ApiError::InternalError => (
                 http::StatusCode::INTERNAL_SERVER_ERROR,
