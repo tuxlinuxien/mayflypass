@@ -109,10 +109,8 @@ impl Serialize for FieldError {
 
 #[derive(Debug, Error)]
 pub enum ApiError {
-    #[error("internal error")]
-    InternalError,
     #[error("internal error: {0}")]
-    AnyhowError(#[from] anyhow::Error),
+    InternalError(#[from] anyhow::Error),
     #[error("database error: {0}")]
     DatabaseError(#[from] database::error::Error),
     #[error("invalid token")]
@@ -129,12 +127,7 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         tracing::error!("api error: {:?}", self);
         match self {
-            ApiError::InternalError => (
-                http::StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "internal error"})),
-            )
-                .into_response(),
-            ApiError::AnyhowError(_) => (
+            ApiError::InternalError(_) => (
                 http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": "internal error"})),
             )

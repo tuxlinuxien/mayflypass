@@ -26,7 +26,7 @@ impl RegisterInput {
 
         let errors: Vec<FieldError> = vec![
             // email
-            Some(FieldError::ValueTooLong("email".into(), 30)).filter(|_| self.email.len() > 30),
+            Some(FieldError::ValueTooLong("email".into(), 50)).filter(|_| self.email.len() > 50),
             Some(FieldError::EmailInvalid("email".into())).filter(|_| !self.email.validate_email()),
             // password
             Some(FieldError::ValueTooShort("password".into(), 8))
@@ -76,7 +76,9 @@ pub async fn register(
                     FieldError::ValueDuplicated("email".into()),
                 ]));
             }
-            _ => return Err(ApiError::InternalError),
+            _ => {
+                Err(anyhow::anyhow!("db error: {:?}", e))?;
+            }
         },
     }
     Ok(())
@@ -88,7 +90,7 @@ pub async fn captchat(
     // create new captchat.
     let (res, _) = database::captchat::generate(&state.pool)
         .await
-        .map_err(|_| ApiError::InternalError)?;
+        .map_err(|e| ApiError::InternalError(anyhow::anyhow!("generate captchat: {:?}", e)))?;
     return Ok(Json(res));
 }
 
@@ -126,7 +128,7 @@ mod test {
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
             panic!("BadRequestFieldErrors");
         };
-        assert_eq!(val, vec![FieldError::ValueTooLong("email".into(), 30)]);
+        assert_eq!(val, vec![FieldError::ValueTooLong("email".into(), 50)]);
 
         // password too short
         let mut input = base.clone();
