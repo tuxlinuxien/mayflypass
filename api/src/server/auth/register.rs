@@ -4,7 +4,6 @@ use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
 use uuid::Uuid;
-use validator::ValidateEmail;
 
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct RegisterInput {
@@ -26,16 +25,27 @@ impl RegisterInput {
 
         let errors: Vec<FieldError> = vec![
             // email
-            Some(FieldError::ValueTooLong("email".into(), 50)).filter(|_| self.email.len() > 50),
-            Some(FieldError::EmailInvalid("email".into())).filter(|_| !self.email.validate_email()),
+            FieldError::check_required("email", &self.email)
+                .or(FieldError::check_too_long("email", &self.email, 50))
+                .or(FieldError::check_email_invalid("email", &self.email)),
             // password
-            Some(FieldError::ValueTooShort("password".into(), 8))
-                .filter(|_| self.password.len() < 8),
+            FieldError::check_required("password", &self.password)
+                .or(FieldError::check_too_short("password", &self.password, 8))
+                .or(FieldError::check_too_long("password", &self.password, 128)),
             // password_repeat
-            Some(FieldError::ValueMismatch("password_repeat".into()))
-                .filter(|_| self.password != self.password_repeat),
+            FieldError::check_required("password_repeat", &self.password_repeat).or(
+                FieldError::check_value_mismatch(
+                    "password_repeat",
+                    &self.password,
+                    &self.password_repeat,
+                ),
+            ),
             // c_code
-            Some(FieldError::ValueRequired("c_code".into())).filter(|_| self.c_code.is_empty()),
+            FieldError::check_required("c_code", &self.c_code).or(FieldError::check_too_long(
+                "c_code",
+                &self.password,
+                128,
+            )),
         ]
         .into_iter()
         .flatten()
@@ -119,6 +129,16 @@ mod test {
             panic!("BadRequestFieldErrors");
         };
         assert_eq!(val, vec![FieldError::EmailInvalid("email".into())]);
+
+        // empty email
+        let mut input = base.clone();
+        input.email = "".into();
+        let res = input.validate();
+        assert!(res.is_err());
+        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
+            panic!("BadRequestFieldErrors");
+        };
+        assert_eq!(val, vec![FieldError::ValueRequired("email".into())]);
 
         // email too long
         let mut input = base.clone();

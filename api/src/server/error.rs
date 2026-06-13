@@ -6,6 +6,7 @@ use axum::{
 use serde::{Serialize, ser::SerializeMap};
 use serde_json::{Value, json};
 use thiserror::Error;
+use validator::ValidateEmail;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FieldError {
@@ -19,6 +20,48 @@ pub enum FieldError {
     ValueRequired(String),
     ValueMismatch(String),
     ValueDuplicated(String),
+}
+
+impl FieldError {
+    pub fn check_required(field: &str, value: &str) -> Option<FieldError> {
+        if value.is_empty() {
+            Some(Self::ValueRequired(field.to_string()))
+        } else {
+            Option::None
+        }
+    }
+
+    pub fn check_too_long(field: &str, value: &str, max: i64) -> Option<FieldError> {
+        if value.len() > max as usize {
+            Some(Self::ValueTooLong(field.to_string(), max))
+        } else {
+            Option::None
+        }
+    }
+
+    pub fn check_too_short(field: &str, value: &str, min: i64) -> Option<FieldError> {
+        if value.len() < min as usize {
+            Some(Self::ValueTooShort(field.to_string(), min))
+        } else {
+            Option::None
+        }
+    }
+
+    pub fn check_email_invalid(field: &str, value: &str) -> Option<FieldError> {
+        if !value.validate_email() {
+            Some(Self::EmailInvalid(field.to_string()))
+        } else {
+            Option::None
+        }
+    }
+
+    pub fn check_value_mismatch(field: &str, cmp1: &str, cmp2: &str) -> Option<FieldError> {
+        if cmp1 != cmp2 {
+            Some(Self::ValueMismatch(field.to_string()))
+        } else {
+            Option::None
+        }
+    }
 }
 
 impl Serialize for FieldError {
