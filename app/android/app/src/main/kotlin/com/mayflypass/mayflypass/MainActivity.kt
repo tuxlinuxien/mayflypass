@@ -1,4 +1,4 @@
-package com.mayflypass.app
+package com.mayflypass.mayflypass
 
 import io.flutter.embedding.android.FlutterActivity
 
