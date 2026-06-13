@@ -3,7 +3,8 @@ import 'package:mayflypass/auth/auth_cubit.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/router.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
