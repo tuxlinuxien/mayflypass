@@ -220,5 +220,10 @@ void main() {
       final error = ApiError.build(401, null);
       expect(error, isA<ApiErrorUnauthorized>());
     });
+
+    test('ApiError no network', () {
+      final error = ApiError.build(0, null);
+      expect(error, isA<ApiErrorNoNetwork>());
+    });
   });
 }

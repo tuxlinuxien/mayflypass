@@ -116,21 +116,31 @@ sealed class ApiError {
   const ApiError();
 
   factory ApiError.build(int code, Map<String, dynamic>? json) {
-    switch (code) {
-      case 400:
-        if ((json?['errors'] is List<dynamic>)) {
-          return ApiErrorBadRequestWithFields.fromJson(json!);
-        } else {
-          return ApiErrorBadRequest();
-        }
-      case 422:
-        return ApiErrorInvalidPayload();
-      case 401:
-        return ApiErrorUnauthorized();
-      default:
-        return ApiErrorInternalServerError();
+    try {
+      switch (code) {
+        case 0:
+          return ApiErrorNoNetwork();
+        case 400:
+          if ((json?['errors'] is List<dynamic>)) {
+            return ApiErrorBadRequestWithFields.fromJson(json!);
+          } else {
+            return ApiErrorBadRequest();
+          }
+        case 422:
+          return ApiErrorInvalidPayload();
+        case 401:
+          return ApiErrorUnauthorized();
+        default:
+          return ApiErrorInternalServerError();
+      }
+    } catch (_) {
+      return ApiErrorUnknown();
     }
   }
+}
+
+class ApiErrorNoNetwork extends ApiError {
+  const ApiErrorNoNetwork();
 }
 
 class ApiErrorBadRequest extends ApiError {
@@ -147,6 +157,10 @@ class ApiErrorInternalServerError extends ApiError {
 
 class ApiErrorUnauthorized extends ApiError {
   const ApiErrorUnauthorized();
+}
+
+class ApiErrorUnknown extends ApiError {
+  const ApiErrorUnknown();
 }
 
 @JsonSerializable(createToJson: false)
