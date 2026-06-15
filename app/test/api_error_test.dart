@@ -182,7 +182,7 @@ void main() {
 
       expect(
         () => FieldError.fromJson(jsonMap),
-        throwsA(isA<UnimplementedError>()),
+        throwsA(isA<FormatException>()),
       );
     });
   });
@@ -202,6 +202,13 @@ void main() {
       final error = ApiError.build(400, <String, dynamic>{'errors': []});
       expect(error, isA<ApiErrorBadRequestWithFields>());
       expect(0, (error as ApiErrorBadRequestWithFields).errors.length);
+    });
+
+    test('ApiError bad request with fields invalid error', () {
+      final error = ApiError.build(400, <String, dynamic>{'errors': 1});
+      expect(error, isA<ApiErrorBadRequest>());
+      final error2 = ApiError.build(400, null);
+      expect(error2, isA<ApiErrorBadRequest>());
     });
 
     test('ApiError bad payload', () {

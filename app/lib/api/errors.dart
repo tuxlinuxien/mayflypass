@@ -25,7 +25,7 @@ sealed class FieldError {
       case 'VALUE_DUPLICATED':
         return FieldErrorValueDuplicated.fromJson(json);
       default:
-        throw UnimplementedError('missing error handling $json');
+        throw FormatException('missing error handling $json');
     }
   }
 }
@@ -118,7 +118,7 @@ sealed class ApiError {
   factory ApiError.build(int code, Map<String, dynamic>? json) {
     switch (code) {
       case 400:
-        if ((json?['errors'] as List<dynamic>?) != null) {
+        if ((json?['errors'] is List<dynamic>)) {
           return ApiErrorBadRequestWithFields.fromJson(json!);
         } else {
           return ApiErrorBadRequest();
