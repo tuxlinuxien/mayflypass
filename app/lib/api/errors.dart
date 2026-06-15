@@ -118,7 +118,7 @@ sealed class ApiError {
   factory ApiError.build(int code, Map<String, dynamic>? json) {
     switch (code) {
       case 400:
-        if (json?['errors'] != null) {
+        if ((json?['errors'] as List<dynamic>?) != null) {
           return ApiErrorBadRequestWithFields.fromJson(json!);
         } else {
           return ApiErrorBadRequest();
