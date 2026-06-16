@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
 
+import 'error_interceptor.dart';
 import 'logger_interceptor.dart';
 import 'models.dart';
 export 'models.dart';
@@ -29,7 +30,7 @@ class API extends _API {
       sendTimeout: Duration(seconds: 10),
       receiveTimeout: Duration(seconds: 10),
     ),
-  )..interceptors.add(LoggerInterceptor());
+  )..interceptors.addAll([LoggerInterceptor(), ErrorInterceptor()]);
   static String? accessToken;
   static String? refreshToken;
 
@@ -41,14 +42,10 @@ class API extends _API {
     Object? data,
     Dio? customclient,
   }) async {
-    try {
-      final option = Options(method: method);
-      final client = customclient ?? _dio;
-      final response = await client.request(path, data: data, options: option);
-      return response;
-    } on DioException catch (e) {
-      throw ApiError.build(e.response?.statusCode ?? 0, e.response?.data);
-    }
+    final option = Options(method: method);
+    final client = customclient ?? _dio;
+    final response = await client.request(path, data: data, options: option);
+    return response;
   }
 
   Future<Response<dynamic>> post(String path, {Object? data}) async {
@@ -152,8 +149,6 @@ class API extends _API {
   @override
   Future<AccountInfo> getAccountInfo() async {
     final response = await getProtected('/api/account/info');
-    final output = AccountInfo.fromJson(response.data);
-
-    return output;
+    return AccountInfo.fromJson(response.data);
   }
 }
