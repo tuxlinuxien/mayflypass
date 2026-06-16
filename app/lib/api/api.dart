@@ -72,10 +72,12 @@ class API extends _API {
     try {
       // refresh the token now since we don't have any accessToken
       if (accessToken == null) {
+        logger.w('refresh token');
         await refresh(refreshToken);
       }
       return await localRequest();
     } on ApiErrorUnauthorized {
+      logger.w('refresh token');
       await refresh(refreshToken);
     }
     return await localRequest();
