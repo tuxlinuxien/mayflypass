@@ -61,10 +61,6 @@ class API extends _API {
     String path, {
     Object? data,
   }) async {
-    if (accessToken == null) {
-      await refresh(refreshToken);
-    }
-
     Future<Response<dynamic>> localRequest() async {
       final client = _dio.clone();
       client.options.headers.addEntries(
@@ -74,6 +70,10 @@ class API extends _API {
     }
 
     try {
+      // refresh the token now since we don't have any accessToken
+      if (accessToken == null) {
+        await refresh(refreshToken);
+      }
       return await localRequest();
     } on ApiErrorUnauthorized {
       await refresh(refreshToken);
