@@ -7,8 +7,8 @@ use uuid::Uuid;
 pub struct Storage {
     pub id: Uuid,
     pub account_id: Uuid,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
     pub version: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
@@ -18,6 +18,8 @@ pub struct Storage {
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct StorageUpsert {
     pub id: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
     pub version: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
@@ -28,7 +30,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     account_id: &Uuid,
     id: &Uuid,
-) -> Result<Storage, error::Error> {
+) -> Result<Option<Storage>, error::Error> {
     let item = sqlx::query_as::<_, Storage>(
         r#"
         SELECT id, account_id, version, created_at, updated_at, deleted, encrypted_dek, encrypted_payload
@@ -38,7 +40,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
     )
     .bind(id)
     .bind(account_id)
-    .fetch_one(executor)
+    .fetch_optional(executor)
     .await?;
     Ok(item)
 }
@@ -64,7 +66,7 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     account_id: &Uuid,
     upsert: &StorageUpsert,
-) -> Result<Storage, error::Error> {
+) -> Result<Option<Storage>, error::Error> {
     let mut upsert = upsert.clone();
     if upsert.deleted {
         upsert.encrypted_dek = vec![];
@@ -72,24 +74,26 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     }
     let res = sqlx::query_as::<_, Storage>(
         r#"
-        INSERT INTO storage (id, account_id, version, deleted, encrypted_dek, encrypted_payload)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON CONFLICT(id)
+        INSERT INTO storage (id, account_id, created_at, updated_at, version, deleted, encrypted_dek, encrypted_payload)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (id, account_id)
         DO UPDATE SET
-            updated_at = datetime('now'),
+            created_at = excluded.created_at,
+            updated_at = excluded.updated_at,
             version = excluded.version,
             deleted = excluded.deleted,
             encrypted_dek = excluded.encrypted_dek,
             encrypted_payload = excluded.encrypted_payload
         WHERE
-            storage.account_id = excluded.account_id
-            AND storage.version < excluded.version
-        RETURNING id, account_id, version, created_at, updated_at, deleted, encrypted_dek, encrypted_payload
+            storage.version < excluded.version
+        RETURNING id, account_id, created_at, updated_at, version, deleted, encrypted_dek, encrypted_payload
         "#,
     )
     // values
     .bind(upsert.id)
     .bind(account_id)
+    .bind(upsert.created_at)
+    .bind(upsert.updated_at)
     .bind(upsert.version)
     .bind(upsert.deleted)
     .bind(upsert.encrypted_dek)
@@ -97,7 +101,7 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     // where
     .bind(account_id)
     .bind(upsert.version)
-    .fetch_one(executor)
+    .fetch_optional(executor)
     .await?;
     Ok(res)
 }
@@ -133,6 +137,8 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -142,7 +148,10 @@ mod test {
         .await
         .unwrap();
 
-        let result = get(&pool, &account.id, &test_storage_id()).await.unwrap();
+        let result = get(&pool, &account.id, &test_storage_id())
+            .await
+            .unwrap()
+            .unwrap();
         assert_eq!(result.id, test_storage_id());
         assert_eq!(result.account_id, account.id);
         assert_eq!(result.version, 1);
@@ -175,6 +184,8 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -190,6 +201,8 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
                 version: 2,
                 deleted: false,
                 encrypted_dek: vec![7, 8, 9],
@@ -199,7 +212,10 @@ mod test {
         .await
         .unwrap();
 
-        let result = get(&pool, &account.id, &test_storage_id()).await.unwrap();
+        let result = get(&pool, &account.id, &test_storage_id())
+            .await
+            .unwrap()
+            .unwrap();
         assert_eq!(result.id, test_storage_id());
         assert_eq!(result.version, 2);
         assert_eq!(result.deleted, false);
@@ -212,6 +228,8 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
                 version: 3,
                 deleted: true,
                 encrypted_dek: vec![7, 8, 9],
@@ -221,7 +239,10 @@ mod test {
         .await
         .unwrap();
 
-        let result = get(&pool, &account.id, &test_storage_id()).await.unwrap();
+        let result = get(&pool, &account.id, &test_storage_id())
+            .await
+            .unwrap()
+            .unwrap();
         assert_eq!(result.id, test_storage_id());
         assert_eq!(result.version, 3);
         assert_eq!(result.deleted, true);
@@ -249,6 +270,8 @@ mod test {
 
         let mut item = StorageUpsert {
             id: test_storage_id(),
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
             version: 2,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
@@ -260,58 +283,12 @@ mod test {
 
         // Try to update with same version and should not update
         let result = upsert(&pool, &account.id, &item).await;
-        assert!(result.is_err());
+        assert!(result.unwrap().is_none());
 
         // Try to update with lower version and should not update
         item.version = 1;
         let result = upsert(&pool, &account.id, &item).await;
-        assert!(result.is_err());
-    }
-
-    #[tokio::test]
-    async fn test_upsert_update_wrong_user() {
-        let pool = super::super::create_pool("sqlite::memory:", 1)
-            .await
-            .unwrap();
-        super::super::run_migrations(&pool).await.unwrap();
-
-        // Create an account first
-        let account1 = account::insert(
-            &pool,
-            &account::AccountInsert {
-                email: "test1@example.com".into(),
-                password: "password".into(),
-            },
-        )
-        .await
-        .unwrap();
-        let account2 = account::insert(
-            &pool,
-            &account::AccountInsert {
-                email: "test2@example.com".into(),
-                password: "password".into(),
-            },
-        )
-        .await
-        .unwrap();
-
-        let mut item = StorageUpsert {
-            id: test_storage_id(),
-            version: 1,
-            deleted: false,
-            encrypted_dek: vec![1, 2, 3],
-            encrypted_payload: vec![4, 5, 6],
-        };
-
-        // Insert initial version
-        upsert(&pool, &account1.id, &item).await.unwrap();
-
-        // Bump the version to force the update
-        item.version += 1;
-
-        // Update with wrong user
-        let res = upsert(&pool, &account2.id, &item).await;
-        assert!(res.is_err());
+        assert!(result.unwrap().is_none());
     }
 
     #[tokio::test]
@@ -336,6 +313,8 @@ mod test {
         let item2_id = uuid::Uuid::from_u128(22222222222222222222222222222222);
         let item1 = StorageUpsert {
             id: item1_id,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![1, 1, 1],
@@ -343,14 +322,16 @@ mod test {
         };
         let item2 = StorageUpsert {
             id: item2_id,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![3, 3, 3],
             encrypted_payload: vec![4, 4, 4],
         };
 
-        let ret1 = upsert(&pool, &account1.id, &item1).await.unwrap();
-        let ret2 = upsert(&pool, &account1.id, &item2).await.unwrap();
+        let ret1 = upsert(&pool, &account1.id, &item1).await.unwrap().unwrap();
+        let ret2 = upsert(&pool, &account1.id, &item2).await.unwrap().unwrap();
         let result = select(&pool, &account1.id).await.unwrap();
         assert_eq!(2, result.len());
         assert!(result.iter().find(|i| ret1.eq(i)).is_some());

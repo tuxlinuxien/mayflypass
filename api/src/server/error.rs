@@ -164,6 +164,8 @@ pub enum ApiError {
     UnprocessableContent(Value),
     #[error("bad request field errors")]
     BadRequestFieldErrors(Vec<FieldError>),
+    #[error("not found")]
+    NotFound,
 }
 
 impl IntoResponse for ApiError {
@@ -196,6 +198,11 @@ impl IntoResponse for ApiError {
             ApiError::UnprocessableContent(e) => {
                 (http::StatusCode::UNPROCESSABLE_ENTITY, Json(e)).into_response()
             }
+            ApiError::NotFound => (
+                http::StatusCode::NOT_FOUND,
+                Json(json!({"error": "not found"})),
+            )
+                .into_response(),
         }
     }
 }

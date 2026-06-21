@@ -1,6 +1,11 @@
 use super::state;
-use crate::database::{self, account::AccountResult};
-use axum::Router;
+use crate::{
+    database::{self, account::AccountResult},
+    server::lib::token,
+};
+use axum::{Router, http};
+use axum_test::TestServer;
+use chrono::Utc;
 
 pub async fn init_test_server() -> (Router, sqlx::SqlitePool) {
     let pool = database::create_pool("sqlite::memory:", 1).await.unwrap();
@@ -25,4 +30,15 @@ pub async fn build_default_account(pool: &sqlx::SqlitePool) -> AccountResult {
     )
     .await
     .unwrap()
+}
+
+pub async fn build_user_server(account: &AccountResult, app: &Router) -> TestServer {
+    let key = [0u8; 32];
+    let access_token = token::new(&key, &account.id, Utc::now()).unwrap();
+    let mut server = axum_test::TestServer::new(app.clone());
+    server.add_header(
+        http::header::AUTHORIZATION,
+        http::HeaderValue::from_str(&format!("Bearer {}", access_token)).unwrap(),
+    );
+    return server;
 }

@@ -27,3 +27,4 @@ serde_trim = "1.1.0"
 jsonwebtoken = { version = "10.4.0", features = ["rust_crypto"] }
 cookie = "0.18.1"
 tower-http = { version = "0.6", features = ["trace", "cors", "limit"] }
+serde_with = { version = "3.21.0", features = ["hex", "json"] }

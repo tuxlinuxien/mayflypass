@@ -25,7 +25,7 @@ CREATE TABLE refresh_token (
 );
 
 CREATE TABLE storage (
-    id TEXT NOT NULL PRIMARY KEY,
+    id TEXT NOT NULL,
     account_id TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -38,5 +38,6 @@ CREATE TABLE storage (
     -- with the database.
     deleted BOOLEAN NOT NULL DEFAULT False,
     encrypted_dek BLOB NOT NULL,
-    encrypted_payload BLOB NOT NULL
+    encrypted_payload BLOB NOT NULL,
+    PRIMARY KEY (id, account_id)
 );

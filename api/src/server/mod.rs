@@ -14,6 +14,7 @@ mod extractor;
 mod lib;
 mod middleware;
 mod state;
+mod storage;
 #[cfg(test)]
 mod testing;
 
@@ -70,7 +71,10 @@ pub fn create_routes(state: state::AppState) -> Router<state::AppState> {
         .route("/api/logout", post(auth::logout));
     // authenticated
     let private = Router::new()
+        // account
         .route("/api/account/info", get(account::info))
+        // storage
+        .route("/api/storage", post(storage::upsert))
         .route_layer(axum::middleware::from_fn_with_state(
             state,
             middleware::auth,
