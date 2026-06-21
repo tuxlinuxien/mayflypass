@@ -75,6 +75,7 @@ pub fn create_routes(state: state::AppState) -> Router<state::AppState> {
         .route("/api/account/info", get(account::info))
         // storage
         .route("/api/storage", post(storage::upsert))
+        .route("/api/storage", get(storage::select))
         .route_layer(axum::middleware::from_fn_with_state(
             state,
             middleware::auth,
