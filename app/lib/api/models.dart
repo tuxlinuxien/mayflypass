@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mayflypass/api/helper.dart';
+import 'package:mayflypass/helpers/json.dart';
 
 part 'models.g.dart';
 
