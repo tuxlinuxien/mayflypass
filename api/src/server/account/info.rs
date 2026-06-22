@@ -14,9 +14,8 @@ pub struct InfoResponse {
     id: Uuid,
     email: String,
     pub kek_m_cost: u32,
-    pub kek_t_cost: u32,
+    pub kek_i_cost: u32,
     pub kek_p_cost: u32,
-    pub kek_output_len: u32,
     #[serde_as(as = "serde_with::hex::Hex")]
     pub kek_salt: Vec<u8>,
 }
@@ -32,9 +31,8 @@ pub async fn info(
         id: account.id,
         email: account.email,
         kek_m_cost: account.kek_m_cost,
-        kek_t_cost: account.kek_t_cost,
+        kek_i_cost: account.kek_i_cost,
         kek_p_cost: account.kek_p_cost,
-        kek_output_len: account.kek_output_len,
         kek_salt: account.kek_salt,
     }))
 }
@@ -65,9 +63,8 @@ mod test {
         assert_eq!(body["id"], account.id.to_string());
         assert_eq!(body["email"], account.email);
         assert_eq!(body["kek_m_cost"], account.kek_m_cost);
-        assert_eq!(body["kek_t_cost"], account.kek_t_cost);
+        assert_eq!(body["kek_i_cost"], account.kek_i_cost);
         assert_eq!(body["kek_p_cost"], account.kek_p_cost);
-        assert_eq!(body["kek_output_len"], account.kek_output_len);
         assert_eq!(body["kek_salt"], hex::encode(account.kek_salt));
     }
 

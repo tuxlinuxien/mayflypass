@@ -6,9 +6,8 @@ CREATE TABLE account (
     password_updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     -- argon2id parameters
     kek_m_cost INTEGER NOT NULL,
-    kek_t_cost INTEGER NOT NULL,
+    kek_i_cost INTEGER NOT NULL,
     kek_p_cost INTEGER NOT NULL,
-    kek_output_len INTEGER NOT NULL,
     kek_salt BLOB NOT NULL
 );
 
