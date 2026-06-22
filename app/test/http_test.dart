@@ -70,6 +70,10 @@ void main() {
       final resp = await API().getAccountInfo();
       expect(resp.email, testEmail);
       expect(resp.id.isNotEmpty, true);
+      expect(resp.kekMCost > 0, true);
+      expect(resp.kekICost > 0, true);
+      expect(resp.kekPCost > 0, true);
+      expect(resp.kekSalt.length, 32);
     });
   });
 }

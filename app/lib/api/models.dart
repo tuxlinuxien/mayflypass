@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mayflypass/api/helper.dart';
 
 part 'models.g.dart';
 
@@ -35,8 +36,24 @@ class RefreshResponse {
 class AccountInfo {
   final String id;
   final String email;
+  @JsonKey(name: 'kek_m_cost')
+  final int kekMCost;
+  @JsonKey(name: 'kek_i_cost')
+  final int kekICost;
+  @JsonKey(name: 'kek_p_cost')
+  final int kekPCost;
+  @JsonKey(name: 'kek_salt')
+  @HexBytesConverter()
+  final List<int> kekSalt;
 
-  const AccountInfo({required this.id, required this.email});
+  const AccountInfo({
+    required this.id,
+    required this.email,
+    required this.kekMCost,
+    required this.kekICost,
+    required this.kekPCost,
+    required this.kekSalt,
+  });
 
   factory AccountInfo.fromJson(Map<String, dynamic> json) =>
       _$AccountInfoFromJson(json);

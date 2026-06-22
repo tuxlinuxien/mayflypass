@@ -30,11 +30,24 @@ Map<String, dynamic> _$RefreshResponseToJson(RefreshResponse instance) =>
       'refresh_token': instance.refreshToken,
     };
 
-AccountInfo _$AccountInfoFromJson(Map<String, dynamic> json) =>
-    AccountInfo(id: json['id'] as String, email: json['email'] as String);
+AccountInfo _$AccountInfoFromJson(Map<String, dynamic> json) => AccountInfo(
+  id: json['id'] as String,
+  email: json['email'] as String,
+  kekMCost: (json['kek_m_cost'] as num).toInt(),
+  kekICost: (json['kek_i_cost'] as num).toInt(),
+  kekPCost: (json['kek_p_cost'] as num).toInt(),
+  kekSalt: const HexBytesConverter().fromJson(json['kek_salt'] as String),
+);
 
 Map<String, dynamic> _$AccountInfoToJson(AccountInfo instance) =>
-    <String, dynamic>{'id': instance.id, 'email': instance.email};
+    <String, dynamic>{
+      'id': instance.id,
+      'email': instance.email,
+      'kek_m_cost': instance.kekMCost,
+      'kek_i_cost': instance.kekICost,
+      'kek_p_cost': instance.kekPCost,
+      'kek_salt': const HexBytesConverter().toJson(instance.kekSalt),
+    };
 
 CaptchaResult _$CaptchaResultFromJson(Map<String, dynamic> json) =>
     CaptchaResult(id: json['id'] as String, image: json['image'] as String);
