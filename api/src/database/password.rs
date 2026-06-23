@@ -1,6 +1,6 @@
-use crate::database::password;
-
-use super::constants;
+use crate::constants::{
+    PASSWORD_I_COST, PASSWORD_M_COST, PASSWORD_OUTPUT_LEN, PASSWORD_P_COST, PASSWORD_SALT_LEN,
+};
 use argon2::{Params, PasswordHasher, PasswordVerifier, password_hash::SaltString};
 
 pub fn gen_bytes(len: usize) -> Vec<u8> {
@@ -15,10 +15,16 @@ pub async fn hash_password(password: &[u8]) -> String {
     let password = password.to_vec();
     // move argon2 into a spawn_blocking block or the whole thread will be blocked.
     tokio::task::spawn_blocking(move || {
-        let params = Params::new(64 * 1024, 4, 3, Some(32)).expect("argon2 param");
+        let params = Params::new(
+            PASSWORD_M_COST,
+            PASSWORD_I_COST,
+            PASSWORD_P_COST,
+            Some(PASSWORD_OUTPUT_LEN),
+        )
+        .expect("argon2 param");
         let hasher =
             argon2::Argon2::new(argon2::Algorithm::Argon2id, argon2::Version::V0x13, params);
-        let salt_bytes = gen_bytes(constants::PASSWORD_SECRET_LEN);
+        let salt_bytes = gen_bytes(PASSWORD_SALT_LEN);
         let salt = SaltString::encode_b64(&salt_bytes).expect("generate argon2 salt");
         hasher.hash_password(&password, &salt).unwrap().to_string()
     })
