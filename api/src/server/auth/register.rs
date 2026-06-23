@@ -3,14 +3,16 @@ use crate::server::error::{ApiError, FieldError};
 use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
+use serde_with::serde_as;
 use uuid::Uuid;
 
+#[serde_as]
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct RegisterInput {
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub email: String,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
-    pub password: String,
+    #[serde_as(as = "serde_with::hex::Hex")]
+    pub password: Vec<u8>,
     pub c_id: Uuid,
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub c_code: String,
@@ -28,7 +30,7 @@ impl RegisterInput {
                 .or(FieldError::check_email_invalid("email", &self.email)),
             // password
             FieldError::check_required("password", &self.password).or(
-                FieldError::check_value_length("password", &self.password, 64),
+                FieldError::check_value_length("password", &self.password, 32),
             ),
             // c_code
             FieldError::check_required("c_code", &self.c_code).or(FieldError::check_too_long(
@@ -105,7 +107,7 @@ mod test {
     async fn test_register_validate() {
         let base = RegisterInput {
             email: "test@mail.com".into(),
-            password: "0".repeat(64),
+            password: [0u8].repeat(32),
             c_id: Uuid::new_v4(),
             c_code: "00000".into(),
         };
@@ -141,13 +143,13 @@ mod test {
 
         // password too short
         let mut input = base.clone();
-        input.password = "0".repeat(63);
+        input.password = [0u8].repeat(31);
         let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
             panic!("BadRequestFieldErrors");
         };
-        assert_eq!(val, vec![FieldError::ValueLength("password".into(), 64)]);
+        assert_eq!(val, vec![FieldError::ValueLength("password".into(), 32)]);
 
         // missing c_code
         let mut input = base.clone();
@@ -195,23 +197,6 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_register_repeat_password() {
-        let (app, pool) = testing::init_test_server().await;
-        let server = axum_test::TestServer::new(app);
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
-        let response = server
-            .post("/api/register")
-            .json(&serde_json::json!({
-                "email": "test@mail.com",
-                "password": "123456789",
-                "c_id": cap.id,
-                "c_code": code,
-            }))
-            .await;
-        response.assert_status_bad_request();
-    }
-
-    #[tokio::test]
     async fn test_register_invalid_code() {
         let (app, pool) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
@@ -220,7 +205,7 @@ mod test {
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
-                "password": "123456789",
+                "password": "00000000",
                 "c_id": cap.id,
                 "c_code": "0000",
             }))

@@ -6,7 +6,7 @@ use uuid::Uuid;
 #[derive(Debug, Clone)]
 pub struct AccountInsert {
     pub email: String,
-    pub password: String,
+    pub password: Vec<u8>,
 }
 
 #[derive(Debug, Clone, sqlx::FromRow)]
@@ -19,7 +19,7 @@ pub struct AccountResult {
 }
 
 impl AccountResult {
-    pub async fn verify_password(&self, password: &str) -> bool {
+    pub async fn verify_password(&self, password: &[u8]) -> bool {
         password::verify_password(password, &self.password_hash).await
     }
 }
@@ -100,7 +100,7 @@ mod test {
         .unwrap();
         assert_eq!(result.email, "test@example.com");
         assert!(result.password_hash != "password");
-        assert!(result.verify_password("password").await);
+        assert!(result.verify_password("password".as_bytes()).await);
     }
 
     #[tokio::test]

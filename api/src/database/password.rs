@@ -1,3 +1,5 @@
+use crate::database::password;
+
 use super::constants;
 use argon2::{Params, PasswordHasher, PasswordVerifier, password_hash::SaltString};
 
@@ -9,19 +11,16 @@ pub fn gen_bytes(len: usize) -> Vec<u8> {
 
 // Returns (phc_hash_string, raw_salt_bytes). The PHC string embeds the salt,
 // so only the hash string is needed for verification; raw salt is stored separately.
-pub async fn hash_password(password: &str) -> String {
-    let password = password.to_string();
+pub async fn hash_password(password: &[u8]) -> String {
+    let password = password.to_vec();
     // move argon2 into a spawn_blocking block or the whole thread will be blocked.
     tokio::task::spawn_blocking(move || {
-        let params = Params::new(64 * 1024, 3, 1, Some(32)).expect("argon2 param");
+        let params = Params::new(64 * 1024, 4, 3, Some(32)).expect("argon2 param");
         let hasher =
             argon2::Argon2::new(argon2::Algorithm::Argon2id, argon2::Version::V0x13, params);
         let salt_bytes = gen_bytes(constants::PASSWORD_SECRET_LEN);
         let salt = SaltString::encode_b64(&salt_bytes).expect("generate argon2 salt");
-        hasher
-            .hash_password(password.as_bytes(), &salt)
-            .unwrap()
-            .to_string()
+        hasher.hash_password(&password, &salt).unwrap().to_string()
     })
     .await
     .unwrap()
@@ -29,8 +28,8 @@ pub async fn hash_password(password: &str) -> String {
 
 // hash the raw password and compare the output using constant time
 // equlity.
-pub async fn verify_password(password: &str, password_hash: &str) -> bool {
-    let password = password.to_string();
+pub async fn verify_password(password: &[u8], password_hash: &str) -> bool {
+    let password = password.to_vec();
     let password_hash = password_hash.to_string();
     // move argon2 in a spawn_blocking block or the whole thread
     // will be blocked.
@@ -40,7 +39,7 @@ pub async fn verify_password(password: &str, password_hash: &str) -> bool {
             Err(_) => return false,
         };
         argon2::Argon2::default()
-            .verify_password(password.as_bytes(), &parsed)
+            .verify_password(&password, &parsed)
             .is_ok()
     })
     .await
@@ -50,13 +49,13 @@ pub async fn verify_password(password: &str, password_hash: &str) -> bool {
 #[cfg(test)]
 #[tokio::test]
 pub async fn test_password_valid() {
-    let hash = hash_password("1234567").await;
-    assert!(verify_password("1234567", &hash).await);
+    let hash = hash_password("1234567".as_bytes()).await;
+    assert!(verify_password("1234567".as_bytes(), &hash).await);
 }
 
 #[cfg(test)]
 #[tokio::test]
 pub async fn test_password_invalid() {
-    let hash = hash_password("1234567").await;
-    assert!(!verify_password("12345678", &hash).await);
+    let hash = hash_password("1234567".as_bytes()).await;
+    assert!(!verify_password("12345678".as_bytes(), &hash).await);
 }

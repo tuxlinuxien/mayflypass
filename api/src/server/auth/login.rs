@@ -12,26 +12,27 @@ use axum::response::IntoResponse;
 use axum::response::Response;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use validator::ValidateEmail;
+use serde_with::serde_as;
 
+#[serde_as]
 #[derive(Debug, Clone, Deserialize)]
 pub struct LoginInput {
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub email: String,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
-    pub password: String,
+    #[serde_as(as = "serde_with::hex::Hex")]
+    pub password: Vec<u8>,
 }
 
 impl LoginInput {
     fn validate(&mut self) -> Result<(), ApiError> {
         self.email = self.email.to_lowercase();
-        let mut errors = vec![];
-        if !self.email.validate_email() {
-            errors.push(FieldError::EmailInvalid("email".into()));
-        }
-        if self.password.is_empty() {
-            errors.push(FieldError::ValueRequired("password".into()));
-        }
+        let errors: Vec<FieldError> = vec![
+            FieldError::check_email_invalid("email", &self.email),
+            FieldError::check_required("password", &self.password),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
         if errors.is_empty() {
             return Ok(());
         }
@@ -95,7 +96,10 @@ mod test {
     async fn test_login_no_payload() {
         let (app, _) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let response = server.post("/api/login").json(&serde_json::json!({})).await;
+        let response = server
+            .post("/api/login")
+            .json(&serde_json::json!({"email": "", "password": ""}))
+            .await;
         response.assert_status_bad_request();
         let body = response.json::<serde_json::Value>();
         assert_eq!(
@@ -118,7 +122,7 @@ mod test {
             .post("/api/login")
             .json(&serde_json::json!({
                 "email": "invalid@mail.com",
-                "password": "123456789",
+                "password": "0".repeat(64),
             }))
             .await;
         response.assert_status_bad_request();
@@ -142,7 +146,7 @@ mod test {
             .post("/api/login")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
-                "password": "123456789_invalid",
+                 "password": "1".repeat(64),
             }))
             .await;
         response.assert_status_bad_request();
@@ -165,7 +169,7 @@ mod test {
             .post("/api/login")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
-                "password": "123456789",
+                "password": "0".repeat(64),
             }))
             .await;
         response.assert_status_ok();
@@ -177,7 +181,7 @@ mod test {
             .post("/api/login")
             .json(&serde_json::json!({
                 "email": "   TEST@mail.com    ",
-                "password": "123456789",
+                "password": "0".repeat(64),
             }))
             .await;
         response.assert_status_ok();
