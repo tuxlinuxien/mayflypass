@@ -164,7 +164,7 @@ impl Serialize for FieldError {
                 struct Params {
                     len: i64,
                 }
-                let mut map = serializer.serialize_map(Some(2))?;
+                let mut map = serializer.serialize_map(Some(3))?;
                 map.serialize_entry("field", field)?;
                 map.serialize_entry("code", "VALUE_LENGTH")?;
                 map.serialize_entry("params", &Params { len: *len })?;
