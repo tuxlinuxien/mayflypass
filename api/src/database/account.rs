@@ -1,6 +1,5 @@
 use super::error;
 use super::password;
-use crate::constants;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
@@ -17,10 +16,6 @@ pub struct AccountResult {
     pub password_hash: String,
     pub password_updated_at: DateTime<Utc>,
     pub created_at: DateTime<Utc>,
-    pub kek_m_cost: u32,
-    pub kek_i_cost: u32,
-    pub kek_p_cost: u32,
-    pub kek_salt: Vec<u8>,
 }
 
 impl AccountResult {
@@ -37,18 +32,14 @@ pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
 
     let res = sqlx::query_as::<_, AccountResult>(
         r"
-        INSERT INTO account (id, email, password_hash, kek_m_cost, kek_i_cost, kek_p_cost, kek_salt)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        RETURNING id, email, password_hash, password_updated_at, created_at, kek_m_cost, kek_i_cost, kek_p_cost, kek_salt
+        INSERT INTO account (id, email, password_hash)
+        VALUES (?, ?, ?)
+        RETURNING id, email, created_at, password_hash, password_updated_at
         ",
     )
     .bind(uuid::Uuid::now_v7())
     .bind(&insert.email)
     .bind(&hash)
-    .bind(&constants::KEK_M_COST)
-    .bind(&constants::KEK_I_COST)
-    .bind(&constants::KEK_P_COST)
-    .bind(super::password::gen_bytes( constants::KEK_SALT_LEN))
     .fetch_one(executor)
     .await?;
     Ok(res)
@@ -60,7 +51,7 @@ pub async fn get_by_email<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Option<AccountResult>, error::Error> {
     let res = sqlx::query_as::<_, AccountResult>(
         r"
-        SELECT id, email, password_hash, password_updated_at, created_at, kek_m_cost, kek_i_cost, kek_p_cost, kek_salt
+        SELECT id, email, created_at, password_hash, password_updated_at
         FROM account
         WHERE email = ?
         ",
@@ -77,7 +68,7 @@ pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Option<AccountResult>, error::Error> {
     let res = sqlx::query_as::<_, AccountResult>(
         r"
-        SELECT id, email, password_hash, password_updated_at, created_at, kek_m_cost, kek_i_cost, kek_p_cost, kek_salt
+        SELECT id, email, created_at, password_hash, password_updated_at
         FROM account
         WHERE id = ?
         ",
@@ -145,9 +136,5 @@ mod test {
         let account = get_by_id(&pool, &result.id).await.unwrap();
         let account = account.unwrap();
         assert_eq!(account.email, account_insert.email);
-        assert_eq!(account.kek_m_cost, constants::KEK_M_COST);
-        assert_eq!(account.kek_i_cost, constants::KEK_I_COST);
-        assert_eq!(account.kek_p_cost, constants::KEK_P_COST);
-        assert_eq!(account.kek_salt.len(), constants::KEK_SALT_LEN);
     }
 }

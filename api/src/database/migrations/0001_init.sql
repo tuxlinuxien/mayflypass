@@ -3,12 +3,7 @@ CREATE TABLE account (
     email TEXT NOT NULL UNIQUE,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     password_hash TEXT NOT NULL,
-    password_updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-    -- argon2id parameters
-    kek_m_cost INTEGER NOT NULL,
-    kek_i_cost INTEGER NOT NULL,
-    kek_p_cost INTEGER NOT NULL,
-    kek_salt BLOB NOT NULL
+    password_updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE capchat_token (

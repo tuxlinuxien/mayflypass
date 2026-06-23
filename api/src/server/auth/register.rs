@@ -11,8 +11,6 @@ pub struct RegisterInput {
     pub email: String,
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub password: String,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
-    pub password_repeat: String,
     pub c_id: Uuid,
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub c_code: String,
@@ -29,16 +27,8 @@ impl RegisterInput {
                 .or(FieldError::check_too_long("email", &self.email, 50))
                 .or(FieldError::check_email_invalid("email", &self.email)),
             // password
-            FieldError::check_required("password", &self.password)
-                .or(FieldError::check_too_short("password", &self.password, 8))
-                .or(FieldError::check_too_long("password", &self.password, 128)),
-            // password_repeat
-            FieldError::check_required("password_repeat", &self.password_repeat).or(
-                FieldError::check_value_mismatch(
-                    "password_repeat",
-                    &self.password,
-                    &self.password_repeat,
-                ),
+            FieldError::check_required("password", &self.password).or(
+                FieldError::check_value_length("password", &self.password, 64),
             ),
             // c_code
             FieldError::check_required("c_code", &self.c_code).or(FieldError::check_too_long(
@@ -115,8 +105,7 @@ mod test {
     async fn test_register_validate() {
         let base = RegisterInput {
             email: "test@mail.com".into(),
-            password: "12345678".into(),
-            password_repeat: "12345678".into(),
+            password: "0".repeat(64),
             c_id: Uuid::new_v4(),
             c_code: "00000".into(),
         };
@@ -152,27 +141,13 @@ mod test {
 
         // password too short
         let mut input = base.clone();
-        input.password = "1234567".into();
-        input.password_repeat = "1234567".into();
+        input.password = "0".repeat(63);
         let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
             panic!("BadRequestFieldErrors");
         };
-        assert_eq!(val, vec![FieldError::ValueTooShort("password".into(), 8)]);
-
-        // password_repeat mistmath
-        let mut input = base.clone();
-        input.password_repeat = "1234567".into();
-        let res = input.validate();
-        assert!(res.is_err());
-        let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
-            panic!("BadRequestFieldErrors");
-        };
-        assert_eq!(
-            val,
-            vec![FieldError::ValueMismatch("password_repeat".into())]
-        );
+        assert_eq!(val, vec![FieldError::ValueLength("password".into(), 64)]);
 
         // missing c_code
         let mut input = base.clone();
@@ -194,8 +169,7 @@ mod test {
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "notanemail",
-                "password": "password123",
-                "password_repeat": "password123",
+                "password": "0".repeat(64),
                 "c_id": cap.id,
                 "c_code": code,
             }))
@@ -213,7 +187,6 @@ mod test {
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "1234",
-                "password_repeat": "1234",
                 "c_id": cap.id,
                 "c_code": code,
             }))
@@ -231,8 +204,7 @@ mod test {
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "123456789",
-                "password_repeat": "1234567890",
-                 "c_id": cap.id,
+                "c_id": cap.id,
                 "c_code": code,
             }))
             .await;
@@ -249,8 +221,7 @@ mod test {
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "123456789",
-                "password_repeat": "123456789",
-                 "c_id": cap.id,
+                "c_id": cap.id,
                 "c_code": "0000",
             }))
             .await;
@@ -265,9 +236,8 @@ mod test {
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
-                "password": "123456789",
-                "password_repeat": "123456789",
-                 "c_id": Uuid::new_v4(),
+                "password": "0".repeat(64),
+                "c_id": Uuid::new_v4(),
                 "c_code": "0000",
             }))
             .await;
@@ -293,8 +263,7 @@ mod test {
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
-                "password": "123456789",
-                "password_repeat": "123456789",
+                "password": "0".repeat(64),
                 "c_id": &cap.id,
                 "c_code": code,
             }))
@@ -318,8 +287,7 @@ mod test {
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
-                "password": "123456789",
-                "password_repeat": "123456789",
+                "password": "0".repeat(64),
                 "c_id": &cap.id,
                 "c_code": code,
             }))
@@ -338,8 +306,7 @@ mod test {
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "Test@MAIL.com",
-                "password": "123456789",
-                "password_repeat": "123456789",
+                "password": "0".repeat(64),
                 "c_id": &cap.id,
                 "c_code": code,
             }))

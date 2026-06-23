@@ -18,8 +18,10 @@ pub enum FieldError {
     #[allow(unused)]
     ValueRange(String, i64, i64),
     ValueRequired(String),
+    #[allow(unused)]
     ValueMismatch(String),
     ValueDuplicated(String),
+    ValueLength(String, i64),
 }
 
 impl FieldError {
@@ -58,6 +60,14 @@ impl FieldError {
     pub fn check_value_mismatch(field: &str, cmp1: &str, cmp2: &str) -> Option<FieldError> {
         if cmp1 != cmp2 {
             Some(Self::ValueMismatch(field.to_string()))
+        } else {
+            Option::None
+        }
+    }
+
+    pub fn check_value_length(field: &str, value: &str, len: i64) -> Option<FieldError> {
+        if value.len() != len as usize {
+            Some(Self::ValueLength(field.to_string(), len))
         } else {
             Option::None
         }
@@ -144,6 +154,17 @@ impl Serialize for FieldError {
                 let mut map = serializer.serialize_map(Some(2))?;
                 map.serialize_entry("field", field)?;
                 map.serialize_entry("code", "VALUE_DUPLICATED")?;
+                map.end()
+            }
+            FieldError::ValueLength(field, len) => {
+                #[derive(Serialize)]
+                struct Params {
+                    len: i64,
+                }
+                let mut map = serializer.serialize_map(Some(2))?;
+                map.serialize_entry("field", field)?;
+                map.serialize_entry("code", "VALUE_LENGTH")?;
+                map.serialize_entry("params", &Params { len: *len })?;
                 map.end()
             }
         }
