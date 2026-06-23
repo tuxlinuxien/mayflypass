@@ -25,16 +25,79 @@ pub enum FieldError {
     ValueLength(String, i64),
 }
 
+/// Trait for types that have a length
+pub trait Length {
+    fn len(&self) -> usize;
+}
+
+impl Length for str {
+    fn len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl Length for String {
+    fn len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl<T> Length for Vec<T> {
+    fn len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl<T> Length for [T] {
+    fn len(&self) -> usize {
+        self.len()
+    }
+}
+
+pub trait Empty {
+    fn empty(&self) -> bool;
+}
+
+impl Empty for str {
+    fn empty(&self) -> bool {
+        self.is_empty()
+    }
+}
+
+impl Empty for String {
+    fn empty(&self) -> bool {
+        self.is_empty()
+    }
+}
+
+impl<T> Empty for Vec<T> {
+    fn empty(&self) -> bool {
+        self.is_empty()
+    }
+}
+
+impl<T> Empty for [T] {
+    fn empty(&self) -> bool {
+        self.is_empty()
+    }
+}
+
+impl<T> Empty for Option<T> {
+    fn empty(&self) -> bool {
+        self.is_none()
+    }
+}
+
 impl FieldError {
-    pub fn check_required(field: &str, value: &str) -> Option<FieldError> {
-        if value.is_empty() {
+    pub fn check_required<T: Empty>(field: &str, value: &T) -> Option<FieldError> {
+        if value.empty() {
             Some(Self::ValueRequired(field.to_string()))
         } else {
             Option::None
         }
     }
 
-    pub fn check_too_long(field: &str, value: &str, max: i64) -> Option<FieldError> {
+    pub fn check_too_long<T: Length>(field: &str, value: &T, max: i64) -> Option<FieldError> {
         if value.len() > max as usize {
             Some(Self::ValueTooLong(field.to_string(), max))
         } else {
@@ -43,7 +106,7 @@ impl FieldError {
     }
 
     #[allow(unused)]
-    pub fn check_too_short(field: &str, value: &str, min: i64) -> Option<FieldError> {
+    pub fn check_too_short<T: Length>(field: &str, value: &T, min: i64) -> Option<FieldError> {
         if value.len() < min as usize {
             Some(Self::ValueTooShort(field.to_string(), min))
         } else {
@@ -60,7 +123,7 @@ impl FieldError {
     }
 
     #[allow(unused)]
-    pub fn check_value_mismatch(field: &str, cmp1: &str, cmp2: &str) -> Option<FieldError> {
+    pub fn check_value_mismatch<T: Eq>(field: &str, cmp1: &T, cmp2: &T) -> Option<FieldError> {
         if cmp1 != cmp2 {
             Some(Self::ValueMismatch(field.to_string()))
         } else {
@@ -68,7 +131,7 @@ impl FieldError {
         }
     }
 
-    pub fn check_value_length(field: &str, value: &str, len: i64) -> Option<FieldError> {
+    pub fn check_value_length<T: Length>(field: &str, value: &T, len: i64) -> Option<FieldError> {
         if value.len() != len as usize {
             Some(Self::ValueLength(field.to_string(), len))
         } else {
