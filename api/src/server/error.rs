@@ -13,6 +13,7 @@ pub enum FieldError {
     EmailInvalid(String),
     CredentialsInvalid(String),
     CaptchatInvalid(String),
+    #[allow(unused)]
     ValueTooShort(String, i64),
     ValueTooLong(String, i64),
     #[allow(unused)]
@@ -41,6 +42,7 @@ impl FieldError {
         }
     }
 
+    #[allow(unused)]
     pub fn check_too_short(field: &str, value: &str, min: i64) -> Option<FieldError> {
         if value.len() < min as usize {
             Some(Self::ValueTooShort(field.to_string(), min))
@@ -57,6 +59,7 @@ impl FieldError {
         }
     }
 
+    #[allow(unused)]
     pub fn check_value_mismatch(field: &str, cmp1: &str, cmp2: &str) -> Option<FieldError> {
         if cmp1 != cmp2 {
             Some(Self::ValueMismatch(field.to_string()))
