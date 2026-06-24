@@ -282,9 +282,11 @@ impl IntoResponse for ApiError {
             ApiError::BadRequestFieldErrors(e) => {
                 (http::StatusCode::BAD_REQUEST, Json(json!({"errors": e}))).into_response()
             }
-            ApiError::UnprocessableContent(e) => {
-                (http::StatusCode::UNPROCESSABLE_ENTITY, Json(e)).into_response()
-            }
+            ApiError::UnprocessableContent(_) => (
+                http::StatusCode::UNPROCESSABLE_ENTITY,
+                Json(json!({"error": "inavlid payload"})),
+            )
+                .into_response(),
             ApiError::NotFound => (
                 http::StatusCode::NOT_FOUND,
                 Json(json!({"error": "not found"})),
