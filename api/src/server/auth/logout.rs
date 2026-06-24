@@ -45,10 +45,12 @@ mod test {
 
     #[tokio::test]
     async fn test_logout_via_json() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let account = testing::build_default_account(&pool).await;
-        let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
+        let account = testing::build_default_account(&state.pool).await;
+        let refresh_token = database::token::generate(&state.pool, &account.id)
+            .await
+            .unwrap();
         let response = server
             .post("/api/logout")
             .json(&serde_json::json!({"refresh_token": refresh_token}))
@@ -58,10 +60,12 @@ mod test {
 
     #[tokio::test]
     async fn test_logout_via_cookie() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let account = testing::build_default_account(&pool).await;
-        let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
+        let account = testing::build_default_account(&state.pool).await;
+        let refresh_token = database::token::generate(&state.pool, &account.id)
+            .await
+            .unwrap();
         let cookie = RefreshTokenCookie::try_from(refresh_token).unwrap();
         let response = server
             .post("/api/logout")
@@ -72,10 +76,12 @@ mod test {
 
     #[tokio::test]
     async fn test_logout_invalidates_token() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let account = testing::build_default_account(&pool).await;
-        let refresh_token = database::token::generate(&pool, &account.id).await.unwrap();
+        let account = testing::build_default_account(&state.pool).await;
+        let refresh_token = database::token::generate(&state.pool, &account.id)
+            .await
+            .unwrap();
         server
             .post("/api/logout")
             .json(&serde_json::json!({"refresh_token": refresh_token}))

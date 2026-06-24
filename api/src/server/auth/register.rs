@@ -4,7 +4,6 @@ use crate::server::state::AppState;
 use axum::Json;
 use axum::extract::State;
 use serde_with::serde_as;
-use uuid::Uuid;
 
 #[serde_as]
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -13,9 +12,9 @@ pub struct RegisterInput {
     pub email: String,
     #[serde_as(as = "serde_with::hex::Hex")]
     pub password: Vec<u8>,
-    pub c_id: Uuid,
-    #[serde(default, deserialize_with = "serde_trim::string_trim")]
-    pub c_code: String,
+    #[serde_as(as = "serde_with::hex::Hex")]
+    pub challenge_key: Vec<u8>,
+    pub challenge_nonce: u64,
 }
 
 impl RegisterInput {
@@ -32,12 +31,10 @@ impl RegisterInput {
             FieldError::check_required("password", &self.password).or(
                 FieldError::check_value_length("password", &self.password, 32),
             ),
-            // c_code
-            FieldError::check_required("c_code", &self.c_code).or(FieldError::check_too_long(
-                "c_code",
-                &self.password,
-                128,
-            )),
+            // challenge_key
+            FieldError::check_required("challenge_key", &self.challenge_key).or(
+                FieldError::check_value_length("challenge_key", &self.challenge_key, 32),
+            ),
         ]
         .into_iter()
         .flatten()
@@ -58,11 +55,11 @@ pub async fn register(
     payload.validate()?;
 
     // only test the captchat is dev is false
-    if !state.dev
-        && !database::captchat::verify(&state.pool, &payload.c_id, &payload.c_code).await?
+    if !database::challenge::verify(&state.pool, &payload.challenge_key, payload.challenge_nonce)
+        .await?
     {
         return Err(ApiError::BadRequestFieldErrors(vec![
-            FieldError::CaptchatInvalid("c_code".into()),
+            FieldError::CaptchatInvalid("challenge_nonce".into()),
         ]));
     }
 
@@ -86,30 +83,29 @@ pub async fn register(
     Ok(())
 }
 
-pub async fn captchat(
+pub async fn challenge(
     State(state): State<AppState>,
-) -> Result<Json<database::captchat::CaptchatResult>, ApiError> {
+) -> Result<Json<database::challenge::ChallengeResult>, ApiError> {
     // create new captchat.
-    let (res, _) = database::captchat::generate(&state.pool)
+    let res = database::challenge::generate(&state.pool, state.difficulty)
         .await
-        .map_err(|e| ApiError::InternalError(anyhow::anyhow!("generate captchat: {:?}", e)))?;
+        .map_err(|e| ApiError::InternalError(anyhow::anyhow!("generate challenge: {:?}", e)))?;
     return Ok(Json(res));
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::database;
+    use crate::database::{self, challenge};
     use crate::server::testing;
-    use uuid::Uuid;
 
     #[tokio::test]
     async fn test_register_validate() {
         let base = RegisterInput {
             email: "test@mail.com".into(),
             password: [0u8].repeat(32),
-            c_id: Uuid::new_v4(),
-            c_code: "00000".into(),
+            challenge_key: [0u8].repeat(32),
+            challenge_nonce: 0,
         };
         // bad email
         let mut input = base.clone();
@@ -153,27 +149,29 @@ mod test {
 
         // missing c_code
         let mut input = base.clone();
-        input.c_code = "".into();
+        input.challenge_key = [0u8].repeat(0);
         let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
             panic!("BadRequestFieldErrors");
         };
-        assert_eq!(val, vec![FieldError::ValueRequired("c_code".into())]);
+        assert_eq!(val, vec![FieldError::ValueRequired("challenge_key".into())]);
     }
 
     #[tokio::test]
     async fn test_register_invalid_email() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+        let challenge = database::challenge::generate(&state.pool, state.difficulty)
+            .await
+            .unwrap();
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "notanemail",
                 "password": "0".repeat(64),
-                "c_id": cap.id,
-                "c_code": code,
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
             }))
             .await;
         response.assert_status_bad_request();
@@ -181,76 +179,37 @@ mod test {
 
     #[tokio::test]
     async fn test_register_short_password() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+        let challenge = database::challenge::generate(&state.pool, state.difficulty)
+            .await
+            .unwrap();
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "1234",
-                "c_id": cap.id,
-                "c_code": code,
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
             }))
             .await;
         response.assert_status_bad_request();
     }
 
     #[tokio::test]
-    async fn test_register_invalid_code() {
-        let (app, pool) = testing::init_test_server().await;
+    async fn test_register_invalid_challenge_nonce() {
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        let (cap, _) = database::captchat::generate(&pool).await.unwrap();
-        let response = server
-            .post("/api/register")
-            .json(&serde_json::json!({
-                "email": "test@mail.com",
-                "password": "00000000",
-                "c_id": cap.id,
-                "c_code": "0000",
-            }))
-            .await;
-        response.assert_status_bad_request();
-    }
-
-    #[tokio::test]
-    async fn test_register_invalid_c_id() {
-        let (app, _) = testing::init_test_server().await;
-        let server = axum_test::TestServer::new(app);
-        let response = server
-            .post("/api/register")
-            .json(&serde_json::json!({
-                "email": "test@mail.com",
-                "password": "0".repeat(64),
-                "c_id": Uuid::new_v4(),
-                "c_code": "0000",
-            }))
-            .await;
-        response.assert_status_bad_request();
-        let body = response.json::<serde_json::Value>();
-        assert_eq!(
-            body,
-            serde_json::json!({"errors": [
-                &FieldError::CaptchatInvalid("c_code".into())
-            ]}),
-        );
-    }
-
-    #[tokio::test]
-    async fn test_register_reuse_c_id() {
-        let (app, pool) = testing::init_test_server().await;
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
-        database::captchat::verify(&pool, &cap.id, &code)
+        let challenge = database::challenge::generate(&state.pool, challenge::DIFFICULTY::EASY)
             .await
             .unwrap();
-        let server = axum_test::TestServer::new(app);
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "0".repeat(64),
-                "c_id": &cap.id,
-                "c_code": code,
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
             }))
             .await;
         response.assert_status_bad_request();
@@ -258,23 +217,54 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                &FieldError::CaptchatInvalid("c_code".into())
+                &FieldError::CaptchatInvalid("challenge_nonce".into())
             ]}),
         );
+    }
+
+    #[tokio::test]
+    async fn test_register_reuse_challenge() {
+        let (app, state) = testing::init_test_server().await;
+        let server = axum_test::TestServer::new(app);
+        let challenge = database::challenge::generate(&state.pool, challenge::DIFFICULTY::NONE)
+            .await
+            .unwrap();
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": "test@mail.com",
+                "password": "0".repeat(64),
+                "challenge_key": hex::encode(challenge.key.clone()),
+                "challenge_nonce": 0,
+            }))
+            .await;
+        response.assert_status_ok();
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": "test1@mail.com",
+                "password": "0".repeat(64),
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
+            }))
+            .await;
+        response.assert_status_bad_request();
     }
 
     #[tokio::test]
     async fn test_register_valid() {
-        let (app, pool) = testing::init_test_server().await;
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
+        let challenge = database::challenge::generate(&state.pool, state.difficulty)
+            .await
+            .unwrap();
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "test@mail.com",
                 "password": "0".repeat(64),
-                "c_id": &cap.id,
-                "c_code": code,
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
             }))
             .await;
         response.assert_status_ok();
@@ -282,18 +272,31 @@ mod test {
 
     #[tokio::test]
     async fn test_register_duplicated() {
-        let (app, pool) = testing::init_test_server().await;
-        // insert account
-        let _ = testing::build_default_account(&pool).await;
-        let (cap, code) = database::captchat::generate(&pool).await.unwrap();
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
+        let challenge = database::challenge::generate(&state.pool, state.difficulty)
+            .await
+            .unwrap();
         let response = server
             .post("/api/register")
             .json(&serde_json::json!({
                 "email": "Test@MAIL.com",
                 "password": "0".repeat(64),
-                "c_id": &cap.id,
-                "c_code": code,
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
+            }))
+            .await;
+        response.assert_status_ok();
+        let challenge = database::challenge::generate(&state.pool, state.difficulty)
+            .await
+            .unwrap();
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": "test@mail.com",
+                "password": "0".repeat(64),
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
             }))
             .await;
         response.assert_status_bad_request();
@@ -313,7 +316,8 @@ mod test {
         let resp = server.get("/api/register").await;
         resp.assert_status_ok();
         let json = resp.json::<serde_json::Value>();
-        assert!(!json["id"].as_str().unwrap().is_empty());
-        assert!(!json["image"].as_str().unwrap().is_empty());
+        assert!(json["key"].as_str().unwrap().len() == 64);
+        assert!(json["salt"].as_str().unwrap().len() == 32);
+        assert!(json["difficulty"].as_str().unwrap().len() == 64);
     }
 }

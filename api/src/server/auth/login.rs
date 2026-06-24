@@ -113,11 +113,9 @@ mod test {
 
     #[tokio::test]
     async fn test_login_invalid_email() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        // create a test user
-        let _ = testing::build_default_account(&pool).await;
-        // use an invalid email
+        let _ = testing::build_default_account(&state.pool).await;
         let response = server
             .post("/api/login")
             .json(&serde_json::json!({
@@ -137,11 +135,9 @@ mod test {
 
     #[tokio::test]
     async fn test_login_invalid_password() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        // create a test user
-        let _ = testing::build_default_account(&pool).await;
-        // use an invalid password
+        let _ = testing::build_default_account(&state.pool).await;
         let response = server
             .post("/api/login")
             .json(&serde_json::json!({
@@ -161,15 +157,29 @@ mod test {
 
     #[tokio::test]
     async fn test_login() {
-        let (app, pool) = testing::init_test_server().await;
+        let (app, state) = testing::init_test_server().await;
         let server = axum_test::TestServer::new(app);
-        // create a test user
-        let _ = testing::build_default_account(&pool).await;
+        let challenge = database::challenge::generate(&state.pool, state.difficulty)
+            .await
+            .unwrap();
+        let email = "test@mail.com";
+        let password = "0".repeat(64);
+        // test full integration
+        let response = server
+            .post("/api/register")
+            .json(&serde_json::json!({
+                "email": email,
+                "password": password,
+                "challenge_key": hex::encode(challenge.key),
+                "challenge_nonce": 0,
+            }))
+            .await;
+        response.assert_status_ok();
         let response = server
             .post("/api/login")
             .json(&serde_json::json!({
-                "email": "test@mail.com",
-                "password": "0".repeat(64),
+                "email": email,
+                "password": password,
             }))
             .await;
         response.assert_status_ok();
@@ -180,8 +190,8 @@ mod test {
         let response = server
             .post("/api/login")
             .json(&serde_json::json!({
-                "email": "   TEST@mail.com    ",
-                "password": "0".repeat(64),
+                "email": format!("    {email}    "),
+                "password": password,
             }))
             .await;
         response.assert_status_ok();

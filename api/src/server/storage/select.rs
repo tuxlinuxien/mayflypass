@@ -50,8 +50,8 @@ mod test {
 
     #[tokio::test]
     async fn test_select_no_items() {
-        let (app, pool) = testing::init_test_server().await;
-        let account = testing::build_default_account(&pool).await;
+        let (app, state) = testing::init_test_server().await;
+        let account = testing::build_default_account(&state.pool).await;
         let server = testing::build_user_server(&account, &app).await;
 
         let response = server.get("/api/storage").await;
@@ -62,12 +62,12 @@ mod test {
 
     #[tokio::test]
     async fn test_select_all_items() {
-        let (app, pool) = testing::init_test_server().await;
-        let account = testing::build_default_account(&pool).await;
+        let (app, state) = testing::init_test_server().await;
+        let account = testing::build_default_account(&state.pool).await;
         let server = testing::build_user_server(&account, &app).await;
 
         database::storage::upsert(
-            &pool,
+            &state.pool,
             &account.id,
             &storage::StorageUpsert {
                 id: uuid::Uuid::now_v7(),
@@ -82,7 +82,7 @@ mod test {
         .await
         .unwrap();
         database::storage::upsert(
-            &pool,
+            &state.pool,
             &account.id,
             &storage::StorageUpsert {
                 id: uuid::Uuid::now_v7(),

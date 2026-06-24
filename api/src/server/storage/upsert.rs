@@ -93,8 +93,8 @@ mod test {
 
     #[tokio::test]
     async fn test_upsert_insert_success() {
-        let (app, pool) = testing::init_test_server().await;
-        let account = testing::build_default_account(&pool).await;
+        let (app, state) = testing::init_test_server().await;
+        let account = testing::build_default_account(&state.pool).await;
         let server = testing::build_user_server(&account, &app).await;
 
         // first insert
@@ -102,12 +102,24 @@ mod test {
         let response = server.post("/api/storage").json(&input).await;
         response.assert_status_ok();
 
-        assert!(storage::select(&pool, &account.id).await.unwrap().len() == 1);
+        assert!(
+            storage::select(&state.pool, &account.id)
+                .await
+                .unwrap()
+                .len()
+                == 1
+        );
 
         // insert it again
         let response = server.post("/api/storage").json(&input).await;
         response.assert_status_ok();
-        assert!(storage::select(&pool, &account.id).await.unwrap().len() == 1)
+        assert!(
+            storage::select(&state.pool, &account.id)
+                .await
+                .unwrap()
+                .len()
+                == 1
+        )
     }
 
     #[tokio::test]

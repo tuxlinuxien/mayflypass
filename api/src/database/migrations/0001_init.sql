@@ -6,12 +6,6 @@ CREATE TABLE account (
     password_updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE TABLE capchat_token (
-    id TEXT PRIMARY KEY,
-    code TEXT NOT NULL,
-    valid_until TEXT NOT NULL DEFAULT (datetime('now', '+2 minutes'))
-);
-
 CREATE TABLE challenge (
     key BLOB NOT NULL,
     salt BLOB NOT NULL,

@@ -67,7 +67,7 @@ pub fn create_routes(state: state::AppState) -> Router<state::AppState> {
     // public
     let public = Router::new()
         .route("/api/register", post(auth::register))
-        .route("/api/register", get(auth::captchat))
+        .route("/api/register", get(auth::challenge))
         .route("/api/login", post(auth::login))
         .route("/api/refresh", post(auth::refresh))
         .route("/api/logout", post(auth::logout));

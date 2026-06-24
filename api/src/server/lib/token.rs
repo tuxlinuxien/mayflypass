@@ -41,9 +41,9 @@ mod test {
 
     #[tokio::test]
     async fn test_access_token() {
-        let (_, pool) = testing::init_test_server().await;
+        let (_, state) = testing::init_test_server().await;
         let account = database::account::insert(
-            &pool,
+            &state.pool,
             &database::account::AccountInsert {
                 email: "test@mail.com".into(),
                 password: "123456789".into(),
@@ -58,9 +58,9 @@ mod test {
 
     #[tokio::test]
     async fn test_access_token_expired() {
-        let (_, pool) = testing::init_test_server().await;
+        let (_, state) = testing::init_test_server().await;
         let account = database::account::insert(
-            &pool,
+            &state.pool,
             &database::account::AccountInsert {
                 email: "test@mail.com".into(),
                 password: "123456789".into(),

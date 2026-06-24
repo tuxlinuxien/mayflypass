@@ -6,5 +6,5 @@ mod register;
 pub use login::login;
 pub use logout::logout;
 pub use refresh::refresh;
-pub use register::captchat;
+pub use register::challenge;
 pub use register::register;

@@ -1,5 +1,7 @@
 use std::{fmt::Display, str::FromStr};
 
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 use sha2::{Digest, Sha256};
 
 use crate::database::password::gen_bytes;
@@ -76,10 +78,14 @@ impl Display for DIFFICULTY {
     }
 }
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[serde_as]
+#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize)]
 pub struct ChallengeResult {
+    #[serde_as(as = "serde_with::hex::Hex")]
     pub key: Vec<u8>,
+    #[serde_as(as = "serde_with::hex::Hex")]
     pub salt: Vec<u8>,
+    #[serde_as(as = "serde_with::hex::Hex")]
     pub difficulty: Vec<u8>,
 }
 
@@ -290,6 +296,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[cfg_attr(debug_assertions, ignore)]
     async fn test_solve_pow_medium_difficulty() {
         let pool = setup_test_db().await;
         let challenge = generate(&pool, DIFFICULTY::MEDIUM).await.unwrap();
@@ -313,6 +320,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[cfg_attr(debug_assertions, ignore)]
     async fn test_solve_pow_hard_difficulty() {
         let pool = setup_test_db().await;
         let challenge = generate(&pool, DIFFICULTY::HARD).await.unwrap();

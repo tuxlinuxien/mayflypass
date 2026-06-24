@@ -34,8 +34,8 @@ mod test {
 
     #[tokio::test]
     async fn test_info_with_valid_token() {
-        let (app, pool) = testing::init_test_server().await;
-        let account = testing::build_default_account(&pool).await;
+        let (app, state) = testing::init_test_server().await;
+        let account = testing::build_default_account(&state.pool).await;
         let server = testing::build_user_server(&account, &app).await;
 
         let response = server.get("/api/account/info").await;
@@ -47,8 +47,8 @@ mod test {
 
     #[tokio::test]
     async fn test_info_with_valid_token_password_change() {
-        let (app, pool) = testing::init_test_server().await;
-        let account = testing::build_default_account(&pool).await;
+        let (app, state) = testing::init_test_server().await;
+        let account = testing::build_default_account(&state.pool).await;
         let server = testing::build_user_server(&account, &app).await;
         // simulate a password change so the access token shouldn't be valid anymore
         sqlx::query(
@@ -59,7 +59,7 @@ mod test {
         ",
         )
         .bind(&account.id)
-        .execute(&pool)
+        .execute(&state.pool)
         .await
         .unwrap();
         // now run the query
