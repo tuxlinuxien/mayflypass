@@ -12,6 +12,13 @@ CREATE TABLE capchat_token (
     valid_until TEXT NOT NULL DEFAULT (datetime('now', '+2 minutes'))
 );
 
+CREATE TABLE challenge (
+    key BLOB NOT NULL,
+    salt BLOB NOT NULL,
+    difficulty BLOB NOT NULL,
+    valid_until TEXT NOT NULL DEFAULT (datetime('now', '+2 minutes'))
+);
+
 CREATE TABLE refresh_token (
     token_hash TEXT NOT NULL,
     account_id TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,

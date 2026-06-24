@@ -1,5 +1,6 @@
 pub mod account;
 pub mod captchat;
+pub mod challenge;
 pub mod error;
 mod password;
 pub mod storage;
