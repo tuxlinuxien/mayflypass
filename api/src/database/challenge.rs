@@ -41,23 +41,10 @@ impl DIFFICULTY {
     }
 }
 
-impl TryFrom<u8> for DIFFICULTY {
-    type Error = &'static str;
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(DIFFICULTY::NONE),
-            1 => Ok(DIFFICULTY::EASY),
-            2 => Ok(DIFFICULTY::MEDIUM),
-            3 => Ok(DIFFICULTY::HARD),
-            _ => Err("invalid difficulty level, should be either 0, 1, 2 or 3"),
-        }
-    }
-}
-
 impl FromStr for DIFFICULTY {
     type Err = &'static str;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
+        match &*s.to_lowercase() {
             "none" => Ok(DIFFICULTY::NONE),
             "easy" => Ok(DIFFICULTY::EASY),
             "medium" => Ok(DIFFICULTY::MEDIUM),
@@ -247,6 +234,15 @@ mod tests {
             result1.salt, result2.salt,
             "generated salts should be unique"
         );
+    }
+
+    #[tokio::test]
+    async fn test_verify_challenge() {
+        let pool = setup_test_db().await;
+        let challenge = generate(&pool, DIFFICULTY::NONE).await.unwrap();
+        assert!(verify(&pool, &challenge.key, 0).await.unwrap());
+        // try to reuse
+        assert!(!verify(&pool, &challenge.key, 0).await.unwrap());
     }
 
     #[tokio::test]

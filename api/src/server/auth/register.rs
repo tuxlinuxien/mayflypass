@@ -59,7 +59,7 @@ pub async fn register(
         .await?
     {
         return Err(ApiError::BadRequestFieldErrors(vec![
-            FieldError::CaptchatInvalid("challenge_nonce".into()),
+            FieldError::ChallengeInvalid("challenge_nonce".into()),
         ]));
     }
 
@@ -217,7 +217,7 @@ mod test {
         assert_eq!(
             body,
             serde_json::json!({"errors": [
-                &FieldError::CaptchatInvalid("challenge_nonce".into())
+                &FieldError::ChallengeInvalid("challenge_nonce".into())
             ]}),
         );
     }

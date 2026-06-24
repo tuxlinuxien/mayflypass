@@ -12,7 +12,7 @@ use validator::ValidateEmail;
 pub enum FieldError {
     EmailInvalid(String),
     CredentialsInvalid(String),
-    CaptchatInvalid(String),
+    ChallengeInvalid(String),
     #[allow(unused)]
     ValueTooShort(String, i64),
     ValueTooLong(String, i64),
@@ -158,10 +158,10 @@ impl Serialize for FieldError {
                 map.serialize_entry("code", "CREDENTIALS_INVALID")?;
                 map.end()
             }
-            FieldError::CaptchatInvalid(field) => {
+            FieldError::ChallengeInvalid(field) => {
                 let mut map = serializer.serialize_map(Some(2))?;
                 map.serialize_entry("field", field)?;
-                map.serialize_entry("code", "CAPTCHAT_INVALID")?;
+                map.serialize_entry("code", "CHALLENGE_INVALID")?;
                 map.end()
             }
             FieldError::ValueTooShort(field, min) => {
