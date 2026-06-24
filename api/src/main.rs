@@ -22,5 +22,5 @@ async fn main() {
     // launch the server
     let interface = format!("{}:{}", args.host_interface, args.host_port);
     tracing::info!("the server will listen in {interface}");
-    server::init(&interface, pool, args.dev).await;
+    server::init(&interface, pool, args.dev, args.challenge).await;
 }

@@ -1,6 +1,8 @@
 use clap::Parser;
 use tracing::level_filters::LevelFilter;
 
+use crate::database::challenge::DIFFICULTY;
+
 #[derive(Debug, Parser)]
 #[command(version, about)]
 pub struct App {
@@ -18,4 +20,7 @@ pub struct App {
 
     #[arg(long, default_value = "info")]
     pub verbosity: LevelFilter,
+
+    #[arg(long, default_value = "easy")]
+    pub challenge: DIFFICULTY,
 }

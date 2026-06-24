@@ -7,6 +7,8 @@ use axum::{
     routing::{get, post},
 };
 use tower_http::{cors::CorsLayer, limit::RequestBodyLimitLayer};
+
+use crate::database::challenge::DIFFICULTY;
 mod account;
 mod auth;
 mod error;
@@ -83,11 +85,12 @@ pub fn create_routes(state: state::AppState) -> Router<state::AppState> {
     return public.merge(private);
 }
 
-pub async fn init(interface: &str, pool: sqlx::SqlitePool, dev: bool) {
+pub async fn init(interface: &str, pool: sqlx::SqlitePool, dev: bool, difficulty: DIFFICULTY) {
     let state = state::AppState {
         pool: pool,
         access_token_key: [0u8; 32],
         dev: dev,
+        difficulty: difficulty,
     };
     let router = create_routes(state.clone());
     let router = router

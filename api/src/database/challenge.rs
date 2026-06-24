@@ -1,3 +1,5 @@
+use std::{fmt::Display, str::FromStr};
+
 use sha2::{Digest, Sha256};
 
 use crate::database::password::gen_bytes;
@@ -19,17 +21,17 @@ impl DIFFICULTY {
                 0xff, 0xff, 0xff, 0xff,
             ],
             DIFFICULTY::EASY => [
-                0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff,
             ],
             DIFFICULTY::MEDIUM => [
-                0x00, 0x00, 0x8f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff,
             ],
             DIFFICULTY::HARD => [
-                0x00, 0x00, 0xaf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x00, 0x3f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff,
             ],
@@ -46,6 +48,30 @@ impl TryFrom<u8> for DIFFICULTY {
             2 => Ok(DIFFICULTY::MEDIUM),
             3 => Ok(DIFFICULTY::HARD),
             _ => Err("invalid difficulty level, should be either 0, 1, 2 or 3"),
+        }
+    }
+}
+
+impl FromStr for DIFFICULTY {
+    type Err = &'static str;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(DIFFICULTY::NONE),
+            "easy" => Ok(DIFFICULTY::EASY),
+            "medium" => Ok(DIFFICULTY::MEDIUM),
+            "hard" => Ok(DIFFICULTY::HARD),
+            _ => Err("invalid difficulty level, should be either none, easy, medium or hard"),
+        }
+    }
+}
+
+impl Display for DIFFICULTY {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DIFFICULTY::NONE => f.write_str("none"),
+            DIFFICULTY::EASY => f.write_str("easy"),
+            DIFFICULTY::MEDIUM => f.write_str("medium"),
+            DIFFICULTY::HARD => f.write_str("hard"),
         }
     }
 }
@@ -124,6 +150,9 @@ mod tests {
     /// sha256(key + salt + nonce) < difficulty.
     /// This is a brute-force search starting from nonce = 0.
     fn solve_pow(challenge: &ChallengeResult) -> Option<u64> {
+        use std::time::Instant;
+
+        let start = Instant::now();
         for nonce in 0u64..=u64::MAX {
             let nonce_bytes = nonce.to_le_bytes();
 
@@ -134,6 +163,8 @@ mod tests {
             let hash_result = hasher.finalize();
 
             if hash_result.as_slice() < challenge.difficulty.as_slice() {
+                let duration = start.elapsed();
+                tracing::warn!("POW solved in {:?} (nonce: {})", duration, nonce);
                 return Some(nonce);
             }
         }
