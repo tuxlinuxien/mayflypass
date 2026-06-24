@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:cryptography/cryptography.dart';
+import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/secure/constants.dart';
 
 Future<Uint8List> encrypt(SecretKey key, Uint8List clearText) async {
@@ -27,7 +27,7 @@ Future<Uint8List> decrypt(SecretKey key, Uint8List encryptedText) async {
 
 SecretKey newDataEncryptionKey() {
   int genByte(int i) {
-    return SecureRandom.defaultRandom.nextInt(1 << 8);
+    return SecureRandom.safe.nextInt(1 << 8);
   }
 
   final newDek = List.generate(secretKeyLength, genByte);
