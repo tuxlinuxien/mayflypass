@@ -11,6 +11,7 @@ pub struct JwtClaim {
     pub exp: DateTime<Utc>,
     #[serde(with = "chrono::serde::ts_seconds")]
     pub iat: DateTime<Utc>,
+    pub id: Uuid, // adds some entropy
 }
 
 pub fn new(key: &[u8; 32], account_id: &Uuid, iat: DateTime<Utc>) -> anyhow::Result<String> {
@@ -18,6 +19,7 @@ pub fn new(key: &[u8; 32], account_id: &Uuid, iat: DateTime<Utc>) -> anyhow::Res
         sub: account_id.clone(),
         iat: iat.clone(),
         exp: iat + Duration::minutes(15),
+        id: Uuid::now_v7(),
     };
     let header = jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS256);
     let key = EncodingKey::from_secret(&key.to_vec());

@@ -30,55 +30,55 @@ Map<String, dynamic> _$RefreshResponseToJson(RefreshResponse instance) =>
       'refresh_token': instance.refreshToken,
     };
 
-AccountInfo _$AccountInfoFromJson(Map<String, dynamic> json) => AccountInfo(
-  id: json['id'] as String,
-  email: json['email'] as String,
-  kekMCost: (json['kek_m_cost'] as num).toInt(),
-  kekICost: (json['kek_i_cost'] as num).toInt(),
-  kekPCost: (json['kek_p_cost'] as num).toInt(),
-  kekSalt: const HexBytesConverter().fromJson(json['kek_salt'] as String),
-);
+AccountInfo _$AccountInfoFromJson(Map<String, dynamic> json) =>
+    AccountInfo(id: json['id'] as String, email: json['email'] as String);
 
 Map<String, dynamic> _$AccountInfoToJson(AccountInfo instance) =>
+    <String, dynamic>{'id': instance.id, 'email': instance.email};
+
+ChallengeResult _$ChallengeResultFromJson(Map<String, dynamic> json) =>
+    ChallengeResult(
+      key: const HexBytesConverter().fromJson(json['key'] as String),
+      salt: const HexBytesConverter().fromJson(json['salt'] as String),
+      difficulty: const HexBytesConverter().fromJson(
+        json['difficulty'] as String,
+      ),
+    );
+
+Map<String, dynamic> _$ChallengeResultToJson(ChallengeResult instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'email': instance.email,
-      'kek_m_cost': instance.kekMCost,
-      'kek_i_cost': instance.kekICost,
-      'kek_p_cost': instance.kekPCost,
-      'kek_salt': const HexBytesConverter().toJson(instance.kekSalt),
+      'key': const HexBytesConverter().toJson(instance.key),
+      'salt': const HexBytesConverter().toJson(instance.salt),
+      'difficulty': const HexBytesConverter().toJson(instance.difficulty),
     };
-
-CaptchaResult _$CaptchaResultFromJson(Map<String, dynamic> json) =>
-    CaptchaResult(id: json['id'] as String, image: json['image'] as String);
-
-Map<String, dynamic> _$CaptchaResultToJson(CaptchaResult instance) =>
-    <String, dynamic>{'id': instance.id, 'image': instance.image};
 
 LoginInput _$LoginInputFromJson(Map<String, dynamic> json) => LoginInput(
   email: json['email'] as String,
-  password: json['password'] as String,
+  password: const HexBytesConverter().fromJson(json['password'] as String),
 );
 
 Map<String, dynamic> _$LoginInputToJson(LoginInput instance) =>
-    <String, dynamic>{'email': instance.email, 'password': instance.password};
+    <String, dynamic>{
+      'email': instance.email,
+      'password': const HexBytesConverter().toJson(instance.password),
+    };
 
 RegisterInput _$RegisterInputFromJson(Map<String, dynamic> json) =>
     RegisterInput(
       email: json['email'] as String,
-      password: json['password'] as String,
-      passwordRepeat: json['password_repeat'] as String,
-      cId: json['c_id'] as String,
-      cCode: json['c_code'] as String,
+      password: const HexBytesConverter().fromJson(json['password'] as String),
+      challengeKey: const HexBytesConverter().fromJson(
+        json['challenge_key'] as String,
+      ),
+      challengeNonce: (json['challenge_nonce'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RegisterInputToJson(RegisterInput instance) =>
     <String, dynamic>{
       'email': instance.email,
-      'password': instance.password,
-      'password_repeat': instance.passwordRepeat,
-      'c_id': instance.cId,
-      'c_code': instance.cCode,
+      'password': const HexBytesConverter().toJson(instance.password),
+      'challenge_key': const HexBytesConverter().toJson(instance.challengeKey),
+      'challenge_nonce': instance.challengeNonce,
     };
 
 RefreshInput _$RefreshInputFromJson(Map<String, dynamic> json) =>
@@ -96,21 +96,9 @@ Map<String, dynamic> _$LogoutInputToJson(LogoutInput instance) =>
 Account _$AccountFromJson(Map<String, dynamic> json) => Account(
   id: json['id'] as String,
   createdAt: DateTime.parse(json['created_at'] as String),
-  kekMCost: (json['kek_m_cost'] as num).toInt(),
-  kekTCost: (json['kek_t_cost'] as num).toInt(),
-  kekPCost: (json['kek_p_cost'] as num).toInt(),
-  kekOutputLen: (json['kek_output_len'] as num).toInt(),
-  kekSalt: (json['kek_salt'] as List<dynamic>)
-      .map((e) => (e as num).toInt())
-      .toList(),
 );
 
 Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
   'id': instance.id,
   'created_at': instance.createdAt.toIso8601String(),
-  'kek_m_cost': instance.kekMCost,
-  'kek_t_cost': instance.kekTCost,
-  'kek_p_cost': instance.kekPCost,
-  'kek_output_len': instance.kekOutputLen,
-  'kek_salt': instance.kekSalt,
 };

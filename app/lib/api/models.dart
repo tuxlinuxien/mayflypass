@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/helpers/json.dart';
 
 part 'models.g.dart';
@@ -36,24 +40,8 @@ class RefreshResponse {
 class AccountInfo {
   final String id;
   final String email;
-  @JsonKey(name: 'kek_m_cost')
-  final int kekMCost;
-  @JsonKey(name: 'kek_i_cost')
-  final int kekICost;
-  @JsonKey(name: 'kek_p_cost')
-  final int kekPCost;
-  @JsonKey(name: 'kek_salt')
-  @HexBytesConverter()
-  final List<int> kekSalt;
 
-  const AccountInfo({
-    required this.id,
-    required this.email,
-    required this.kekMCost,
-    required this.kekICost,
-    required this.kekPCost,
-    required this.kekSalt,
-  });
+  const AccountInfo({required this.id, required this.email});
 
   factory AccountInfo.fromJson(Map<String, dynamic> json) =>
       _$AccountInfoFromJson(json);
@@ -62,22 +50,70 @@ class AccountInfo {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class CaptchaResult {
-  final String id;
-  final String image;
+class ChallengeResult {
+  @HexBytesConverter()
+  final List<int> key;
+  @HexBytesConverter()
+  final List<int> salt;
+  @HexBytesConverter()
+  final List<int> difficulty;
 
-  const CaptchaResult({required this.id, required this.image});
+  const ChallengeResult({
+    required this.key,
+    required this.salt,
+    required this.difficulty,
+  });
 
-  factory CaptchaResult.fromJson(Map<String, dynamic> json) =>
-      _$CaptchaResultFromJson(json);
+  factory ChallengeResult.fromJson(Map<String, dynamic> json) =>
+      _$ChallengeResultFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CaptchaResultToJson(this);
+  Map<String, dynamic> toJson() => _$ChallengeResultToJson(this);
+
+  Future<int> solve() async {
+    return await compute(_solveChallenge, (key, salt, difficulty));
+  }
+
+  static Future<int> _solveChallenge(
+    (List<int>, List<int>, List<int>) input,
+  ) async {
+    final key = input.$1;
+    final salt = input.$2;
+    final target = input.$3;
+    final hasher = Sha256();
+    final nonceBytes = ByteData(8);
+
+    for (var nonce = 0; nonce < 0x7FFFFFFFFFFFFFFF; nonce++) {
+      nonceBytes.setInt64(0, nonce, Endian.little);
+      final inputBytes = Uint8List.fromList([
+        ...key,
+        ...salt,
+        ...nonceBytes.buffer.asUint8List(),
+      ]);
+      final hash = await hasher.hash(inputBytes);
+      if (_checkHashes(hash.bytes, target)) {
+        return nonce;
+      }
+    }
+    return -1;
+  }
+
+  static bool _checkHashes(List<int> hash, List<int> target) {
+    if (hash.length != target.length) {
+      return false;
+    }
+    for (var i = 0; i < hash.length; i++) {
+      if (hash[i] > target[i]) return false;
+      if (hash[i] < target[i]) return true;
+    }
+    return true;
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class LoginInput {
   final String email;
-  final String password;
+  @HexBytesConverter()
+  final List<int> password;
 
   const LoginInput({required this.email, required this.password});
 
@@ -90,19 +126,17 @@ class LoginInput {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class RegisterInput {
   final String email;
-  final String password;
-  final String passwordRepeat;
-  @JsonKey(name: 'c_id')
-  final String cId;
-  @JsonKey(name: 'c_code')
-  final String cCode;
+  @HexBytesConverter()
+  final List<int> password;
+  @HexBytesConverter()
+  final List<int> challengeKey;
+  final int challengeNonce;
 
   const RegisterInput({
     required this.email,
     required this.password,
-    required this.passwordRepeat,
-    required this.cId,
-    required this.cCode,
+    required this.challengeKey,
+    required this.challengeNonce,
   });
 
   factory RegisterInput.fromJson(Map<String, dynamic> json) =>
@@ -139,26 +173,8 @@ class LogoutInput {
 class Account {
   final String id;
   final DateTime createdAt;
-  @JsonKey(name: 'kek_m_cost')
-  final int kekMCost;
-  @JsonKey(name: 'kek_t_cost')
-  final int kekTCost;
-  @JsonKey(name: 'kek_p_cost')
-  final int kekPCost;
-  @JsonKey(name: 'kek_output_len')
-  final int kekOutputLen;
-  @JsonKey(name: 'kek_salt')
-  final List<int> kekSalt;
 
-  const Account({
-    required this.id,
-    required this.createdAt,
-    required this.kekMCost,
-    required this.kekTCost,
-    required this.kekPCost,
-    required this.kekOutputLen,
-    required this.kekSalt,
-  });
+  const Account({required this.id, required this.createdAt});
 
   factory Account.fromJson(Map<String, dynamic> json) =>
       _$AccountFromJson(json);

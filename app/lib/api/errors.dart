@@ -12,8 +12,8 @@ sealed class FieldError {
         return FieldErrorEmailInvalid.fromJson(json);
       case 'CREDENTIALS_INVALID':
         return FieldErrorCredentialsInvalid.fromJson(json);
-      case 'CAPTCHAT_INVALID':
-        return FieldErrorCaptchatInvalid.fromJson(json);
+      case 'CHALLENGE_INVALID':
+        return FieldErrorChallengeInvalid.fromJson(json);
       case 'VALUE_TOO_SHORT':
         return FieldErrorValueTooShort.fromJson(json);
       case 'VALUE_TOO_LONG':
@@ -51,13 +51,13 @@ class FieldErrorCredentialsInvalid extends FieldError {
 }
 
 @JsonSerializable(createToJson: false)
-class FieldErrorCaptchatInvalid extends FieldError {
-  final String code = 'CAPTCHAT_INVALID';
+class FieldErrorChallengeInvalid extends FieldError {
+  final String code = 'CHALLENGE_INVALID';
 
-  const FieldErrorCaptchatInvalid({required super.field});
+  const FieldErrorChallengeInvalid({required super.field});
 
-  factory FieldErrorCaptchatInvalid.fromJson(Map<String, dynamic> json) =>
-      _$FieldErrorCaptchatInvalidFromJson(json);
+  factory FieldErrorChallengeInvalid.fromJson(Map<String, dynamic> json) =>
+      _$FieldErrorChallengeInvalidFromJson(json);
 }
 
 @JsonSerializable(createToJson: false)
@@ -126,6 +126,12 @@ sealed class ApiError {
           } else {
             return ApiErrorBadRequest();
           }
+        case 404:
+          return ApiErrorNotFound();
+        case 405:
+          return ApiErrorMethodNotAllowed();
+        case 415:
+          return ApiErrorUnsupportedMediaType();
         case 422:
           return ApiErrorInvalidPayload();
         case 401:
@@ -147,8 +153,20 @@ class ApiErrorBadRequest extends ApiError {
   const ApiErrorBadRequest();
 }
 
+class ApiErrorNotFound extends ApiError {
+  const ApiErrorNotFound();
+}
+
+class ApiErrorMethodNotAllowed extends ApiError {
+  const ApiErrorMethodNotAllowed();
+}
+
 class ApiErrorInvalidPayload extends ApiError {
   const ApiErrorInvalidPayload();
+}
+
+class ApiErrorUnsupportedMediaType extends ApiError {
+  const ApiErrorUnsupportedMediaType();
 }
 
 class ApiErrorInternalServerError extends ApiError {

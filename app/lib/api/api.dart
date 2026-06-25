@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
@@ -8,18 +10,14 @@ import 'models.dart';
 export 'models.dart';
 
 abstract class _API {
-  Future<LoginResponse> login(String email, String password);
-  Future<void> register({
-    required String email,
-    required String password,
-    required String passwordRepeat,
-    required String cId,
-    required String cCode,
-  });
-  Future<CaptchaResult> generateCaptcha();
-  Future<RefreshResponse> refresh([String? refreshToken]);
-  Future<void> logout([String? refreshToken]);
-  Future<AccountInfo> getAccountInfo();
+  // auth
+  Future<LoginResponse> login(LoginInput input);
+  Future<void> register(RegisterInput input);
+  Future<ChallengeResult> challenge();
+  Future<RefreshResponse> refresh({String? refreshToken});
+  Future<void> logout();
+  // account
+  Future<AccountInfo> accountInfo();
 }
 
 class API extends _API {
@@ -64,21 +62,21 @@ class API extends _API {
     Future<Response<dynamic>> localRequest() async {
       final client = _dio.clone();
       client.options.headers.addEntries(
-        {'Authorization': 'Bearer $accessToken'}.entries,
+        {'Authorization': 'Bearer ${API.accessToken}'}.entries,
       );
       return _request(method, path, data: data, customclient: client);
     }
 
     try {
       // refresh the token now since we don't have any accessToken
-      if (accessToken == null) {
+      if (API.accessToken == null) {
         logger.w('refresh token');
-        await refresh(refreshToken);
+        await refresh(refreshToken: API.refreshToken);
       }
       return await localRequest();
     } on ApiErrorUnauthorized {
       logger.w('refresh token');
-      await refresh(refreshToken);
+      await refresh(refreshToken: API.refreshToken);
     }
     return await localRequest();
   }
@@ -92,64 +90,52 @@ class API extends _API {
   }
 
   @override
-  Future<LoginResponse> login(String email, String password) async {
-    final payload = {'email': email, 'password': password};
-    final response = await post('/api/login', data: payload);
+  Future<LoginResponse> login(LoginInput input) async {
+    final response = await post('/api/login', data: input.toJson());
     final output = LoginResponse.fromJson(response.data);
     // set the access token
-    accessToken = output.accessToken;
-    refreshToken = output.refreshToken;
+    API.accessToken = output.accessToken;
+    API.refreshToken = output.refreshToken;
     return output;
   }
 
   @override
-  Future<CaptchaResult> generateCaptcha() async {
+  Future<ChallengeResult> challenge() async {
     final response = await get('/api/register');
-    return CaptchaResult.fromJson(response.data);
+    return ChallengeResult.fromJson(response.data);
   }
 
   @override
-  Future<void> register({
-    required String email,
-    required String password,
-    required String passwordRepeat,
-    required String cId,
-    required String cCode,
-  }) async {
-    final payload = {
-      'email': email,
-      'password': password,
-      'password_repeat': passwordRepeat,
-      'c_id': cId,
-      'c_code': cCode,
-    };
-    await post('/api/register', data: payload);
+  Future<void> register(RegisterInput input) async {
+    await post('/api/register', data: input.toJson());
   }
 
   @override
-  Future<RefreshResponse> refresh([String? refreshToken]) async {
+  Future<RefreshResponse> refresh({String? refreshToken}) async {
     final payload = {'refresh_token': refreshToken};
-    final response = await post('/api/refresh', data: payload);
+    final response = await post('/api/refresh', data: jsonEncode(payload));
     final output = RefreshResponse.fromJson(response.data);
     // set the access token
-    accessToken = output.accessToken;
-    refreshToken = output.refreshToken;
-
+    API.accessToken = output.accessToken;
+    API.refreshToken = output.refreshToken;
     return output;
   }
 
   @override
-  Future<void> logout([String? refreshToken]) async {
+  Future<void> logout() async {
     try {
       final payload = {'refresh_token': refreshToken};
-      await post('/api/logout', data: payload);
-      accessToken = null;
-      refreshToken = null;
-    } catch (_) {}
+      await post('/api/logout', data: jsonEncode(payload));
+    } catch (e) {
+      logger.e('logout error $e');
+    } finally {
+      API.accessToken = null;
+      API.refreshToken = null;
+    }
   }
 
   @override
-  Future<AccountInfo> getAccountInfo() async {
+  Future<AccountInfo> accountInfo() async {
     final response = await getProtected('/api/account/info');
     return AccountInfo.fromJson(response.data);
   }

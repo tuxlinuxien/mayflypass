@@ -14,9 +14,9 @@ FieldErrorCredentialsInvalid _$FieldErrorCredentialsInvalidFromJson(
   Map<String, dynamic> json,
 ) => FieldErrorCredentialsInvalid(field: json['field'] as String);
 
-FieldErrorCaptchatInvalid _$FieldErrorCaptchatInvalidFromJson(
+FieldErrorChallengeInvalid _$FieldErrorChallengeInvalidFromJson(
   Map<String, dynamic> json,
-) => FieldErrorCaptchatInvalid(field: json['field'] as String);
+) => FieldErrorChallengeInvalid(field: json['field'] as String);
 
 FieldErrorValueTooShort _$FieldErrorValueTooShortFromJson(
   Map<String, dynamic> json,

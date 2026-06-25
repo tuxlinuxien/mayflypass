@@ -33,17 +33,17 @@ void main() {
       expect(error.field, 'password');
     });
 
-    test('FieldErrorCaptchatInvalid can be parsed from JSON string', () {
+    test('FieldErrorChallengeInvalid can be parsed from JSON string', () {
       const jsonString = '''
         {
           "field": "captcha",
-          "code": "CAPTCHAT_INVALID"
+          "code": "CHALLENGE_INVALID"
         }
       ''';
       final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
       final error = FieldError.fromJson(jsonMap);
 
-      expect(error, isA<FieldErrorCaptchatInvalid>());
+      expect(error, isA<FieldErrorChallengeInvalid>());
       expect(error.field, 'captcha');
     });
 
