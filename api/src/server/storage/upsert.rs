@@ -11,7 +11,7 @@ use crate::{
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CreateInput {
+pub struct UpsertInput {
     id: Uuid,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
@@ -25,7 +25,7 @@ pub struct CreateInput {
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CreateResponse {
+pub struct UpsertResponse {
     id: Uuid,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
@@ -40,8 +40,8 @@ pub struct CreateResponse {
 pub async fn upsert(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,
-    Json(payload): Json<CreateInput>,
-) -> Result<Json<CreateResponse>, ApiError> {
+    Json(payload): Json<UpsertInput>,
+) -> Result<Json<UpsertResponse>, ApiError> {
     let input = database::storage::StorageUpsert {
         id: payload.id,
         created_at: payload.created_at,
@@ -59,7 +59,7 @@ pub async fn upsert(
             None => return Err(ApiError::NotFound),
         },
     };
-    Ok(Json(CreateResponse {
+    Ok(Json(UpsertResponse {
         id: result.id,
         created_at: result.created_at,
         updated_at: result.updated_at,
@@ -79,8 +79,8 @@ mod test {
         uuid::Uuid::from_u128(12345678901234567890123456789012)
     }
 
-    fn create_test_input() -> CreateInput {
-        CreateInput {
+    fn create_test_input() -> UpsertInput {
+        UpsertInput {
             id: test_storage_id(),
             created_at: Utc::now(),
             updated_at: Utc::now(),
