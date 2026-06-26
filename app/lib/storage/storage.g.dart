@@ -13,8 +13,8 @@ EncryptedStorage _$EncryptedStorageFromJson(Map<String, dynamic> json) =>
       updatedAt: DateTime.parse(json['updated_at'] as String),
       version: (json['version'] as num).toInt(),
       deleted: json['deleted'] as bool,
-      encryptedKek: const HexBytesConverter().fromJson(
-        json['encrypted_kek'] as String,
+      encryptedDek: const HexBytesConverter().fromJson(
+        json['encrypted_dek'] as String,
       ),
       encryptedPayload: const HexBytesConverter().fromJson(
         json['encrypted_payload'] as String,
@@ -28,7 +28,7 @@ Map<String, dynamic> _$EncryptedStorageToJson(EncryptedStorage instance) =>
       'updated_at': instance.updatedAt.toIso8601String(),
       'version': instance.version,
       'deleted': instance.deleted,
-      'encrypted_kek': const HexBytesConverter().toJson(instance.encryptedKek),
+      'encrypted_dek': const HexBytesConverter().toJson(instance.encryptedDek),
       'encrypted_payload': const HexBytesConverter().toJson(
         instance.encryptedPayload,
       ),

@@ -25,10 +25,5 @@ Future<Uint8List> decrypt(SecretKey key, Uint8List encryptedText) async {
 }
 
 SecretKey newDataEncryptionKey() {
-  int genByte(int i) {
-    return SecureRandom.safe.nextInt(1 << 8);
-  }
-
-  final newDek = List.generate(secretKeyLength, genByte);
-  return SecretKey(newDek);
+  return SecretKeyData.random(length: secretKeyLength);
 }
