@@ -23,6 +23,7 @@ dependencies:
   cryptography_plus: ^3.0.0
   hex: ^0.2.0
   uuid: ^4.5.3
+  protobuf: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +34,7 @@ dev_dependencies:
   json_serializable: ^6.14.0
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.5
+  protoc_plugin: ^25.0.0
 
 flutter_launcher_icons:
   android: true

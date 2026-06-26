@@ -1,0 +1,23 @@
+edition = "2024";
+
+enum TotpAlgorithm {
+    SHA1    = 0;
+    SHA256  = 1;
+    SHA512  = 2;
+}
+
+message Totp {
+    string          issuer = 1;
+    string          account = 2;
+    string          secret = 3;
+    TotpAlgorithm   algorithm = 4;
+    int32           digits = 5 [default = 6];
+    int32           period = 6 [default = 30];
+    bool            favorite = 7;
+}
+
+message DataBox {
+    oneof box {
+        Totp totp = 1;
+    }
+}
