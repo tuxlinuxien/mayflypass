@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/secure/constants.dart';
 

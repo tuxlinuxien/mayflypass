@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/secure/constants.dart';
 
@@ -15,26 +14,18 @@ Future<SecretKey> deriveMasterPassword(String email, String password) async {
     parallelism: masterPasswordPCost,
     hashLength: secretKeyLength,
   );
-  final newSecretKey = await algorithm.deriveKey(
-    secretKey: SecretKey(utf8.encode(password)),
+  return await algorithm.deriveKeyFromPassword(
+    password: password,
     nonce: emailHash.bytes,
   );
-  final byteList = await newSecretKey.extractBytes();
-  return SecretKey(byteList);
 }
 
 Future<SecretKey> deriveAuthKey(SecretKey masterKey) async {
-  final hasher = Pbkdf2.hmacSha256(
-    iterations: authIterations,
-    bits: authBits, // 256 bits = 32 bytes
-  );
+  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: authOuputLen);
   return await hasher.deriveKey(secretKey: masterKey, nonce: authSalt);
 }
 
 Future<SecretKey> deriveKek(SecretKey masterKey) async {
-  final hasher = Pbkdf2.hmacSha256(
-    iterations: kekIterations,
-    bits: kekBits, // 256 bits = 32 bytes
-  );
+  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: kekOuputLen);
   return await hasher.deriveKey(secretKey: masterKey, nonce: kekSalt);
 }

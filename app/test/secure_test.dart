@@ -70,17 +70,17 @@ void main() {
       expect((await masterKey.extractBytes()).length, 32);
       expect(
         base64.encode(await masterKey.extractBytes()),
-        'gI8Bteu+CFk3o6b1MOGEDn/BXwyk8mkwkTe/ypuLmYM=',
+        '4CPqxVgxbqu1uSEvP81uXjT4nFFGScoSH89824cTMXA=',
       );
       expect((await authKey.extractBytes()).length, 32);
       expect(
         base64.encode(await authKey.extractBytes()),
-        'd3GyyRGaVVAAbP6ouy0dygbtI2lano0oQmH9P4+riOY=',
+        'N0WKMoQeHY6Q3rqkLE33OLTYQcFU6NJ5cYFjRMN7CUM=',
       );
       expect((await kek.extractBytes()).length, 32);
       expect(
         base64.encode(await kek.extractBytes()),
-        'WDsmX0O1lXbAMs513EHc3bFsUeOY5HPVOpSr7IO70YI=',
+        'K6HGUE+7HPHKgJFSlHd/Ixd2AjjzPYhN2i4JymiXMZ0=',
       );
     });
   });

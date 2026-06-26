@@ -2,9 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/secure/derive.dart';
+import 'package:uuid/v7.dart';
 
 String buildTestEmail() {
-  return '${DateTime.now().microsecond}@mail.com';
+  return '${UuidV7().generate()}@mail.com';
 }
 
 Future<List<int>> buildPassword(String email) async {

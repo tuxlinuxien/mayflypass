@@ -7,7 +7,7 @@ async fn main() {
     api::init_logger(args.verbosity);
 
     // create the database and start the migration
-    let pool = database::create_pool(&args.database_url, 1).await.unwrap();
+    let pool = database::create_pool(&args.database_url, 5).await.unwrap();
     database::run_migrations(&pool).await.unwrap();
 
     if args.dev {
