@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/helpers/json.dart';
+import 'package:uuid/uuid.dart';
 
 part 'models.g.dart';
 
@@ -50,11 +51,11 @@ class AccountInfo {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ChallengeResult {
   @HexBytesConverter()
-  final List<int> key;
+  final Uint8List key;
   @HexBytesConverter()
-  final List<int> salt;
+  final Uint8List salt;
   @HexBytesConverter()
-  final List<int> difficulty;
+  final Uint8List difficulty;
 
   const ChallengeResult({
     required this.key,
@@ -72,7 +73,7 @@ class ChallengeResult {
   }
 
   static Future<int> _solveChallenge(
-    (List<int>, List<int>, List<int>) input,
+    (Uint8List, Uint8List, Uint8List) input,
   ) async {
     final key = input.$1;
     final salt = input.$2;
@@ -111,7 +112,7 @@ class ChallengeResult {
 class LoginInput {
   final String email;
   @HexBytesConverter()
-  final List<int> password;
+  final Uint8List password;
 
   const LoginInput({required this.email, required this.password});
 
@@ -125,9 +126,9 @@ class LoginInput {
 class RegisterInput {
   final String email;
   @HexBytesConverter()
-  final List<int> password;
+  final Uint8List password;
   @HexBytesConverter()
-  final List<int> challengeKey;
+  final Uint8List challengeKey;
   final int challengeNonce;
 
   const RegisterInput({
@@ -178,4 +179,35 @@ class Account {
       _$AccountFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class Storage {
+  @UuidConverter()
+  final UuidValue id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int version;
+  final bool deleted;
+  @JsonKey(name: 'encrypted_dek')
+  @HexBytesConverter()
+  final Uint8List encryptedDek;
+  @JsonKey(name: 'encrypted_payload')
+  @HexBytesConverter()
+  final Uint8List encryptedPayload;
+
+  const Storage({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.version,
+    required this.deleted,
+    required this.encryptedDek,
+    required this.encryptedPayload,
+  });
+
+  factory Storage.fromJson(Map<String, dynamic> json) =>
+      _$StorageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StorageToJson(this);
 }

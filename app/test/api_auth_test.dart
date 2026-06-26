@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/core/core.dart';
@@ -8,9 +9,10 @@ String buildTestEmail() {
   return '${UuidV7().generate()}@mail.com';
 }
 
-Future<List<int>> buildPassword(String email) async {
+Future<Uint8List> buildPassword(String email) async {
   final masterKey = await deriveMasterPassword(email, '12345678');
-  return await (await deriveAuthKey(masterKey)).extractBytes();
+  final buffer = await (await deriveAuthKey(masterKey)).extractBytes();
+  return Uint8List.fromList(buffer);
 }
 
 Future<LoginResponse> setupAccount() async {
