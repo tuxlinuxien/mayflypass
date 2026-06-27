@@ -24,6 +24,9 @@ dependencies:
   hex: ^0.2.0
   uuid: ^4.5.3
   protobuf: ^6.0.0
+  drift: ^2.34.0
+  drift_flutter: ^0.3.0
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +38,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.5
   protoc_plugin: ^25.0.0
+  drift_dev: ^2.34.0
 
 flutter_launcher_icons:
   android: true
