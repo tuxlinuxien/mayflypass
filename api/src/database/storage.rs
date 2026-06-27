@@ -1,5 +1,3 @@
-use chrono::{DateTime, Utc};
-
 use super::error;
 use uuid::Uuid;
 
@@ -7,8 +5,6 @@ use uuid::Uuid;
 pub struct Storage {
     pub id: Uuid,
     pub account_id: Uuid,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
     pub version: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
@@ -18,8 +14,6 @@ pub struct Storage {
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct StorageUpsert {
     pub id: Uuid,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
     pub version: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
@@ -33,7 +27,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Option<Storage>, error::Error> {
     let item = sqlx::query_as::<_, Storage>(
         r#"
-        SELECT id, account_id, version, created_at, updated_at, deleted, encrypted_dek, encrypted_payload
+        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
         FROM storage
         WHERE id = ? AND account_id = ?
         "#,
@@ -51,7 +45,7 @@ pub async fn select<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Vec<Storage>, error::Error> {
     let items = sqlx::query_as::<_, Storage>(
         r#"
-        SELECT id, account_id, version, created_at, updated_at, deleted, encrypted_dek, encrypted_payload
+        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
         FROM storage
         WHERE account_id = ?
         "#,
@@ -74,26 +68,22 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     }
     let res = sqlx::query_as::<_, Storage>(
         r#"
-        INSERT INTO storage (id, account_id, created_at, updated_at, version, deleted, encrypted_dek, encrypted_payload)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO storage (id, account_id, version, deleted, encrypted_dek, encrypted_payload)
+        VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT (id, account_id)
         DO UPDATE SET
-            created_at = excluded.created_at,
-            updated_at = excluded.updated_at,
             version = excluded.version,
             deleted = excluded.deleted,
             encrypted_dek = excluded.encrypted_dek,
             encrypted_payload = excluded.encrypted_payload
         WHERE
             storage.version < excluded.version
-        RETURNING id, account_id, created_at, updated_at, version, deleted, encrypted_dek, encrypted_payload
+        RETURNING id, account_id, version, deleted, encrypted_dek, encrypted_payload
         "#,
     )
     // values
     .bind(upsert.id)
     .bind(account_id)
-    .bind(upsert.created_at)
-    .bind(upsert.updated_at)
     .bind(upsert.version)
     .bind(upsert.deleted)
     .bind(upsert.encrypted_dek)
@@ -137,8 +127,6 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -184,8 +172,6 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -201,8 +187,6 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
                 version: 2,
                 deleted: false,
                 encrypted_dek: vec![7, 8, 9],
@@ -228,8 +212,6 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
                 version: 3,
                 deleted: true,
                 encrypted_dek: vec![7, 8, 9],
@@ -270,8 +252,6 @@ mod test {
 
         let mut item = StorageUpsert {
             id: test_storage_id(),
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
             version: 2,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
@@ -313,8 +293,6 @@ mod test {
         let item2_id = uuid::Uuid::from_u128(22222222222222222222222222222222);
         let item1 = StorageUpsert {
             id: item1_id,
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![1, 1, 1],
@@ -322,8 +300,6 @@ mod test {
         };
         let item2 = StorageUpsert {
             id: item2_id,
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![3, 3, 3],

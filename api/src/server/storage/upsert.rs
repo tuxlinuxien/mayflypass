@@ -3,7 +3,6 @@ use crate::{
     server::{error::ApiError, json::Json, middleware::AuthUserId, state::AppState},
 };
 use axum::{Extension, extract::State};
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use uuid::Uuid;
@@ -12,8 +11,6 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpsertInput {
     id: Uuid,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
     version: i64,
     deleted: bool,
     #[serde_as(as = "serde_with::hex::Hex")]
@@ -26,8 +23,6 @@ pub struct UpsertInput {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpsertResponse {
     id: Uuid,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
     version: i64,
     deleted: bool,
     #[serde_as(as = "serde_with::hex::Hex")]
@@ -43,8 +38,6 @@ pub async fn upsert(
 ) -> Result<Json<UpsertResponse>, ApiError> {
     let input = database::storage::StorageUpsert {
         id: payload.id,
-        created_at: payload.created_at,
-        updated_at: payload.updated_at,
         version: payload.version,
         deleted: payload.deleted,
         encrypted_dek: payload.encrypted_dek,
@@ -60,8 +53,6 @@ pub async fn upsert(
     };
     Ok(Json(UpsertResponse {
         id: result.id,
-        created_at: result.created_at,
-        updated_at: result.updated_at,
         version: result.version,
         deleted: result.deleted,
         encrypted_dek: result.encrypted_dek,
@@ -81,8 +72,6 @@ mod test {
     fn create_test_input() -> UpsertInput {
         UpsertInput {
             id: test_storage_id(),
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
             version: 1,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],

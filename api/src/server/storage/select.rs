@@ -4,7 +4,6 @@ use crate::{
     server::{error::ApiError, middleware::AuthUserId, state::AppState},
 };
 use axum::{Extension, extract::State};
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use uuid::Uuid;
@@ -13,8 +12,6 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SelectResponse {
     id: Uuid,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
     version: i64,
     deleted: bool,
     #[serde_as(as = "serde_with::hex::Hex")]
@@ -32,8 +29,6 @@ pub async fn select(
         .into_iter()
         .map(|result| SelectResponse {
             id: result.id,
-            created_at: result.created_at,
-            updated_at: result.updated_at,
             version: result.version,
             deleted: result.deleted,
             encrypted_dek: result.encrypted_dek,
@@ -71,8 +66,6 @@ mod test {
             &account.id,
             &storage::StorageUpsert {
                 id: uuid::Uuid::now_v7(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
@@ -86,8 +79,6 @@ mod test {
             &account.id,
             &storage::StorageUpsert {
                 id: uuid::Uuid::now_v7(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
                 version: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
