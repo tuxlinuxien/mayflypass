@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/helpers/json.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v7.dart';
 
 part 'models.g.dart';
 
@@ -185,18 +186,18 @@ class Account {
 class Storage {
   @UuidConverter()
   final UuidValue id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int version;
-  final bool deleted;
+  DateTime createdAt;
+  DateTime updatedAt;
+  int version;
+  bool deleted;
   @JsonKey(name: 'encrypted_dek')
   @HexBytesConverter()
-  final Uint8List encryptedDek;
+  Uint8List encryptedDek;
   @JsonKey(name: 'encrypted_payload')
   @HexBytesConverter()
-  final Uint8List encryptedPayload;
+  Uint8List encryptedPayload;
 
-  const Storage({
+  Storage({
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -210,4 +211,19 @@ class Storage {
       _$StorageFromJson(json);
 
   Map<String, dynamic> toJson() => _$StorageToJson(this);
+
+  factory Storage.create({
+    required Uint8List encryptedDek,
+    required Uint8List encryptedPayload,
+  }) {
+    return Storage(
+      id: UuidValue.fromString(UuidV7().generate()),
+      createdAt: DateTime.now().toUtc(),
+      updatedAt: DateTime.now().toUtc(),
+      version: DateTime.now().millisecondsSinceEpoch,
+      deleted: false,
+      encryptedDek: encryptedDek,
+      encryptedPayload: encryptedPayload,
+    );
+  }
 }

@@ -4,7 +4,7 @@ import 'package:mayflypass/core/core.dart';
 class LoggerInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    apiLogger.d('${options.method} ${options.path}');
+    apiLogger.d('>>> ${options.method} ${options.path}');
     super.onRequest(options, handler);
   }
 

@@ -18,6 +18,8 @@ abstract class _API {
   Future<void> logout();
   // account
   Future<AccountInfo> accountInfo();
+  // storage
+  Future<Storage> storageUpsert(Storage storage);
 }
 
 class API extends _API {
@@ -138,5 +140,11 @@ class API extends _API {
   Future<AccountInfo> accountInfo() async {
     final response = await getProtected('/api/account/info');
     return AccountInfo.fromJson(response.data);
+  }
+
+  @override
+  Future<Storage> storageUpsert(Storage input) async {
+    final response = await postProtected('/api/storage', data: input.toJson());
+    return Storage.fromJson(response.data);
   }
 }

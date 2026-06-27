@@ -20,5 +20,7 @@ class UuidConverter implements JsonConverter<UuidValue, String> {
   UuidValue fromJson(String json) => UuidValue.fromString(json);
 
   @override
-  String toJson(UuidValue uuid) => uuid.toString();
+  String toJson(UuidValue uuid) {
+    return Uuid.unparse(uuid.toBytes());
+  }
 }
