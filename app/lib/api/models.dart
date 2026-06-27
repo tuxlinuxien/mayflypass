@@ -183,7 +183,7 @@ class Account {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class Storage {
+class ApiStorage {
   @UuidConverter()
   final UuidValue id;
   DateTime createdAt;
@@ -197,7 +197,7 @@ class Storage {
   @HexBytesConverter()
   Uint8List encryptedPayload;
 
-  Storage({
+  ApiStorage({
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -207,16 +207,16 @@ class Storage {
     required this.encryptedPayload,
   });
 
-  factory Storage.fromJson(Map<String, dynamic> json) =>
-      _$StorageFromJson(json);
+  factory ApiStorage.fromJson(Map<String, dynamic> json) =>
+      _$ApiStorageFromJson(json);
 
-  Map<String, dynamic> toJson() => _$StorageToJson(this);
+  Map<String, dynamic> toJson() => _$ApiStorageToJson(this);
 
-  factory Storage.create({
+  factory ApiStorage.create({
     required Uint8List encryptedDek,
     required Uint8List encryptedPayload,
   }) {
-    return Storage(
+    return ApiStorage(
       id: UuidValue.fromString(UuidV7().generate()),
       createdAt: DateTime.now().toUtc(),
       updatedAt: DateTime.now().toUtc(),

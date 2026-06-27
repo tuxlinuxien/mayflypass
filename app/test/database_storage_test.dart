@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/database/database.dart';
+import 'package:mayflypass/api/api.dart';
 
 AppDatabase openTestDatabase() => AppDatabase(NativeDatabase.memory());
 
@@ -17,71 +18,44 @@ void main() {
   });
 
   group('database storage', () {
-    test('insert and select', () async {
-      await db.into(db.storage).insert(StorageCompanion.insert(
-            id: 'abc',
-            accountId: 'account-1',
-            version: 1,
-            encryptedDek: Uint8List(0),
-            encryptedPayload: Uint8List(0),
-          ));
-
-      final rows = await db.select(db.storage).get();
-      expect(rows.length, 1);
-      expect(rows.first.id, 'abc');
-      expect(rows.first.accountId, 'account-1');
-      expect(rows.first.version, 1);
-      expect(rows.first.deleted, false);
+    test('insert', () async {
+      final input = ApiStorage.create(
+        encryptedDek: Uint8List(0),
+        encryptedPayload: Uint8List(0),
+      );
+      expect(await db.countStorage(), 0);
+      await db.upsertStorage(input);
+      expect(await db.countStorage(), 1);
     });
 
-    test('select by account', () async {
-      await db.into(db.storage).insert(StorageCompanion.insert(
-            id: 'abc',
-            accountId: 'account-1',
-            version: 1,
-            encryptedDek: Uint8List(0),
-            encryptedPayload: Uint8List(0),
-          ));
-      await db.into(db.storage).insert(StorageCompanion.insert(
-            id: 'xyz',
-            accountId: 'account-2',
-            version: 1,
-            encryptedDek: Uint8List(0),
-            encryptedPayload: Uint8List(0),
-          ));
-
-      final rows = await (db.select(db.storage)
-            ..where((t) => t.accountId.equals('account-1')))
-          .get();
-      expect(rows.length, 1);
-      expect(rows.first.id, 'abc');
-    });
-
-    test('soft delete', () async {
-      await db.into(db.storage).insert(StorageCompanion.insert(
-            id: 'abc',
-            accountId: 'account-1',
-            version: 1,
-            encryptedDek: Uint8List(16),
-            encryptedPayload: Uint8List(32),
-          ));
-
-      await (db.update(db.storage)
-            ..where((t) => t.id.equals('abc') & t.accountId.equals('account-1')))
-          .write(StorageCompanion(
-            deleted: const Value(true),
-            version: const Value(2),
-            encryptedDek: Value(Uint8List(0)),
-            encryptedPayload: Value(Uint8List(0)),
-          ));
-
-      final row = await (db.select(db.storage)
-            ..where((t) => t.id.equals('abc')))
-          .getSingle();
-      expect(row.deleted, true);
-      expect(row.version, 2);
-      expect(row.encryptedDek, Uint8List(0));
-      expect(row.encryptedPayload, Uint8List(0));
+    test('upsert', () async {
+      final input = ApiStorage.create(
+        encryptedDek: Uint8List(0),
+        encryptedPayload: Uint8List(0),
+      )..version = 1;
+      await db.upsertStorage(input);
+      var row = await db.getStorage(input.id);
+      expect(row!.version, 1);
+      expect(row.encryptedDek.length, 0);
+      expect(row.encryptedPayload.length, 0);
+      // update the version
+      input.version = 2;
+      input.encryptedDek = Uint8List(1);
+      input.encryptedPayload = Uint8List(1);
+      await db.upsertStorage(input);
+      row = await db.getStorage(input.id);
+      expect(row!.version, 2);
+      expect(row.encryptedDek.length, 1);
+      expect(row.encryptedPayload.length, 1);
+      // update the version with lower value so the stored data shouldn't chage
+      input.version = 1;
+      input.encryptedDek = Uint8List(3);
+      input.encryptedPayload = Uint8List(3);
+      await db.upsertStorage(input);
+      row = await db.getStorage(input.id);
+      expect(row!.version, 2);
+      expect(row.encryptedDek.length, 1);
+      expect(row.encryptedPayload.length, 1);
     });
   });
 }

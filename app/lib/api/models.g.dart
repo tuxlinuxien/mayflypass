@@ -103,7 +103,7 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
   'created_at': instance.createdAt.toIso8601String(),
 };
 
-Storage _$StorageFromJson(Map<String, dynamic> json) => Storage(
+ApiStorage _$ApiStorageFromJson(Map<String, dynamic> json) => ApiStorage(
   id: const UuidConverter().fromJson(json['id'] as String),
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -117,14 +117,15 @@ Storage _$StorageFromJson(Map<String, dynamic> json) => Storage(
   ),
 );
 
-Map<String, dynamic> _$StorageToJson(Storage instance) => <String, dynamic>{
-  'id': const UuidConverter().toJson(instance.id),
-  'created_at': instance.createdAt.toIso8601String(),
-  'updated_at': instance.updatedAt.toIso8601String(),
-  'version': instance.version,
-  'deleted': instance.deleted,
-  'encrypted_dek': const HexBytesConverter().toJson(instance.encryptedDek),
-  'encrypted_payload': const HexBytesConverter().toJson(
-    instance.encryptedPayload,
-  ),
-};
+Map<String, dynamic> _$ApiStorageToJson(ApiStorage instance) =>
+    <String, dynamic>{
+      'id': const UuidConverter().toJson(instance.id),
+      'created_at': instance.createdAt.toIso8601String(),
+      'updated_at': instance.updatedAt.toIso8601String(),
+      'version': instance.version,
+      'deleted': instance.deleted,
+      'encrypted_dek': const HexBytesConverter().toJson(instance.encryptedDek),
+      'encrypted_payload': const HexBytesConverter().toJson(
+        instance.encryptedPayload,
+      ),
+    };

@@ -7,7 +7,7 @@ void main() {
   group('api storage', () {
     test('upsert', () async {
       await setupAccount();
-      final input = Storage.create(
+      final input = ApiStorage.create(
         encryptedDek: Uint8List(0),
         encryptedPayload: Uint8List(0),
       );

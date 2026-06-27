@@ -17,17 +17,6 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _accountIdMeta = const VerificationMeta(
-    'accountId',
-  );
-  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
-    'account_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -102,7 +91,6 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    accountId,
     createdAt,
     updatedAt,
     version,
@@ -126,14 +114,6 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
-    }
-    if (data.containsKey('account_id')) {
-      context.handle(
-        _accountIdMeta,
-        accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_accountIdMeta);
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -187,7 +167,7 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id, accountId};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   StorageData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -195,10 +175,6 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
-      )!,
-      accountId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}account_id'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -233,14 +209,13 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
   }
 
   @override
-  List<String> get customConstraints => const ['PRIMARY KEY(id, account_id)'];
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
   @override
   bool get dontWriteConstraints => true;
 }
 
 class StorageData extends DataClass implements Insertable<StorageData> {
   final String id;
-  final String accountId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
@@ -249,7 +224,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   final Uint8List encryptedPayload;
   const StorageData({
     required this.id,
-    required this.accountId,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -261,7 +235,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['account_id'] = Variable<String>(accountId);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['version'] = Variable<int>(version);
@@ -274,7 +247,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   StorageCompanion toCompanion(bool nullToAbsent) {
     return StorageCompanion(
       id: Value(id),
-      accountId: Value(accountId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       version: Value(version),
@@ -291,7 +263,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return StorageData(
       id: serializer.fromJson<String>(json['id']),
-      accountId: serializer.fromJson<String>(json['account_id']),
       createdAt: serializer.fromJson<DateTime>(json['created_at']),
       updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
       version: serializer.fromJson<int>(json['version']),
@@ -307,7 +278,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'account_id': serializer.toJson<String>(accountId),
       'created_at': serializer.toJson<DateTime>(createdAt),
       'updated_at': serializer.toJson<DateTime>(updatedAt),
       'version': serializer.toJson<int>(version),
@@ -319,7 +289,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
 
   StorageData copyWith({
     String? id,
-    String? accountId,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? version,
@@ -328,7 +297,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
     Uint8List? encryptedPayload,
   }) => StorageData(
     id: id ?? this.id,
-    accountId: accountId ?? this.accountId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     version: version ?? this.version,
@@ -339,7 +307,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   StorageData copyWithCompanion(StorageCompanion data) {
     return StorageData(
       id: data.id.present ? data.id.value : this.id,
-      accountId: data.accountId.present ? data.accountId.value : this.accountId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       version: data.version.present ? data.version.value : this.version,
@@ -357,7 +324,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   String toString() {
     return (StringBuffer('StorageData(')
           ..write('id: $id, ')
-          ..write('accountId: $accountId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
@@ -371,7 +337,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   @override
   int get hashCode => Object.hash(
     id,
-    accountId,
     createdAt,
     updatedAt,
     version,
@@ -384,7 +349,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
       identical(this, other) ||
       (other is StorageData &&
           other.id == this.id &&
-          other.accountId == this.accountId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.version == this.version &&
@@ -398,7 +362,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
 
 class StorageCompanion extends UpdateCompanion<StorageData> {
   final Value<String> id;
-  final Value<String> accountId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> version;
@@ -408,7 +371,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
   final Value<int> rowid;
   const StorageCompanion({
     this.id = const Value.absent(),
-    this.accountId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
@@ -419,7 +381,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
   });
   StorageCompanion.insert({
     required String id,
-    required String accountId,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     required int version,
@@ -428,13 +389,11 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
     required Uint8List encryptedPayload,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       accountId = Value(accountId),
        version = Value(version),
        encryptedDek = Value(encryptedDek),
        encryptedPayload = Value(encryptedPayload);
   static Insertable<StorageData> custom({
     Expression<String>? id,
-    Expression<String>? accountId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? version,
@@ -445,7 +404,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (accountId != null) 'account_id': accountId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (version != null) 'version': version,
@@ -458,7 +416,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
 
   StorageCompanion copyWith({
     Value<String>? id,
-    Value<String>? accountId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? version,
@@ -469,7 +426,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
   }) {
     return StorageCompanion(
       id: id ?? this.id,
-      accountId: accountId ?? this.accountId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       version: version ?? this.version,
@@ -485,9 +441,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
-    }
-    if (accountId.present) {
-      map['account_id'] = Variable<String>(accountId.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -517,7 +470,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
   String toString() {
     return (StringBuffer('StorageCompanion(')
           ..write('id: $id, ')
-          ..write('accountId: $accountId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
@@ -544,7 +496,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $StorageCreateCompanionBuilder =
     StorageCompanion Function({
       required String id,
-      required String accountId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       required int version,
@@ -556,7 +507,6 @@ typedef $StorageCreateCompanionBuilder =
 typedef $StorageUpdateCompanionBuilder =
     StorageCompanion Function({
       Value<String> id,
-      Value<String> accountId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> version,
@@ -576,11 +526,6 @@ class $StorageFilterComposer extends Composer<_$AppDatabase, Storage> {
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get accountId => $composableBuilder(
-    column: $table.accountId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -628,11 +573,6 @@ class $StorageOrderingComposer extends Composer<_$AppDatabase, Storage> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get accountId => $composableBuilder(
-    column: $table.accountId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -674,9 +614,6 @@ class $StorageAnnotationComposer extends Composer<_$AppDatabase, Storage> {
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get accountId =>
-      $composableBuilder(column: $table.accountId, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -730,7 +667,6 @@ class $StorageTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<String> accountId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
@@ -740,7 +676,6 @@ class $StorageTableManager
                 Value<int> rowid = const Value.absent(),
               }) => StorageCompanion(
                 id: id,
-                accountId: accountId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 version: version,
@@ -752,7 +687,6 @@ class $StorageTableManager
           createCompanionCallback:
               ({
                 required String id,
-                required String accountId,
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 required int version,
@@ -762,7 +696,6 @@ class $StorageTableManager
                 Value<int> rowid = const Value.absent(),
               }) => StorageCompanion.insert(
                 id: id,
-                accountId: accountId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 version: version,

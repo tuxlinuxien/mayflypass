@@ -17,7 +17,7 @@ abstract class _API {
   // account
   Future<AccountInfo> accountInfo();
   // storage
-  Future<Storage> storageUpsert(Storage storage);
+  Future<ApiStorage> storageUpsert(ApiStorage storage);
 }
 
 class API extends _API {
@@ -141,8 +141,8 @@ class API extends _API {
   }
 
   @override
-  Future<Storage> storageUpsert(Storage input) async {
+  Future<ApiStorage> storageUpsert(ApiStorage input) async {
     final response = await postProtected('/api/storage', data: input.toJson());
-    return Storage.fromJson(response.data);
+    return ApiStorage.fromJson(response.data);
   }
 }
