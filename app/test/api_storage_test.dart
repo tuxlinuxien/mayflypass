@@ -13,8 +13,6 @@ void main() {
       );
       final response = await API().storageUpsert(input);
       expect(response.id, input.id);
-      expect(response.createdAt, input.createdAt);
-      expect(response.updatedAt, input.updatedAt);
       expect(response.version, input.version);
       expect(response.deleted, input.deleted);
       expect(response.encryptedDek, input.encryptedDek);

@@ -186,8 +186,6 @@ class Account {
 class ApiStorage {
   @UuidConverter()
   final UuidValue id;
-  DateTime createdAt;
-  DateTime updatedAt;
   int version;
   bool deleted;
   @JsonKey(name: 'encrypted_dek')
@@ -199,8 +197,6 @@ class ApiStorage {
 
   ApiStorage({
     required this.id,
-    required this.createdAt,
-    required this.updatedAt,
     required this.version,
     required this.deleted,
     required this.encryptedDek,
@@ -218,8 +214,6 @@ class ApiStorage {
   }) {
     return ApiStorage(
       id: UuidValue.fromString(UuidV7().generate()),
-      createdAt: DateTime.now().toUtc(),
-      updatedAt: DateTime.now().toUtc(),
       version: DateTime.now().millisecondsSinceEpoch,
       deleted: false,
       encryptedDek: encryptedDek,

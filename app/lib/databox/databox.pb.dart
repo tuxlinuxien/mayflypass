@@ -12,6 +12,7 @@
 
 import 'dart:core' as $core;
 
+import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'databox.pbenum.dart';
@@ -29,6 +30,7 @@ class Totp extends $pb.GeneratedMessage {
     $core.int? digits,
     $core.int? period,
     $core.bool? favorite,
+    $fixnum.Int64? createdAtMs,
   }) {
     final result = create();
     if (issuer != null) result.issuer = issuer;
@@ -38,6 +40,7 @@ class Totp extends $pb.GeneratedMessage {
     if (digits != null) result.digits = digits;
     if (period != null) result.period = period;
     if (favorite != null) result.favorite = favorite;
+    if (createdAtMs != null) result.createdAtMs = createdAtMs;
     return result;
   }
 
@@ -61,6 +64,7 @@ class Totp extends $pb.GeneratedMessage {
     ..aI(5, _omitFieldNames ? '' : 'digits', defaultOrMaker: 6)
     ..aI(6, _omitFieldNames ? '' : 'period', defaultOrMaker: 30)
     ..aOB(7, _omitFieldNames ? '' : 'favorite')
+    ..aInt64(8, _omitFieldNames ? '' : 'createdAtMs')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -143,6 +147,15 @@ class Totp extends $pb.GeneratedMessage {
   $core.bool hasFavorite() => $_has(6);
   @$pb.TagNumber(7)
   void clearFavorite() => $_clearField(7);
+
+  @$pb.TagNumber(8)
+  $fixnum.Int64 get createdAtMs => $_getI64(7);
+  @$pb.TagNumber(8)
+  set createdAtMs($fixnum.Int64 value) => $_setInt64(7, value);
+  @$pb.TagNumber(8)
+  $core.bool hasCreatedAtMs() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearCreatedAtMs() => $_clearField(8);
 }
 
 enum DataBox_Box { totp, notSet }

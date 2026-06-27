@@ -1,3 +1,4 @@
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/databox/databox.dart';
 
@@ -11,6 +12,7 @@ void main() {
       expect(totp.algorithm, TotpAlgorithm.SHA1);
       expect(totp.digits, 6);
       expect(totp.period, 30);
+      expect(totp.createdAtMs.toInt(), 0);
     });
 
     test('totp values', () async {
@@ -21,6 +23,7 @@ void main() {
         algorithm: TotpAlgorithm.SHA256,
         digits: 8,
         period: 60,
+        createdAtMs: Int64(DateTime.now().millisecondsSinceEpoch),
       );
 
       final newTotp = Totp.fromBuffer(totp.writeToBuffer());
@@ -30,6 +33,7 @@ void main() {
       expect(totp.algorithm, newTotp.algorithm);
       expect(totp.digits, newTotp.digits);
       expect(totp.period, newTotp.period);
+      expect(totp.createdAtMs.toInt(), newTotp.createdAtMs.toInt());
     });
   });
 }

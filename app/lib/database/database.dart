@@ -2,10 +2,11 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:mayflypass/api/models.dart';
 import 'package:uuid/uuid.dart';
+import 'local_storage.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(include: {'storage.drift'})
+@DriftDatabase(tables: [LocalStorage])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
@@ -20,70 +21,54 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {},
   );
 
-  Future<ApiStorage?> getStorage(UuidValue value) async {
-    final row = await managers.storage
+  Future<LocalStorageData?> getStorage(UuidValue value) async {
+    return await managers.localStorage
         .filter((t) => t.id.equals(value.uuid))
         .getSingleOrNull();
-    if (row == null) return null;
-    return ApiStorage(
-      id: UuidValue.fromString(row.id),
-      createdAt: row.createdAt.toUtc(),
-      updatedAt: row.updatedAt.toUtc(),
-      version: row.version,
-      deleted: row.deleted,
-      encryptedDek: row.encryptedDek,
-      encryptedPayload: row.encryptedPayload,
-    );
   }
 
-  Future<List<ApiStorage>> selectStorage() async {
-    final rows = await managers.storage.get();
-    return rows.map((row) {
-      return ApiStorage(
-        id: UuidValue.fromString(row.id),
-        createdAt: row.createdAt.toUtc(),
-        updatedAt: row.updatedAt.toUtc(),
-        version: row.version,
-        deleted: row.deleted,
-        encryptedDek: row.encryptedDek,
-        encryptedPayload: row.encryptedPayload,
-      );
-    }).toList();
+  Future<List<LocalStorageData>> selectStorage() async {
+    return await managers.localStorage.get();
   }
 
   Future<int> countStorage() async {
-    return managers.storage.count();
+    return managers.localStorage.count();
   }
 
-  Future<void> upsertStorage(ApiStorage s) async {
-    await customInsert(
-      '''
-      INSERT INTO storage
-        (id, created_at, updated_at, version, deleted, encrypted_dek, encrypted_payload)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT (id) DO UPDATE SET
-        updated_at        = excluded.updated_at,
-        version           = excluded.version,
-        deleted           = excluded.deleted,
-        encrypted_dek     = excluded.encrypted_dek,
-        encrypted_payload = excluded.encrypted_payload
-      WHERE
-        version < excluded.version
-      ''',
-      variables: [
-        Variable.withString(s.id.uuid),
-        Variable.withInt(s.createdAt.millisecondsSinceEpoch),
-        Variable.withInt(s.updatedAt.millisecondsSinceEpoch),
-        Variable.withInt(s.version),
-        Variable.withBool(s.deleted),
-        Variable.withBlob(s.encryptedDek),
-        Variable.withBlob(s.encryptedPayload),
-      ],
-      updates: {storage},
+  Future<void> upsertStorage(ApiStorage value) async {
+    final input = localStorageDataFromApiStorage(value);
+    await into(localStorage).insert(
+      LocalStorageCompanion.insert(
+        id: input.id,
+        version: input.version,
+        deleted: input.deleted,
+        encryptedDek: input.encryptedDek,
+        encryptedPayload: input.encryptedPayload,
+      ),
+      onConflict: DoUpdate(
+        (_) => LocalStorageCompanion(
+          version: Value(input.version),
+          deleted: Value(input.deleted),
+          encryptedDek: Value(input.encryptedDek),
+          encryptedPayload: Value(input.encryptedPayload),
+        ),
+        where: (old) =>
+            localStorage.version.isSmallerThan(Variable(input.version)),
+      ),
     );
   }
 }
 
 QueryExecutor _openConnection() {
   return driftDatabase(name: 'mayflypass');
+}
+
+LocalStorageData localStorageDataFromApiStorage(ApiStorage api) {
+  return LocalStorageData(
+    id: Uuid.unparse(api.id.toBytes()),
+    deleted: api.deleted,
+    version: api.version,
+    encryptedDek: api.encryptedDek,
+    encryptedPayload: api.encryptedPayload,
+  );
 }

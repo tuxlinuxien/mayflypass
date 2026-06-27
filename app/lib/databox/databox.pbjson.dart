@@ -47,6 +47,7 @@ const Totp$json = {
     {'1': 'digits', '3': 5, '4': 1, '5': 5, '7': '6', '10': 'digits'},
     {'1': 'period', '3': 6, '4': 1, '5': 5, '7': '30', '10': 'period'},
     {'1': 'favorite', '3': 7, '4': 1, '5': 8, '10': 'favorite'},
+    {'1': 'created_at_ms', '3': 8, '4': 1, '5': 3, '10': 'createdAtMs'},
   ],
 };
 
@@ -55,7 +56,8 @@ final $typed_data.Uint8List totpDescriptor = $convert.base64Decode(
     'CgRUb3RwEhYKBmlzc3VlchgBIAEoCVIGaXNzdWVyEhgKB2FjY291bnQYAiABKAlSB2FjY291bn'
     'QSFgoGc2VjcmV0GAMgASgJUgZzZWNyZXQSLAoJYWxnb3JpdGhtGAQgASgOMg4uVG90cEFsZ29y'
     'aXRobVIJYWxnb3JpdGhtEhkKBmRpZ2l0cxgFIAEoBToBNlIGZGlnaXRzEhoKBnBlcmlvZBgGIA'
-    'EoBToCMzBSBnBlcmlvZBIaCghmYXZvcml0ZRgHIAEoCFIIZmF2b3JpdGU=');
+    'EoBToCMzBSBnBlcmlvZBIaCghmYXZvcml0ZRgHIAEoCFIIZmF2b3JpdGUSIgoNY3JlYXRlZF9h'
+    'dF9tcxgIIAEoA1ILY3JlYXRlZEF0TXM=');
 
 @$core.Deprecated('Use dataBoxDescriptor instead')
 const DataBox$json = {

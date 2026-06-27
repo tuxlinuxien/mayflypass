@@ -3,70 +3,50 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class Storage extends Table with TableInfo<Storage, StorageData> {
+class $LocalStorageTable extends LocalStorage
+    with TableInfo<$LocalStorageTable, LocalStorageData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Storage(this.attachedDatabase, [this._alias]);
+  $LocalStorageTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
-    defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
-    defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
   );
+  @override
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
   );
   static const VerificationMeta _deletedMeta = const VerificationMeta(
     'deleted',
   );
+  @override
   late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
     'deleted',
     aliasedName,
     false,
     type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT FALSE',
-    defaultValue: const CustomExpression('FALSE'),
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted" IN (0, 1))',
+    ),
   );
   static const VerificationMeta _encryptedDekMeta = const VerificationMeta(
     'encryptedDek',
   );
+  @override
   late final GeneratedColumn<Uint8List> encryptedDek =
       GeneratedColumn<Uint8List>(
         'encrypted_dek',
@@ -74,11 +54,11 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
         false,
         type: DriftSqlType.blob,
         requiredDuringInsert: true,
-        $customConstraints: 'NOT NULL',
       );
   static const VerificationMeta _encryptedPayloadMeta = const VerificationMeta(
     'encryptedPayload',
   );
+  @override
   late final GeneratedColumn<Uint8List> encryptedPayload =
       GeneratedColumn<Uint8List>(
         'encrypted_payload',
@@ -86,13 +66,10 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
         false,
         type: DriftSqlType.blob,
         requiredDuringInsert: true,
-        $customConstraints: 'NOT NULL',
       );
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    createdAt,
-    updatedAt,
     version,
     deleted,
     encryptedDek,
@@ -102,10 +79,10 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'storage';
+  static const String $name = 'local_storage';
   @override
   VerificationContext validateIntegrity(
-    Insertable<StorageData> instance, {
+    Insertable<LocalStorageData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -114,18 +91,6 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
     }
     if (data.containsKey('version')) {
       context.handle(
@@ -140,6 +105,8 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
         _deletedMeta,
         deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
       );
+    } else if (isInserting) {
+      context.missing(_deletedMeta);
     }
     if (data.containsKey('encrypted_dek')) {
       context.handle(
@@ -169,20 +136,12 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  StorageData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  LocalStorageData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return StorageData(
+    return LocalStorageData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
       )!,
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -204,28 +163,20 @@ class Storage extends Table with TableInfo<Storage, StorageData> {
   }
 
   @override
-  Storage createAlias(String alias) {
-    return Storage(attachedDatabase, alias);
+  $LocalStorageTable createAlias(String alias) {
+    return $LocalStorageTable(attachedDatabase, alias);
   }
-
-  @override
-  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
-  @override
-  bool get dontWriteConstraints => true;
 }
 
-class StorageData extends DataClass implements Insertable<StorageData> {
+class LocalStorageData extends DataClass
+    implements Insertable<LocalStorageData> {
   final String id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final int version;
   final bool deleted;
   final Uint8List encryptedDek;
   final Uint8List encryptedPayload;
-  const StorageData({
+  const LocalStorageData({
     required this.id,
-    required this.createdAt,
-    required this.updatedAt,
     required this.version,
     required this.deleted,
     required this.encryptedDek,
@@ -235,8 +186,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['version'] = Variable<int>(version);
     map['deleted'] = Variable<bool>(deleted);
     map['encrypted_dek'] = Variable<Uint8List>(encryptedDek);
@@ -244,11 +193,9 @@ class StorageData extends DataClass implements Insertable<StorageData> {
     return map;
   }
 
-  StorageCompanion toCompanion(bool nullToAbsent) {
-    return StorageCompanion(
+  LocalStorageCompanion toCompanion(bool nullToAbsent) {
+    return LocalStorageCompanion(
       id: Value(id),
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       version: Value(version),
       deleted: Value(deleted),
       encryptedDek: Value(encryptedDek),
@@ -256,20 +203,18 @@ class StorageData extends DataClass implements Insertable<StorageData> {
     );
   }
 
-  factory StorageData.fromJson(
+  factory LocalStorageData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return StorageData(
+    return LocalStorageData(
       id: serializer.fromJson<String>(json['id']),
-      createdAt: serializer.fromJson<DateTime>(json['created_at']),
-      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
       version: serializer.fromJson<int>(json['version']),
       deleted: serializer.fromJson<bool>(json['deleted']),
-      encryptedDek: serializer.fromJson<Uint8List>(json['encrypted_dek']),
+      encryptedDek: serializer.fromJson<Uint8List>(json['encryptedDek']),
       encryptedPayload: serializer.fromJson<Uint8List>(
-        json['encrypted_payload'],
+        json['encryptedPayload'],
       ),
     );
   }
@@ -278,37 +223,29 @@ class StorageData extends DataClass implements Insertable<StorageData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'created_at': serializer.toJson<DateTime>(createdAt),
-      'updated_at': serializer.toJson<DateTime>(updatedAt),
       'version': serializer.toJson<int>(version),
       'deleted': serializer.toJson<bool>(deleted),
-      'encrypted_dek': serializer.toJson<Uint8List>(encryptedDek),
-      'encrypted_payload': serializer.toJson<Uint8List>(encryptedPayload),
+      'encryptedDek': serializer.toJson<Uint8List>(encryptedDek),
+      'encryptedPayload': serializer.toJson<Uint8List>(encryptedPayload),
     };
   }
 
-  StorageData copyWith({
+  LocalStorageData copyWith({
     String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
     int? version,
     bool? deleted,
     Uint8List? encryptedDek,
     Uint8List? encryptedPayload,
-  }) => StorageData(
+  }) => LocalStorageData(
     id: id ?? this.id,
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     version: version ?? this.version,
     deleted: deleted ?? this.deleted,
     encryptedDek: encryptedDek ?? this.encryptedDek,
     encryptedPayload: encryptedPayload ?? this.encryptedPayload,
   );
-  StorageData copyWithCompanion(StorageCompanion data) {
-    return StorageData(
+  LocalStorageData copyWithCompanion(LocalStorageCompanion data) {
+    return LocalStorageData(
       id: data.id.present ? data.id.value : this.id,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       version: data.version.present ? data.version.value : this.version,
       deleted: data.deleted.present ? data.deleted.value : this.deleted,
       encryptedDek: data.encryptedDek.present
@@ -322,10 +259,8 @@ class StorageData extends DataClass implements Insertable<StorageData> {
 
   @override
   String toString() {
-    return (StringBuffer('StorageData(')
+    return (StringBuffer('LocalStorageData(')
           ..write('id: $id, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
           ..write('deleted: $deleted, ')
           ..write('encryptedDek: $encryptedDek, ')
@@ -337,8 +272,6 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   @override
   int get hashCode => Object.hash(
     id,
-    createdAt,
-    updatedAt,
     version,
     deleted,
     $driftBlobEquality.hash(encryptedDek),
@@ -347,10 +280,8 @@ class StorageData extends DataClass implements Insertable<StorageData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is StorageData &&
+      (other is LocalStorageData &&
           other.id == this.id &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.version == this.version &&
           other.deleted == this.deleted &&
           $driftBlobEquality.equals(other.encryptedDek, this.encryptedDek) &&
@@ -360,42 +291,35 @@ class StorageData extends DataClass implements Insertable<StorageData> {
           ));
 }
 
-class StorageCompanion extends UpdateCompanion<StorageData> {
+class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
   final Value<String> id;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<int> version;
   final Value<bool> deleted;
   final Value<Uint8List> encryptedDek;
   final Value<Uint8List> encryptedPayload;
   final Value<int> rowid;
-  const StorageCompanion({
+  const LocalStorageCompanion({
     this.id = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deleted = const Value.absent(),
     this.encryptedDek = const Value.absent(),
     this.encryptedPayload = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  StorageCompanion.insert({
+  LocalStorageCompanion.insert({
     required String id,
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required int version,
-    this.deleted = const Value.absent(),
+    required bool deleted,
     required Uint8List encryptedDek,
     required Uint8List encryptedPayload,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        version = Value(version),
+       deleted = Value(deleted),
        encryptedDek = Value(encryptedDek),
        encryptedPayload = Value(encryptedPayload);
-  static Insertable<StorageData> custom({
+  static Insertable<LocalStorageData> custom({
     Expression<String>? id,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<int>? version,
     Expression<bool>? deleted,
     Expression<Uint8List>? encryptedDek,
@@ -404,8 +328,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (version != null) 'version': version,
       if (deleted != null) 'deleted': deleted,
       if (encryptedDek != null) 'encrypted_dek': encryptedDek,
@@ -414,20 +336,16 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
     });
   }
 
-  StorageCompanion copyWith({
+  LocalStorageCompanion copyWith({
     Value<String>? id,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<int>? version,
     Value<bool>? deleted,
     Value<Uint8List>? encryptedDek,
     Value<Uint8List>? encryptedPayload,
     Value<int>? rowid,
   }) {
-    return StorageCompanion(
+    return LocalStorageCompanion(
       id: id ?? this.id,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       version: version ?? this.version,
       deleted: deleted ?? this.deleted,
       encryptedDek: encryptedDek ?? this.encryptedDek,
@@ -441,12 +359,6 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (version.present) {
       map['version'] = Variable<int>(version.value);
@@ -468,10 +380,8 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
 
   @override
   String toString() {
-    return (StringBuffer('StorageCompanion(')
+    return (StringBuffer('LocalStorageCompanion(')
           ..write('id: $id, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
           ..write('deleted: $deleted, ')
           ..write('encryptedDek: $encryptedDek, ')
@@ -485,30 +395,26 @@ class StorageCompanion extends UpdateCompanion<StorageData> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final Storage storage = Storage(this);
+  late final $LocalStorageTable localStorage = $LocalStorageTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [storage];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [localStorage];
 }
 
-typedef $StorageCreateCompanionBuilder =
-    StorageCompanion Function({
+typedef $$LocalStorageTableCreateCompanionBuilder =
+    LocalStorageCompanion Function({
       required String id,
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required int version,
-      Value<bool> deleted,
+      required bool deleted,
       required Uint8List encryptedDek,
       required Uint8List encryptedPayload,
       Value<int> rowid,
     });
-typedef $StorageUpdateCompanionBuilder =
-    StorageCompanion Function({
+typedef $$LocalStorageTableUpdateCompanionBuilder =
+    LocalStorageCompanion Function({
       Value<String> id,
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<int> version,
       Value<bool> deleted,
       Value<Uint8List> encryptedDek,
@@ -516,8 +422,9 @@ typedef $StorageUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $StorageFilterComposer extends Composer<_$AppDatabase, Storage> {
-  $StorageFilterComposer({
+class $$LocalStorageTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalStorageTable> {
+  $$LocalStorageTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -526,16 +433,6 @@ class $StorageFilterComposer extends Composer<_$AppDatabase, Storage> {
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -560,8 +457,9 @@ class $StorageFilterComposer extends Composer<_$AppDatabase, Storage> {
   );
 }
 
-class $StorageOrderingComposer extends Composer<_$AppDatabase, Storage> {
-  $StorageOrderingComposer({
+class $$LocalStorageTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalStorageTable> {
+  $$LocalStorageTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -570,16 +468,6 @@ class $StorageOrderingComposer extends Composer<_$AppDatabase, Storage> {
   });
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -604,8 +492,9 @@ class $StorageOrderingComposer extends Composer<_$AppDatabase, Storage> {
   );
 }
 
-class $StorageAnnotationComposer extends Composer<_$AppDatabase, Storage> {
-  $StorageAnnotationComposer({
+class $$LocalStorageTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalStorageTable> {
+  $$LocalStorageTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -614,12 +503,6 @@ class $StorageAnnotationComposer extends Composer<_$AppDatabase, Storage> {
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   GeneratedColumn<int> get version =>
       $composableBuilder(column: $table.version, builder: (column) => column);
@@ -638,46 +521,45 @@ class $StorageAnnotationComposer extends Composer<_$AppDatabase, Storage> {
   );
 }
 
-class $StorageTableManager
+class $$LocalStorageTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          Storage,
-          StorageData,
-          $StorageFilterComposer,
-          $StorageOrderingComposer,
-          $StorageAnnotationComposer,
-          $StorageCreateCompanionBuilder,
-          $StorageUpdateCompanionBuilder,
-          (StorageData, BaseReferences<_$AppDatabase, Storage, StorageData>),
-          StorageData,
+          $LocalStorageTable,
+          LocalStorageData,
+          $$LocalStorageTableFilterComposer,
+          $$LocalStorageTableOrderingComposer,
+          $$LocalStorageTableAnnotationComposer,
+          $$LocalStorageTableCreateCompanionBuilder,
+          $$LocalStorageTableUpdateCompanionBuilder,
+          (
+            LocalStorageData,
+            BaseReferences<_$AppDatabase, $LocalStorageTable, LocalStorageData>,
+          ),
+          LocalStorageData,
           PrefetchHooks Function()
         > {
-  $StorageTableManager(_$AppDatabase db, Storage table)
+  $$LocalStorageTableTableManager(_$AppDatabase db, $LocalStorageTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $StorageFilterComposer($db: db, $table: table),
+              $$LocalStorageTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $StorageOrderingComposer($db: db, $table: table),
+              $$LocalStorageTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $StorageAnnotationComposer($db: db, $table: table),
+              $$LocalStorageTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<bool> deleted = const Value.absent(),
                 Value<Uint8List> encryptedDek = const Value.absent(),
                 Value<Uint8List> encryptedPayload = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => StorageCompanion(
+              }) => LocalStorageCompanion(
                 id: id,
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 version: version,
                 deleted: deleted,
                 encryptedDek: encryptedDek,
@@ -687,17 +569,13 @@ class $StorageTableManager
           createCompanionCallback:
               ({
                 required String id,
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required int version,
-                Value<bool> deleted = const Value.absent(),
+                required bool deleted,
                 required Uint8List encryptedDek,
                 required Uint8List encryptedPayload,
                 Value<int> rowid = const Value.absent(),
-              }) => StorageCompanion.insert(
+              }) => LocalStorageCompanion.insert(
                 id: id,
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 version: version,
                 deleted: deleted,
                 encryptedDek: encryptedDek,
@@ -712,23 +590,27 @@ class $StorageTableManager
       );
 }
 
-typedef $StorageProcessedTableManager =
+typedef $$LocalStorageTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      Storage,
-      StorageData,
-      $StorageFilterComposer,
-      $StorageOrderingComposer,
-      $StorageAnnotationComposer,
-      $StorageCreateCompanionBuilder,
-      $StorageUpdateCompanionBuilder,
-      (StorageData, BaseReferences<_$AppDatabase, Storage, StorageData>),
-      StorageData,
+      $LocalStorageTable,
+      LocalStorageData,
+      $$LocalStorageTableFilterComposer,
+      $$LocalStorageTableOrderingComposer,
+      $$LocalStorageTableAnnotationComposer,
+      $$LocalStorageTableCreateCompanionBuilder,
+      $$LocalStorageTableUpdateCompanionBuilder,
+      (
+        LocalStorageData,
+        BaseReferences<_$AppDatabase, $LocalStorageTable, LocalStorageData>,
+      ),
+      LocalStorageData,
       PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $StorageTableManager get storage => $StorageTableManager(_db, _db.storage);
+  $$LocalStorageTableTableManager get localStorage =>
+      $$LocalStorageTableTableManager(_db, _db.localStorage);
 }
