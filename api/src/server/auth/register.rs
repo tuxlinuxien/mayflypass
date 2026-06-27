@@ -1,7 +1,7 @@
 use crate::database;
 use crate::server::error::{ApiError, FieldError};
+use crate::server::json::Json;
 use crate::server::state::AppState;
-use axum::Json;
 use axum::extract::State;
 use serde_with::serde_as;
 
@@ -47,6 +47,7 @@ impl RegisterInput {
     }
 }
 
+#[axum::debug_handler]
 pub async fn register(
     State(state): State<AppState>,
     Json(mut payload): Json<RegisterInput>,

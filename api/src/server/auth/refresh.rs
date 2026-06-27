@@ -1,9 +1,9 @@
 use crate::database;
 use crate::server::error::ApiError;
+use crate::server::json::Json;
 use crate::server::lib::cookies::RefreshTokenCookie;
 use crate::server::lib::token;
 use crate::server::state::AppState;
-use axum::Json;
 use axum::extract::State;
 use axum::http;
 use axum::response::IntoResponse;

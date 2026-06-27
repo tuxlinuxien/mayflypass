@@ -1,11 +1,10 @@
 use crate::database;
 use crate::server::error::ApiError;
 use crate::server::error::FieldError;
-use crate::server::extractor::JsonInput;
+use crate::server::json::Json;
 use crate::server::lib::cookies::RefreshTokenCookie;
 use crate::server::lib::token;
 use crate::server::state::AppState;
-use axum::Json;
 use axum::extract::State;
 use axum::http;
 use axum::response::IntoResponse;
@@ -48,7 +47,7 @@ pub struct LoginReponse {
 
 pub async fn login(
     State(state): State<AppState>,
-    JsonInput(mut payload): JsonInput<LoginInput>,
+    Json(mut payload): Json<LoginInput>,
 ) -> Result<Response, ApiError> {
     payload.validate()?;
 

@@ -12,7 +12,7 @@ use crate::database::challenge::DIFFICULTY;
 mod account;
 mod auth;
 mod error;
-mod extractor;
+mod json;
 mod lib;
 mod middleware;
 mod state;

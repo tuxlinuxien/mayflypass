@@ -1,7 +1,7 @@
 use super::refresh::extract_refresh_token_from_cookie;
 use crate::database;
 use crate::server::error::ApiError;
-use crate::server::extractor::JsonInput;
+use crate::server::json::Json;
 use crate::server::state::AppState;
 use axum::extract::State;
 use axum::http;
@@ -17,7 +17,7 @@ pub struct LogoutInput {
 pub async fn logout(
     State(state): State<AppState>,
     headers: http::HeaderMap,
-    payload: Option<JsonInput<LogoutInput>>,
+    payload: Option<Json<LogoutInput>>,
 ) -> Result<Response, ApiError> {
     if let Some(token) = extract_refresh_token_from_cookie(&headers) {
         database::token::delete(&state.pool, &token).await?;

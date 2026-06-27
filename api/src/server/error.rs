@@ -1,10 +1,11 @@
 use crate::database;
+use crate::server::json::Json;
 use axum::{
-    Json, http,
+    http,
     response::{IntoResponse, Response},
 };
 use serde::{Serialize, ser::SerializeMap};
-use serde_json::{Value, json};
+use serde_json::json;
 use thiserror::Error;
 use validator::ValidateEmail;
 
@@ -248,9 +249,11 @@ pub enum ApiError {
     #[error("unauthorized")]
     UnauthorizedError,
     #[error("unprocessable content: {0}")]
-    UnprocessableContent(Value),
+    UnprocessableContent(anyhow::Error),
     #[error("bad request field errors")]
     BadRequestFieldErrors(Vec<FieldError>),
+    #[error("bad request: {0}")]
+    BadRequest(anyhow::Error),
     #[error("not found")]
     NotFound,
 }
@@ -282,9 +285,14 @@ impl IntoResponse for ApiError {
             ApiError::BadRequestFieldErrors(e) => {
                 (http::StatusCode::BAD_REQUEST, Json(json!({"errors": e}))).into_response()
             }
+            ApiError::BadRequest(_) => (
+                http::StatusCode::BAD_REQUEST,
+                Json(json!({"error": "bad request"})),
+            )
+                .into_response(),
             ApiError::UnprocessableContent(_) => (
                 http::StatusCode::UNPROCESSABLE_ENTITY,
-                Json(json!({"error": "inavlid payload"})),
+                Json(json!({"error": "invalid payload"})),
             )
                 .into_response(),
             ApiError::NotFound => (
