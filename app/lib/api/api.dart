@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
-
 import 'error_interceptor.dart';
 import 'logger_interceptor.dart';
 import 'models.dart';
