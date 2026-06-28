@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:cryptography_plus/cryptography_plus.dart';
+import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/secure/constants.dart';
 
 Future<Uint8List> encrypt(SecretKey key, Uint8List clearText) async {
@@ -26,4 +27,28 @@ Future<Uint8List> decrypt(SecretKey key, Uint8List encryptedText) async {
 
 SecretKey newDataEncryptionKey() {
   return SecretKeyData.random(length: secretKeyLength);
+}
+
+Future<DataBox> decryptDataBox(
+  SecretKey kek,
+  Uint8List encryptedDek,
+  Uint8List encryptedPayload,
+) async {
+  final dekBytes = await decrypt(kek, encryptedDek);
+  final dek = SecretKey(dekBytes.toList());
+  final payload = await decrypt(dek, encryptedPayload);
+  return DataBox.fromBuffer(payload);
+}
+
+Future<(Uint8List, Uint8List)> encryptDataBox(
+  SecretKey kek,
+  DataBox databox,
+) async {
+  final dek = newDataEncryptionKey();
+  final encryptedDek = await encrypt(
+    kek,
+    Uint8List.fromList(await dek.extractBytes()),
+  );
+  final encryptedPayload = await encrypt(dek, databox.writeToBuffer());
+  return (encryptedDek, encryptedPayload);
 }

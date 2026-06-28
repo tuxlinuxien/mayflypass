@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:cryptography_plus/cryptography_plus.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/secure/constants.dart';
 import 'package:mayflypass/secure/secure.dart';
 
@@ -53,5 +55,23 @@ void main() {
     } catch (e) {
       expect(true, e is SecretBoxAuthenticationError);
     }
+  });
+
+  test('encrypt/decrypt databox', () async {
+    final totp = Totp(
+      issuer: 'mayflypass.com',
+      account: 'yoann@mail.com',
+      secret: '0123456789ABCDEF',
+      algorithm: TotpAlgorithm.SHA256,
+      digits: 8,
+      period: 60,
+      createdAtMs: Int64(DateTime.now().millisecondsSinceEpoch),
+    );
+    final databox = DataBox(totp: totp);
+    final masterKey = await deriveMasterPassword('test@mail.com', '12345678');
+    final kek = await deriveKek(masterKey);
+    final (encDek, encPld) = await encryptDataBox(kek, databox);
+    final decDatabox = await decryptDataBox(kek, encDek, encPld);
+    expect(decDatabox.writeToBuffer(), databox.writeToBuffer());
   });
 }
