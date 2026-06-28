@@ -34,4 +34,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerNewAccount => 'Register new account';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get emailInvalid => 'Invalid email address';
+
+  @override
+  String passwordTooShort(int min) {
+    return 'Password must be at least $min characters';
+  }
+
+  @override
+  String get passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get accountCreatedSuccessfully => 'Account created successfully';
+
+  @override
+  String get accountAlreadyExists => 'An account with this email already exists';
 }

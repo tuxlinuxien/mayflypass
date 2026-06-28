@@ -18,5 +18,21 @@
   "or": "or",
   "@or": {},
   "registerNewAccount": "Register new account",
-  "@registerNewAccount": {}
+  "@registerNewAccount": {},
+  "fieldRequired": "This field is required",
+  "@fieldRequired": {},
+  "emailInvalid": "Invalid email address",
+  "@emailInvalid": {},
+  "passwordTooShort": "Password must be at least {min} characters",
+  "@passwordTooShort": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "passwordMismatch": "Passwords do not match",
+  "@passwordMismatch": {},
+  "accountCreatedSuccessfully": "Account created successfully",
+  "@accountCreatedSuccessfully": {},
+  "accountAlreadyExists": "An account with this email already exists",
+  "@accountAlreadyExists": {}
 }
