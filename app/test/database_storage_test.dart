@@ -47,7 +47,7 @@ void main() {
       expect(row!.version, 2);
       expect(row.encryptedDek.length, 1);
       expect(row.encryptedPayload.length, 1);
-      // update the version with lower value so the stored data shouldn't chage
+      // update the version with lower value so the stored data shouldn't change
       input.version = 1;
       input.encryptedDek = Uint8List(3);
       input.encryptedPayload = Uint8List(3);
