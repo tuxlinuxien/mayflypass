@@ -93,17 +93,59 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
+  /// No description provided for @appName.
+  ///
+  /// In en, this message translates to:
+  /// **'Mayfly Pass'**
+  String get appName;
+
   /// No description provided for @email.
   ///
   /// In en, this message translates to:
   /// **'E-Mail'**
   String get email;
 
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @loginToAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to your account'**
+  String get loginToAccount;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
   /// No description provided for @masterPassword.
   ///
   /// In en, this message translates to:
   /// **'Master Password'**
   String get masterPassword;
+
+  /// No description provided for @confirmMasterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Master Password'**
+  String get confirmMasterPassword;
+
+  /// No description provided for @or.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get or;
+
+  /// No description provided for @registerNewAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Register new account'**
+  String get registerNewAccount;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

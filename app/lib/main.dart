@@ -3,10 +3,10 @@ import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:mayflypass/l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  initRouter(gloablAuth);
   runApp(const MyApp());
 }
 
@@ -18,8 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final _router = createRouter(gloablAuth);
-
   @override
   void initState() {
     super.initState();
@@ -39,6 +37,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp.router(
         title: 'Mayfly Pass',
         localizationsDelegates: [
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
@@ -46,7 +45,7 @@ class _MyAppState extends State<MyApp> {
         supportedLocales: [Locale('en')],
         theme: AppTheme.dark,
         darkTheme: AppTheme.dark,
-        routerConfig: _router,
+        routerConfig: router,
       ),
     );
   }

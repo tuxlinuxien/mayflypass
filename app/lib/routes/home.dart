@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mayfly Pass'),
+        title: Text(AppLocalizations.of(context)!.appName),
         actions: [
           IconButton(
             icon: const Icon(Icons.lock_outline),

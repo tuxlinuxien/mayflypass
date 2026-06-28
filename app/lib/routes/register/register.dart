@@ -1,22 +1,25 @@
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscure = true;
+  final _confirmController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
@@ -40,30 +43,48 @@ class _LoginPageState extends State<LoginPage> {
             Spacer16,
             TextField(
               controller: _passwordController,
-              obscureText: _obscure,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.masterPassword,
                 border: const OutlineInputBorder(),
                 prefixIcon: Icon(Icons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscure ? Icons.visibility_off : Icons.visibility,
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
                   ),
-                  onPressed: () => setState(() => _obscure = !_obscure),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                ),
+              ),
+            ),
+            Spacer16,
+            TextField(
+              controller: _confirmController,
+              obscureText: _obscureConfirm,
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.confirmMasterPassword,
+                border: const OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
                 ),
               ),
             ),
             Spacer16,
             FilledButton(
-              onPressed: () => context.go('/home'),
-              child: Text(AppLocalizations.of(context)!.login),
+              onPressed: () {},
+              child: Text(AppLocalizations.of(context)!.register),
             ),
             Spacer32,
             const Or(),
             Spacer32,
             TextButton(
-              onPressed: () => context.go('/register'),
-              child: Text(AppLocalizations.of(context)!.registerNewAccount),
+              onPressed: () => context.go('/login'),
+              child: Text(AppLocalizations.of(context)!.loginToAccount),
             ),
           ],
         ),

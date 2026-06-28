@@ -5,7 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/routes/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
+import 'package:mayflypass/routes/register/register.dart';
 import 'package:mayflypass/routes/splash.dart';
+
+late final GoRouter router;
+
+void initRouter(AuthCubit authCubit) {
+  router = createRouter(authCubit);
+}
 
 GoRouter createRouter(AuthCubit authCubit) {
   return GoRouter(
@@ -17,7 +24,7 @@ GoRouter createRouter(AuthCubit authCubit) {
         case AuthStatus.loading:
           return loc == '/splash' ? null : '/splash';
         case AuthStatus.unauthenticated:
-          return loc == '/login' ? null : '/login';
+          return ['/login', '/register'].contains(loc) ? null : '/login';
         case AuthStatus.authenticated:
           return loc == '/home' ? null : '/home';
       }
@@ -25,6 +32,7 @@ GoRouter createRouter(AuthCubit authCubit) {
     routes: [
       GoRoute(path: '/splash', builder: (ctx, state) => const SplashPage()),
       GoRoute(path: '/login', builder: (ctx, state) => const LoginPage()),
+      GoRoute(path: '/register', builder: (ctx, state) => const RegisterPage()),
       GoRoute(path: '/home', builder: (ctx, state) => const HomePage()),
     ],
   );

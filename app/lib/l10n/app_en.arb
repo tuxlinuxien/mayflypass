@@ -1,4 +1,22 @@
 {
+  "@@locale": "en",
+  "@@author": "Yoann Cerda <yoann.cerda@proton.me>",
+  "appName": "Mayfly Pass",
+  "@appName": {},
   "email": "E-Mail",
-  "masterPassword": "Master Password"
+  "@email": {},
+  "login": "Login",
+  "@login": {},
+  "loginToAccount": "Login to your account",
+  "@loginToAccount": {},
+  "register": "Register",
+  "@register": {},
+  "masterPassword": "Master Password",
+  "@masterPassword": {},
+  "confirmMasterPassword": "Confirm Master Password",
+  "@confirmMasterPassword": {},
+  "or": "or",
+  "@or": {},
+  "registerNewAccount": "Register new account",
+  "@registerNewAccount": {}
 }
