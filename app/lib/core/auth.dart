@@ -13,3 +13,5 @@ class AuthCubit extends Cubit<AuthStatus> {
   void login() => emit(AuthStatus.authenticated);
   void logout() => emit(AuthStatus.unauthenticated);
 }
+
+final gloablAuth = AuthCubit();

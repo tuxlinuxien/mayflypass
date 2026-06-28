@@ -3,6 +3,8 @@
 build:
 	# generate code
 	fvm dart run build_runner build
+	# generate lang
+	fvm flutter gen-l10n
 	# build proto
 	@PATH="${PWD}/.flutter/bin:${PATH}" protoc \
 		--dart_out=grpc:./lib/databox \

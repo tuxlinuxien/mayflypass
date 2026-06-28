@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mayflypass/auth/auth_cubit.dart';
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/routes/home.dart';
-import 'package:mayflypass/routes/login.dart';
+import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/splash.dart';
 
 GoRouter createRouter(AuthCubit authCubit) {
@@ -23,18 +23,9 @@ GoRouter createRouter(AuthCubit authCubit) {
       }
     },
     routes: [
-      GoRoute(
-        path: '/splash',
-        builder: (ctx, state) => const SplashPage(),
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (ctx, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (ctx, state) => const HomePage(),
-      ),
+      GoRoute(path: '/splash', builder: (ctx, state) => const SplashPage()),
+      GoRoute(path: '/login', builder: (ctx, state) => const LoginPage()),
+      GoRoute(path: '/home', builder: (ctx, state) => const HomePage()),
     ],
   );
 }

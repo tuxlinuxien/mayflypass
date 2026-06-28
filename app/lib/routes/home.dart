@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mayflypass/auth/auth_cubit.dart';
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 
 class HomePage extends StatelessWidget {
@@ -18,9 +18,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text('Vault unlocked'),
-      ),
+      body: const Center(child: Text('Vault unlocked')),
     );
   }
 }
