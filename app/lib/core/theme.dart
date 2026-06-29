@@ -34,6 +34,7 @@ abstract final class AppTheme {
     // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+    error: Colors.red,
   );
 
   // The FlexColorScheme defined dark mode ThemeData.
@@ -54,5 +55,6 @@ abstract final class AppTheme {
     // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+    error: Colors.red,
   );
 }

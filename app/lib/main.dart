@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  logger.i('[API_URL] $API_URL');
   initRouter(gloablAuth);
   runApp(const MyApp());
 }

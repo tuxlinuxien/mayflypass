@@ -34,13 +34,13 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
   }
 
   void masterPasswordChanged(String value) {
+    final confirm = state.confirmMasterPassword.isPure
+        ? ConfirmMasterPassword.pure(value)
+        : ConfirmMasterPassword.dirty(value, value: state.confirmMasterPassword.value);
     emit(
       state.copyWith(
         masterPassword: MasterPassword.dirty(value),
-        confirmMasterPassword: ConfirmMasterPassword.dirty(
-          value,
-          value: state.confirmMasterPassword.value,
-        ),
+        confirmMasterPassword: confirm,
       ),
     );
   }
@@ -112,7 +112,9 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
       return;
     } catch (e) {
       logger.e(e);
-      emit(state.copyWith(status: FormStatus.failure));
+      emit(
+        state.copyWith(status: FormStatus.failure, apiError: ApiErrorUnknown()),
+      );
       return;
     }
 
