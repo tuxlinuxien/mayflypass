@@ -91,13 +91,10 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
           challengeNonce: nonce,
         ),
       );
-    } on DioException catch (e) {
-      final apiError = e.error;
-      if (apiError is ApiErrorBadRequestWithFields) {
-        for (final error in apiError.errors) {
-          if (error.field == 'email') {
-            emit(state.copyWith(apiEmailError: error));
-          }
+    } on ApiErrorBadRequestWithFields catch (e) {
+      for (final error in e.errors) {
+        if (error.field == 'email') {
+          emit(state.copyWith(apiEmailError: error));
         }
       }
       emit(state.copyWith(status: FormStatus.failure));

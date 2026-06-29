@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
-import 'error_interceptor.dart';
 import 'logger_interceptor.dart';
 import 'models.dart';
 export 'models.dart';
@@ -27,8 +26,9 @@ class API extends _API {
       connectTimeout: Duration(seconds: 10),
       sendTimeout: Duration(seconds: 10),
       receiveTimeout: Duration(seconds: 10),
+      validateStatus: (status) => true,
     ),
-  )..interceptors.addAll([LoggerInterceptor(), ErrorInterceptor()]);
+  )..interceptors.addAll([LoggerInterceptor()]);
   static String? accessToken;
   static String? refreshToken;
 
@@ -42,8 +42,29 @@ class API extends _API {
   }) async {
     final option = Options(method: method);
     final client = customclient ?? _dio;
-    final response = await client.request(path, data: data, options: option);
-    return response;
+    try {
+      final response = await client.request(path, data: data, options: option);
+      final status = response.statusCode ?? 0;
+      if (status >= 200 && status < 400) {
+        return response;
+      }
+      throw ApiError.build(status, response.data);
+    } on ApiError catch (e) {
+      logger.e(e);
+      rethrow;
+    } on DioException catch (e) {
+      logger.e(e);
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw ApiErrorNoNetwork();
+      }
+      throw ApiErrorUnknown();
+    } catch (e) {
+      logger.e(e);
+      throw ApiErrorUnknown();
+    }
   }
 
   Future<Response<dynamic>> post(String path, {Object? data}) async {
