@@ -60,7 +60,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     prefixIcon: const Icon(Icons.mail),
                     errorText: _emailError(
                       context,
-                      state.form.email.displayError,
+                      state.email.displayError,
                       state.apiEmailError,
                     ),
                   ),
@@ -76,7 +76,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     prefixIcon: const Icon(Icons.lock),
                     errorText: _passwordError(
                       context,
-                      state.form.masterPassword.displayError,
+                      state.masterPassword.displayError,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -100,7 +100,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     prefixIcon: const Icon(Icons.lock),
                     errorText: _confirmError(
                       context,
-                      state.form.confirmMasterPassword.displayError,
+                      state.confirmMasterPassword.displayError,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(

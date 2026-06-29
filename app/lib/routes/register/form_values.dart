@@ -44,39 +44,3 @@ class ConfirmMasterPassword extends FormzInput<String, ValueError> {
     return null;
   }
 }
-
-class RegisterForm with FormzMixin {
-  final Email email;
-  final MasterPassword masterPassword;
-  final ConfirmMasterPassword confirmMasterPassword;
-
-  RegisterForm({
-    Email? email,
-    MasterPassword? masterPassword,
-    ConfirmMasterPassword? confirmMasterPassword,
-  }) : email = email ?? const Email.pure(),
-       masterPassword = masterPassword ?? const MasterPassword.pure(),
-       confirmMasterPassword =
-           confirmMasterPassword ??
-           ConfirmMasterPassword.pure(masterPassword?.value ?? '');
-
-  RegisterForm copyWith({
-    Email? email,
-    MasterPassword? masterPassword,
-    ConfirmMasterPassword? confirmMasterPassword,
-  }) {
-    return RegisterForm(
-      email: email ?? this.email,
-      masterPassword: masterPassword ?? this.masterPassword,
-      confirmMasterPassword:
-          confirmMasterPassword ?? this.confirmMasterPassword,
-    );
-  }
-
-  @override
-  List<FormzInput<dynamic, dynamic>> get inputs => [
-    email,
-    masterPassword,
-    confirmMasterPassword,
-  ];
-}
