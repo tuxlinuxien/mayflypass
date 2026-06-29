@@ -26,7 +26,9 @@
   "passwordTooShort": "Password must be at least {min} characters",
   "@passwordTooShort": {
     "placeholders": {
-      "min": { "type": "int" }
+      "min": {
+        "type": "int"
+      }
     }
   },
   "passwordMismatch": "Passwords do not match",
@@ -34,5 +36,7 @@
   "accountCreatedSuccessfully": "Account created successfully",
   "@accountCreatedSuccessfully": {},
   "accountAlreadyExists": "An account with this email already exists",
-  "@accountAlreadyExists": {}
+  "@accountAlreadyExists": {},
+  "thereWasProblem": "There was a problem while processing your request",
+  "@thereWasProblem": {}
 }

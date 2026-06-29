@@ -182,6 +182,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An account with this email already exists'**
   String get accountAlreadyExists;
+
+  /// No description provided for @thereWasProblem.
+  ///
+  /// In en, this message translates to:
+  /// **'There was a problem while processing your request'**
+  String get thereWasProblem;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,13 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/helpers/errors.dart';
 import 'package:mayflypass/secure/secure.dart';
 import 'form_values.dart';
 
@@ -23,8 +21,8 @@ abstract class RegisterFormState with _$RegisterFormState {
     @Default(ConfirmMasterPassword.pure(''))
     ConfirmMasterPassword confirmMasterPassword,
     @Default(FormStatus.initial) FormStatus status,
-    ValueError? apiError,
-    FieldError? apiEmailError,
+    ApiError? apiError,
+    EmailError? apiEmailError,
   }) = _RegisterFormState;
 }
 
@@ -66,7 +64,14 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
     ]);
     if (!isValid) return;
 
-    emit(state.copyWith(status: FormStatus.submitting, apiError: null));
+    // reset errors.
+    emit(
+      state.copyWith(
+        status: FormStatus.submitting,
+        apiError: null,
+        apiEmailError: null,
+      ),
+    );
 
     logger.i('derive auth password');
     // create auth key
@@ -94,7 +99,13 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
     } on ApiErrorBadRequestWithFields catch (e) {
       for (final error in e.errors) {
         if (error.field == 'email') {
-          emit(state.copyWith(apiEmailError: error));
+          switch (error) {
+            case FieldErrorEmailInvalid():
+              emit(state.copyWith(apiEmailError: EmailInvalidError()));
+            case FieldErrorValueDuplicated():
+              emit(state.copyWith(apiEmailError: EmailDuplicatedError()));
+            default:
+          }
         }
       }
       emit(state.copyWith(status: FormStatus.failure));

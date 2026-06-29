@@ -54,4 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountAlreadyExists => 'An account with this email already exists';
+
+  @override
+  String get thereWasProblem => 'There was a problem while processing your request';
 }

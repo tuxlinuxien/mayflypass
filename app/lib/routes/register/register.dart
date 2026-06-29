@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/helpers/errors.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/register/form_cubit.dart';
+import 'package:mayflypass/routes/register/form_values.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -33,12 +33,26 @@ class _RegisterViewState extends State<_RegisterView> {
   Widget build(BuildContext context) {
     return BlocConsumer<RegisterFormCubit, RegisterFormState>(
       listener: (context, state) {
-        if (state.status == FormStatus.success) {
-          final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.accountCreatedSuccessfully)),
-          );
-          router.go('/login');
+        final l10n = AppLocalizations.of(context)!;
+        switch (state.status) {
+          case FormStatus.success:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.accountCreatedSuccessfully),
+                backgroundColor: Colors.green,
+              ),
+            );
+            router.go('/login');
+          case FormStatus.failure:
+            if (state.apiError == null) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.thereWasProblem),
+                backgroundColor: Colors.red,
+              ),
+            );
+          default:
+          // do nothing
         }
       },
       builder: (context, state) {
@@ -142,40 +156,38 @@ class _RegisterViewState extends State<_RegisterView> {
 
   String? _emailError(
     BuildContext context,
-    ValueError? formError,
-    FieldError? apiError,
+    EmailError? formError,
+    EmailError? apiError,
   ) {
     if (formError == null && apiError == null) return null;
-    final l10n = AppLocalizations.of(context)!;
-    if (formError != null) {
-      return switch (formError) {
-        ValueRequiredError() => l10n.fieldRequired,
-        EmailInvalidError() => l10n.emailInvalid,
-        _ => null,
-      };
-    }
-    return switch (apiError) {
-      FieldErrorValueDuplicated() => l10n.accountAlreadyExists,
-      _ => null,
-    };
-  }
-
-  String? _passwordError(BuildContext context, ValueError? error) {
+    final error = formError ?? apiError;
     if (error == null) return null;
     final l10n = AppLocalizations.of(context)!;
     return switch (error) {
-      ValueRequiredError() => l10n.fieldRequired,
-      ValueTooShortError(:final min) => l10n.passwordTooShort(min),
-      _ => null,
+      EmailRequiredError() => l10n.fieldRequired,
+      EmailInvalidError() => l10n.emailInvalid,
+      EmailDuplicatedError() => l10n.accountAlreadyExists,
     };
   }
 
-  String? _confirmError(BuildContext context, ValueError? error) {
+  String? _passwordError(BuildContext context, MasterPasswordError? error) {
     if (error == null) return null;
     final l10n = AppLocalizations.of(context)!;
     return switch (error) {
-      ValueMismatchError() => l10n.passwordMismatch,
-      _ => null,
+      MasterPasswordRequiredError() => l10n.fieldRequired,
+      MasterPasswordMinError(:final min) => l10n.passwordTooShort(min),
+    };
+  }
+
+  String? _confirmError(
+    BuildContext context,
+    ConfirmMasterPasswordError? error,
+  ) {
+    if (error == null) return null;
+    final l10n = AppLocalizations.of(context)!;
+    return switch (error) {
+      ConfirmMasterPasswordRequiredError() => l10n.fieldRequired,
+      ConfirmMasterPasswordMismatchError() => l10n.passwordMismatch,
     };
   }
 }
