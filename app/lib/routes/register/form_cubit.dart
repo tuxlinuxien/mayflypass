@@ -36,7 +36,10 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
   void masterPasswordChanged(String value) {
     final confirm = state.confirmMasterPassword.isPure
         ? ConfirmMasterPassword.pure(value)
-        : ConfirmMasterPassword.dirty(value, value: state.confirmMasterPassword.value);
+        : ConfirmMasterPassword.dirty(
+            value,
+            value: state.confirmMasterPassword.value,
+          );
     emit(
       state.copyWith(
         masterPassword: MasterPassword.dirty(value),
@@ -116,6 +119,9 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
         state.copyWith(status: FormStatus.failure, apiError: ApiErrorUnknown()),
       );
       return;
+    } finally {
+      masterKey.destroy();
+      authKey.destroy();
     }
 
     emit(state.copyWith(status: FormStatus.success));
