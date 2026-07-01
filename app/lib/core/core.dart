@@ -7,3 +7,4 @@ export 'logger.dart';
 export 'theme.dart';
 export 'ui.dart';
 export 'widgets/or.dart';
+export 'secure_storage.dart';

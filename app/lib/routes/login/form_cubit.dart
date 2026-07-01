@@ -62,12 +62,14 @@ class LoginFormCubit extends Cubit<LoginFormState> {
 
     try {
       final authKeyBytes = await authKey.extractBytes();
-      await API().login(
+      final response = await API().login(
         LoginInput(
           email: state.email.value,
           password: Uint8List.fromList(authKeyBytes),
         ),
       );
+      await StorageSetApiRefreshToken(response.refreshToken);
+      await StorageSetAccount(state.email.value.trim().toLowerCase());
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {

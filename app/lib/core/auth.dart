@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mayflypass/core/core.dart';
 
 enum AuthStatus { loading, unauthenticated, unlocked, locked }
 
@@ -6,8 +7,12 @@ class AuthCubit extends Cubit<AuthStatus> {
   AuthCubit() : super(AuthStatus.loading);
 
   Future<void> checkAuth() async {
-    await Future.delayed(const Duration(seconds: 1));
-    emit(AuthStatus.unauthenticated);
+    final email = await StorageGetAccount();
+    if (email == null) {
+      emit(AuthStatus.unauthenticated);
+    } else {
+      emit(AuthStatus.unlocked);
+    }
   }
 
   void unlocked() => emit(AuthStatus.unlocked);

@@ -31,6 +31,7 @@ dependencies:
   path_provider: ^2.1.6
   fixnum: ^1.1.1
   formz: ^0.8.0
+  flutter_secure_storage: ^10.3.1
 
 dev_dependencies:
   flutter_test:
