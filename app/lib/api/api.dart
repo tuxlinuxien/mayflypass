@@ -23,9 +23,9 @@ class API extends _API {
   static final _dio = Dio(
     BaseOptions(
       baseUrl: API_URL,
-      connectTimeout: Duration(seconds: 10),
-      sendTimeout: Duration(seconds: 10),
-      receiveTimeout: Duration(seconds: 10),
+      connectTimeout: Duration(seconds: 5),
+      sendTimeout: Duration(seconds: 5),
+      receiveTimeout: Duration(seconds: 5),
       validateStatus: (status) => true,
     ),
   )..interceptors.addAll([LoggerInterceptor()]);

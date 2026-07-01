@@ -19,3 +19,8 @@ Future<void> StorageSetAccount(String email) async {
   const store = FlutterSecureStorage(lOptions: LinuxOptions());
   await store.write(key: 'account::email', value: email);
 }
+
+Future<void> StorageFlushAll() async {
+  const store = FlutterSecureStorage(lOptions: LinuxOptions());
+  store.deleteAll(lOptions: LinuxOptions());
+}
