@@ -57,4 +57,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thereWasProblem => 'There was a problem while processing your request';
+
+  @override
+  String get invalidCrentials => 'Invalid credentials';
+
+  @override
+  String loggedIn(String email) {
+    return 'Welcome back $email';
+  }
 }

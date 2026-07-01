@@ -38,5 +38,15 @@
   "accountAlreadyExists": "An account with this email already exists",
   "@accountAlreadyExists": {},
   "thereWasProblem": "There was a problem while processing your request",
-  "@thereWasProblem": {}
+  "@thereWasProblem": {},
+  "invalidCrentials": "Invalid credentials",
+  "@invalidCrentials": {},
+  "loggedIn": "Welcome back {email}",
+  "@loggedIn": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -188,6 +188,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'There was a problem while processing your request'**
   String get thereWasProblem;
+
+  /// No description provided for @invalidCrentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid credentials'**
+  String get invalidCrentials;
+
+  /// No description provided for @loggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back {email}'**
+  String loggedIn(String email);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

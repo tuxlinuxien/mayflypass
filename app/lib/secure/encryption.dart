@@ -36,7 +36,7 @@ Future<DataBox> decryptDataBox(
 ) async {
   final dekBytes = await decrypt(kek, encryptedDek);
   final dek = SecretKey(dekBytes.toList());
-  dekBytes.fillRange(0, dekBytes.length, 0); // clean bytes
+  zeroing(dekBytes);
   final payload = await decrypt(dek, encryptedPayload);
   dek.destroy();
   return DataBox.fromBuffer(payload);
@@ -49,8 +49,14 @@ Future<(Uint8List, Uint8List)> encryptDataBox(
   final dek = newDataEncryptionKey();
   final dekBytes = Uint8List.fromList(await dek.extractBytes());
   final encryptedDek = await encrypt(kek, dekBytes);
-  dekBytes.fillRange(0, dekBytes.length, 0); // clean bytes
+  zeroing(dekBytes);
   final encryptedPayload = await encrypt(dek, databox.writeToBuffer());
   dek.destroy();
   return (encryptedDek, encryptedPayload);
+}
+
+void zeroing<T>(T buffer) {
+  if (buffer is List<int>) {
+    buffer.fillRange(0, buffer.length, 0);
+  }
 }

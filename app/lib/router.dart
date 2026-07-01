@@ -25,7 +25,9 @@ GoRouter createRouter(AuthCubit authCubit) {
           return loc == '/splash' ? null : '/splash';
         case AuthStatus.unauthenticated:
           return ['/login', '/register'].contains(loc) ? null : '/login';
-        case AuthStatus.authenticated:
+        case AuthStatus.unlocked:
+          return loc == '/home' ? null : '/home';
+        case AuthStatus.locked:
           return loc == '/home' ? null : '/home';
       }
     },

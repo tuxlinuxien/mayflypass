@@ -44,8 +44,8 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [Locale('en')],
-        theme: AppTheme.dark,
-        darkTheme: AppTheme.dark,
+        //theme: AppTheme.dark,
+        // darkTheme: AppTheme.dark,
         routerConfig: router,
       ),
     );
