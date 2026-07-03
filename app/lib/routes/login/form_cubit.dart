@@ -59,17 +59,18 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       state.masterPassword.value,
     );
     final authKey = await deriveAuthKey(masterKey);
+    final unlockKey = await deriveUnlockKey(masterKey);
 
     try {
       final authKeyBytes = await authKey.extractBytes();
-      final response = await API().login(
+      await API().login(
         LoginInput(
           email: state.email.value,
           password: Uint8List.fromList(authKeyBytes),
         ),
       );
-      await StorageSetApiRefreshToken(response.refreshToken);
-      await StorageSetAccount(state.email.value.trim().toLowerCase());
+      await storage.setEmail(state.email.value.trim().toLowerCase());
+      await storage.setUnlockKey(await unlockKey.extractBytes());
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {
@@ -93,6 +94,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
     } finally {
       masterKey.destroy();
       authKey.destroy();
+      unlockKey.destroy();
     }
 
     emit(state.copyWith(status: FormStatus.success));

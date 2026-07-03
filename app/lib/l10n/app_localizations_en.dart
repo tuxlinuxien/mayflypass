@@ -65,4 +65,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String loggedIn(String email) {
     return 'Welcome back $email';
   }
+
+  @override
+  String get invalidMasterPassword => 'Invalid master password';
+
+  @override
+  String get unlock => 'Unlock';
 }

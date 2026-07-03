@@ -30,7 +30,6 @@ class API extends _API {
     ),
   )..interceptors.addAll([LoggerInterceptor()]);
   static String? accessToken;
-  static String? refreshToken;
 
   API();
 
@@ -92,12 +91,12 @@ class API extends _API {
       // refresh the token now since we don't have any accessToken
       if (API.accessToken == null) {
         logger.w('refresh token');
-        await refresh(refreshToken: API.refreshToken);
+        await refresh(refreshToken: await storage.getApiRefreshToken());
       }
       return await localRequest();
     } on ApiErrorUnauthorized {
       logger.w('refresh token');
-      await refresh(refreshToken: API.refreshToken);
+      await refresh(refreshToken: await storage.getApiRefreshToken());
     }
     return await localRequest();
   }
@@ -116,7 +115,7 @@ class API extends _API {
     final output = LoginResponse.fromJson(response.data);
     // set the access token
     API.accessToken = output.accessToken;
-    API.refreshToken = output.refreshToken;
+    await storage.setApiRefreshToken(output.refreshToken);
     return output;
   }
 
@@ -138,20 +137,20 @@ class API extends _API {
     final output = RefreshResponse.fromJson(response.data);
     // set the access token
     API.accessToken = output.accessToken;
-    API.refreshToken = output.refreshToken;
+    await storage.setApiRefreshToken(output.refreshToken);
     return output;
   }
 
   @override
   Future<void> logout() async {
     try {
-      final payload = {'refresh_token': refreshToken};
+      final payload = {'refresh_token': await storage.getApiRefreshToken()};
       await post('/api/logout', data: jsonEncode(payload));
     } catch (e) {
       logger.e('logout error $e');
     } finally {
       API.accessToken = null;
-      API.refreshToken = null;
+      await storage.deleteApiRefreshToken();
     }
   }
 

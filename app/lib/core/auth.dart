@@ -7,16 +7,17 @@ class AuthCubit extends Cubit<AuthStatus> {
   AuthCubit() : super(AuthStatus.loading);
 
   Future<void> checkAuth() async {
-    final email = await StorageGetAccount();
-    if (email == null) {
+    final email = await storage.getEmail();
+    final unlockKeyBytes = await storage.getUnlockKey();
+    if (email == null || unlockKeyBytes == null) {
       emit(AuthStatus.unauthenticated);
     } else {
-      emit(AuthStatus.unlocked);
+      emit(AuthStatus.locked);
     }
   }
 
-  void unlocked() => emit(AuthStatus.unlocked);
-  void locked() => emit(AuthStatus.locked);
+  void unlock() => emit(AuthStatus.unlocked);
+  void lock() => emit(AuthStatus.locked);
   void logout() => emit(AuthStatus.unauthenticated);
 }
 

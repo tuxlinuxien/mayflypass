@@ -48,5 +48,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "invalidMasterPassword": "Invalid master password",
+  "@invalidMasterPassword": {},
+  "unlock": "Unlock",
+  "@unlock": {}
 }

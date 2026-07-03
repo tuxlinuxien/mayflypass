@@ -29,3 +29,8 @@ Future<SecretKey> deriveKek(SecretKey masterKey) async {
   final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: kekOuputLen);
   return await hasher.deriveKey(secretKey: masterKey, nonce: kekSalt);
 }
+
+Future<SecretKey> deriveUnlockKey(SecretKey masterKey) async {
+  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: unlockOutputLen);
+  return await hasher.deriveKey(secretKey: masterKey, nonce: unlockSalt);
+}

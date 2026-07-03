@@ -7,6 +7,7 @@ import 'package:mayflypass/routes/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
 import 'package:mayflypass/routes/splash.dart';
+import 'package:mayflypass/routes/unlock/unlock.dart';
 
 late final GoRouter router;
 
@@ -28,13 +29,14 @@ GoRouter createRouter(AuthCubit authCubit) {
         case AuthStatus.unlocked:
           return loc == '/home' ? null : '/home';
         case AuthStatus.locked:
-          return loc == '/home' ? null : '/home';
+          return loc == '/unlock' ? null : '/unlock';
       }
     },
     routes: [
       GoRoute(path: '/splash', builder: (ctx, state) => const SplashPage()),
       GoRoute(path: '/login', builder: (ctx, state) => const LoginPage()),
       GoRoute(path: '/register', builder: (ctx, state) => const RegisterPage()),
+      GoRoute(path: '/unlock', builder: (ctx, state) => const UnlockPage()),
       GoRoute(path: '/home', builder: (ctx, state) => const HomePage()),
     ],
   );

@@ -200,6 +200,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome back {email}'**
   String loggedIn(String email);
+
+  /// No description provided for @invalidMasterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid master password'**
+  String get invalidMasterPassword;
+
+  /// No description provided for @unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlock;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

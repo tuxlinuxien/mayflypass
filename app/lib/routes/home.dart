@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.lock_outline),
             tooltip: 'Lock vault',
-            onPressed: () => context.read<AuthCubit>().logout(),
+            onPressed: () => context.read<AuthCubit>().lock(),
           ),
         ],
       ),

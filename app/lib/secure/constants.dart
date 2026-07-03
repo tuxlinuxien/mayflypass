@@ -10,6 +10,8 @@ final authSalt = utf8.encode('domain/derive/auth');
 final authOuputLen = secretKeyLength;
 final kekSalt = utf8.encode('domain/derive/kek');
 final kekOuputLen = secretKeyLength;
+final unlockSalt = utf8.encode('domain/derive/unlockSalt');
+final unlockOutputLen = secretKeyLength;
 
 final masterPasswordMemCost = 64 * 1024;
 final masterPasswordICost = 15;
