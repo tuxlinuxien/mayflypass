@@ -10,146 +10,99 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => RegisterFormCubit(),
-      child: const _RegisterView(),
-    );
-  }
-}
-
-class _RegisterView extends StatefulWidget {
-  const _RegisterView();
-
-  @override
-  State<_RegisterView> createState() => _RegisterViewState();
-}
-
-class _RegisterViewState extends State<_RegisterView> {
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<RegisterFormCubit, RegisterFormState>(
-      listener: (context, state) {
-        final l10n = AppLocalizations.of(context)!;
-        switch (state.status) {
-          case FormStatus.success:
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.accountCreatedSuccessfully),
-                backgroundColor: Colors.green,
-              ),
-            );
-            router.go('/login');
-          case FormStatus.failure:
-            if (state.apiError == null) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.thereWasProblem),
-                backgroundColor: Colors.red,
-              ),
-            );
-          default:
-          // do nothing
-        }
-      },
-      builder: (context, state) {
-        final cubit = context.read<RegisterFormCubit>();
-        final l10n = AppLocalizations.of(context)!;
-        return Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // email
-                TextField(
-                  autofocus: true,
-                  onChanged: cubit.emailChanged,
-                  decoration: InputDecoration(
-                    labelText: l10n.email,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.mail),
-                    errorText: _emailError(
-                      context,
-                      state.email.displayError,
-                      state.apiEmailError,
+    return BlocProvider<RegisterFormCubit>(
+      create: (context) => RegisterFormCubit(),
+      child: BlocConsumer<RegisterFormCubit, RegisterFormState>(
+        listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
+          switch (state.status) {
+            case FormStatus.success:
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(l10n.accountCreatedSuccessfully),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              router.go('/login');
+            case FormStatus.failure:
+              if (state.apiError == null) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(l10n.thereWasProblem),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            default:
+            // do nothing
+          }
+        },
+        builder: (context, state) {
+          final cubit = context.read<RegisterFormCubit>();
+          final l10n = AppLocalizations.of(context)!;
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // email
+                  TextField(
+                    autofocus: true,
+                    onChanged: cubit.emailChanged,
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
+                      errorText: _emailError(
+                        context,
+                        state.email.displayError,
+                        state.apiEmailError,
+                      ),
                     ),
                   ),
-                ),
-                Spacer16,
-                // password
-                TextField(
-                  obscureText: _obscurePassword,
-                  onChanged: cubit.masterPasswordChanged,
-                  decoration: InputDecoration(
+                  Spacer16,
+                  // password
+                  PasswordField(
                     labelText: l10n.masterPassword,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock),
                     errorText: _passwordError(
                       context,
                       state.masterPassword.displayError,
                     ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                    ),
+                    onChanged: cubit.masterPasswordChanged,
                   ),
-                ),
-                Spacer16,
-                // confirm password
-                TextField(
-                  obscureText: _obscureConfirm,
-                  onChanged: cubit.confirmMasterPasswordChanged,
-                  decoration: InputDecoration(
+                  Spacer16,
+                  // confirm password
+                  PasswordField(
                     labelText: l10n.confirmMasterPassword,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock),
                     errorText: _confirmError(
                       context,
                       state.confirmMasterPassword.displayError,
                     ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirm
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
-                    ),
+                    onChanged: cubit.confirmMasterPasswordChanged,
                   ),
-                ),
-                Spacer16,
-                FilledButton(
-                  onPressed: state.status == FormStatus.submitting
-                      ? null
-                      : cubit.submit,
-                  child: state.status == FormStatus.submitting
-                      ? const SizedBox.square(
-                          dimension: 16,
-                          child: CircularProgressIndicator(),
-                        )
-                      : Text(l10n.register),
-                ),
-                Spacer32,
-                const Or(),
-                Spacer32,
-                TextButton(
-                  onPressed: () => context.go('/login'),
-                  child: Text(l10n.loginToAccount),
-                ),
-              ],
+                  Spacer16,
+                  FilledButton(
+                    onPressed: state.status == FormStatus.submitting
+                        ? null
+                        : cubit.submit,
+                    child: state.status == FormStatus.submitting
+                        ? const SizedBox.square(
+                            dimension: 16,
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text(l10n.register),
+                  ),
+                  Spacer32,
+                  const Or(),
+                  Spacer32,
+                  TextButton(
+                    onPressed: () => context.go('/login'),
+                    child: Text(l10n.loginToAccount),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

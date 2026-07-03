@@ -8,7 +8,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageFlushAll();
   logger.i('[API_URL] $API_URL');
-  initRouter(gloablAuth);
+  initRouter(globalAuth);
   runApp(const MyApp());
 }
 
@@ -23,19 +23,19 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    gloablAuth.checkAuth();
+    globalAuth.checkAuth();
   }
 
   @override
   void dispose() {
-    gloablAuth.close();
+    globalAuth.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: gloablAuth,
+      value: globalAuth,
       child: MaterialApp.router(
         title: 'Mayfly Pass',
         localizationsDelegates: [
