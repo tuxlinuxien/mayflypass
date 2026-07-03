@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/api/errors.dart';
+import 'package:mayflypass/core/core.dart';
 
 void main() {
+  initSecureStorage(StorageTest());
   group('FieldError parsing from JSON', () {
     test('FieldErrorEmailInvalid can be parsed from JSON string', () {
       const jsonString = '''

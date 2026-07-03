@@ -31,6 +31,7 @@ Future<LoginResponse> setupAccount() async {
 }
 
 void main() {
+  initSecureStorage(StorageTest());
   group('api auth', () {
     test('get challenge and solve it', () async {
       final resp = await API().challenge();

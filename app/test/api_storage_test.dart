@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/api/api.dart';
+import 'package:mayflypass/core/core.dart';
 import 'api_auth_test.dart';
 
 void main() {
+  initSecureStorage(StorageTest());
   group('api storage', () {
     test('upsert', () async {
       await setupAccount();
