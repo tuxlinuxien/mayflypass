@@ -66,6 +66,63 @@ class StorageTest extends Storage {
   }
 }
 
+class StorageEncrypted extends Storage {
+  StorageEncrypted();
+
+  @override
+  Future<String?> getApiRefreshToken() async {
+    logger.d('getApiRefreshToken');
+    final store = await BiometricStorage().getStorage('api::refresh_token');
+    return store.read();
+  }
+
+  @override
+  Future<void> setApiRefreshToken(String value) async {
+    logger.d('setApiRefreshToken');
+    final store = await BiometricStorage().getStorage('api::refresh_token');
+    await store.write(value);
+  }
+
+  @override
+  Future<void> deleteApiRefreshToken() async {
+    logger.d('deleteApiRefreshToken');
+    final store = await BiometricStorage().getStorage('api::refresh_token');
+    await store.delete();
+  }
+
+  @override
+  Future<String?> getEmail() async {
+    logger.d('getEmail');
+    final store = await BiometricStorage().getStorage('account::email');
+    return await store.read();
+  }
+
+  @override
+  Future<void> setEmail(String value) async {
+    logger.d('setEmail');
+    final store = await BiometricStorage().getStorage('account::email');
+    await store.write(value);
+  }
+
+  @override
+  Future<List<int>?> getUnlockKey() async {
+    logger.d('getUnlockKey');
+    final store = await BiometricStorage().getStorage('account::unlock_key');
+    final value = await store.read();
+    if (value == null) {
+      return null;
+    }
+    return HEX.decode(value);
+  }
+
+  @override
+  Future<void> setUnlockKey(List<int> value) async {
+    logger.d('setUnlockKey');
+    final store = await BiometricStorage().getStorage('account::unlock_key');
+    await store.write(HEX.encode(value));
+  }
+}
+
 late Storage storage;
 
 void initSecureStorage(Storage s) {
