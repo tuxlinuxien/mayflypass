@@ -1,4 +1,5 @@
-import 'package:biometric_storage/biometric_storage.dart';
+import 'dart:io';
+
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hex/hex.dart';
@@ -103,8 +104,7 @@ class FSStore extends Store {
   @override
   Future<void> deleteApiRefreshToken() async {
     logger.d('deleteApiRefreshToken');
-    final store = await BiometricStorage().getStorage('api::refresh_token');
-    await store.delete();
+    await FlutterSecureStorage().delete(key: 'api::refresh_token');
   }
 
   @override
@@ -142,12 +142,20 @@ class FSStore extends Store {
   Future<void> setKek(SecretKey value) async {
     logger.d('setKek');
     try {
-      final bs = await BiometricStorage().getStorage(
-        'account::kek',
-        options: StorageFileInitOptions(authenticationRequired: true),
-      );
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        return;
+      }
       final keyBytes = await value.extractBytes();
-      await bs.write(HEX.encode(keyBytes));
+      await FlutterSecureStorage().write(
+        key: 'account::kek',
+        value: HEX.encode(keyBytes),
+        aOptions: AndroidOptions.biometric(
+          enforceBiometrics: true,
+          storageNamespace: 'critical',
+          biometricType: AndroidBiometricType.strongBiometricOnly,
+        ),
+        iOptions: IOSOptions(useSecureEnclave: true, accountName: 'critical'),
+      );
     } catch (e) {
       logger.e(e);
     }
@@ -157,11 +165,18 @@ class FSStore extends Store {
   Future<SecretKey?> getKek() async {
     logger.d('getKek');
     try {
-      final bs = await BiometricStorage().getStorage(
-        'account::kek',
-        options: StorageFileInitOptions(authenticationRequired: true),
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        return null;
+      }
+      final kekHex = await FlutterSecureStorage().read(
+        key: 'account::kek',
+        aOptions: AndroidOptions.biometric(
+          enforceBiometrics: true,
+          storageNamespace: 'critical',
+          biometricType: AndroidBiometricType.strongBiometricOnly,
+        ),
+        iOptions: IOSOptions(useSecureEnclave: true, accountName: 'critical'),
       );
-      final kekHex = await bs.read();
       if (kekHex == null) {
         return null;
       }
@@ -170,22 +185,14 @@ class FSStore extends Store {
       zeroing(kekBytes);
       return kek;
     } catch (e) {
-      return null;
+      logger.e(e);
     }
+    return null;
   }
 
   @override
   Future<void> flushAll() async {
     await FlutterSecureStorage().deleteAll();
-    try {
-      final bs = await BiometricStorage().getStorage(
-        'account::kek',
-        options: StorageFileInitOptions(authenticationRequired: false),
-      );
-      await bs.delete();
-    } catch (e) {
-      logger.e(e);
-    }
   }
 }
 

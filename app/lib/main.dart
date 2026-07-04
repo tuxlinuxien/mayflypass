@@ -1,4 +1,3 @@
-import 'package:biometric_storage/biometric_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
@@ -7,9 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final armor = await BiometricStorage().linuxCheckAppArmorError();
-  final canAuth = await BiometricStorage().canAuthenticate();
-  logger.w('armor $armor canAuth $canAuth');
+
   initStore(FSStore());
   logger.i('[API_URL] $API_URL');
   initRouter(globalAuth);
