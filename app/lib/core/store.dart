@@ -142,7 +142,10 @@ class FSStore extends Store {
   Future<void> setKek(SecretKey value) async {
     logger.d('setKek');
     try {
-      final bs = await BiometricStorage().getStorage('account::kek');
+      final bs = await BiometricStorage().getStorage(
+        'account::kek',
+        options: StorageFileInitOptions(authenticationRequired: true),
+      );
       final keyBytes = await value.extractBytes();
       await bs.write(HEX.encode(keyBytes));
     } catch (e) {
@@ -154,7 +157,10 @@ class FSStore extends Store {
   Future<SecretKey?> getKek() async {
     logger.d('getKek');
     try {
-      final bs = await BiometricStorage().getStorage('account::kek');
+      final bs = await BiometricStorage().getStorage(
+        'account::kek',
+        options: StorageFileInitOptions(authenticationRequired: true),
+      );
       final kekHex = await bs.read();
       if (kekHex == null) {
         return null;
