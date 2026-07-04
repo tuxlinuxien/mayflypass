@@ -174,8 +174,8 @@ class FSStore extends Store {
   }
 }
 
-late Store storage;
+late Store globalStore;
 
 void initStore(Store s) {
-  storage = s;
+  globalStore = s;
 }

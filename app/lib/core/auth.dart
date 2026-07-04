@@ -7,8 +7,8 @@ class AuthCubit extends Cubit<AuthStatus> {
   AuthCubit() : super(AuthStatus.loading);
 
   Future<void> checkAuth() async {
-    final email = await storage.getEmail();
-    final unlockKeyBytes = await storage.getUnlockKey();
+    final email = await globalStore.getEmail();
+    final unlockKeyBytes = await globalStore.getUnlockKey();
     if (email == null || unlockKeyBytes == null) {
       emit(AuthStatus.unauthenticated);
     } else {

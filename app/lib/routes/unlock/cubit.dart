@@ -37,8 +37,8 @@ class FormCubit extends Cubit<UnlockFormState> {
 
     emit(state.copyWith(status: .submitting));
 
-    final email = await storage.getEmail();
-    final unlockKeyBytes = await storage.getUnlockKey();
+    final email = await globalStore.getEmail();
+    final unlockKeyBytes = await globalStore.getUnlockKey();
     if (email == null || unlockKeyBytes == null) {
       zeroing(unlockKeyBytes ?? []);
       router.go('/login');

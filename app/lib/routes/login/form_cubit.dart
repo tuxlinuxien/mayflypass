@@ -69,8 +69,8 @@ class LoginFormCubit extends Cubit<LoginFormState> {
           password: Uint8List.fromList(authKeyBytes),
         ),
       );
-      await storage.setEmail(state.email.value.trim().toLowerCase());
-      await storage.setUnlockKey(await unlockKey.extractBytes());
+      await globalStore.setEmail(state.email.value.trim().toLowerCase());
+      await globalStore.setUnlockKey(await unlockKey.extractBytes());
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {

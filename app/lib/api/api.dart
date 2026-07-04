@@ -87,16 +87,21 @@ class API extends _API {
       return _request(method, path, data: data, customclient: client);
     }
 
+    final refreshToken = await globalStore.getApiRefreshToken();
+    if (API.accessToken == null && refreshToken == null) {
+      throw ApiErrorUnauthorized();
+    }
+
     try {
       // refresh the token now since we don't have any accessToken
       if (API.accessToken == null) {
         logger.w('refresh token');
-        await refresh(refreshToken: await storage.getApiRefreshToken());
+        await refresh(refreshToken: refreshToken);
       }
       return await localRequest();
     } on ApiErrorUnauthorized {
       logger.w('refresh token');
-      await refresh(refreshToken: await storage.getApiRefreshToken());
+      await refresh(refreshToken: refreshToken);
     }
     return await localRequest();
   }
@@ -115,7 +120,7 @@ class API extends _API {
     final output = LoginResponse.fromJson(response.data);
     // set the access token
     API.accessToken = output.accessToken;
-    await storage.setApiRefreshToken(output.refreshToken);
+    await globalStore.setApiRefreshToken(output.refreshToken);
     return output;
   }
 
@@ -137,20 +142,20 @@ class API extends _API {
     final output = RefreshResponse.fromJson(response.data);
     // set the access token
     API.accessToken = output.accessToken;
-    await storage.setApiRefreshToken(output.refreshToken);
+    await globalStore.setApiRefreshToken(output.refreshToken);
     return output;
   }
 
   @override
   Future<void> logout() async {
     try {
-      final payload = {'refresh_token': await storage.getApiRefreshToken()};
+      final payload = {'refresh_token': await globalStore.getApiRefreshToken()};
       await post('/api/logout', data: jsonEncode(payload));
     } catch (e) {
       logger.e('logout error $e');
     } finally {
       API.accessToken = null;
-      await storage.deleteApiRefreshToken();
+      await globalStore.deleteApiRefreshToken();
     }
   }
 
