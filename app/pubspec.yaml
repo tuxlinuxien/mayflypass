@@ -31,7 +31,7 @@ dependencies:
   path_provider: ^2.1.6
   fixnum: ^1.1.1
   formz: ^0.8.0
-  biometric_storage: ^5.0.1
+  biometric_storage: ^5.1.1-dev.2
   flutter_secure_storage: ^10.3.1
 
 dev_dependencies:

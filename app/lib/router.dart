@@ -29,7 +29,9 @@ GoRouter createRouter(AuthCubit authCubit) {
         case AuthStatus.unlocked:
           return loc == '/home' ? null : '/home';
         case AuthStatus.locked:
-          return loc == '/unlock' ? null : '/unlock';
+          return ['/unlock', '/login', '/register'].contains(loc)
+              ? null
+              : '/unlock';
       }
     },
     routes: [

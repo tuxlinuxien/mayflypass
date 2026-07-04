@@ -152,7 +152,7 @@ class FSStore extends Store {
 
   @override
   Future<SecretKey?> getKek() async {
-    logger.d('get');
+    logger.d('getKek');
     try {
       final bs = await BiometricStorage().getStorage('account::kek');
       final kekHex = await bs.read();
@@ -171,6 +171,15 @@ class FSStore extends Store {
   @override
   Future<void> flushAll() async {
     await FlutterSecureStorage().deleteAll();
+    try {
+      final bs = await BiometricStorage().getStorage(
+        'account::kek',
+        options: StorageFileInitOptions(authenticationRequired: false),
+      );
+      await bs.delete();
+    } catch (e) {
+      logger.e(e);
+    }
   }
 }
 
@@ -178,4 +187,18 @@ late Store globalStore;
 
 void initStore(Store s) {
   globalStore = s;
+}
+
+SecretKey? _globalKek;
+
+void setGlobalKek(SecretKey kek) {
+  _globalKek = kek;
+}
+
+SecretKey? getGlobalKek() {
+  return _globalKek;
+}
+
+void deleteGlobalKek() {
+  _globalKek = null;
 }

@@ -62,15 +62,28 @@ class LoginFormCubit extends Cubit<LoginFormState> {
     final unlockKey = await deriveUnlockKey(masterKey);
 
     try {
+      // remove all account data
+      await globalStore.flushAll();
+      // no need to keep the kek
+      deleteGlobalKek();
+      // generate the auth key since we will need it for unlocking
       final authKeyBytes = await authKey.extractBytes();
+      // now do an api query
       await API().login(
         LoginInput(
           email: state.email.value,
           password: Uint8List.fromList(authKeyBytes),
         ),
       );
+      // if the response is successfull, store the email and the unlock key.
+      // the email will be used to rebuild the masterKey.
       await globalStore.setEmail(state.email.value.trim().toLowerCase());
       await globalStore.setUnlockKey(await unlockKey.extractBytes());
+      // keep the kek in memory
+      final kek = await deriveKek(masterKey);
+      setGlobalKek(kek);
+      // keep it in the encrypted storage
+      await globalStore.setKek(kek);
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {
