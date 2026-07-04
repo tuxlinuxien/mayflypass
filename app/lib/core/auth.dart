@@ -4,7 +4,10 @@ import 'package:mayflypass/core/core.dart';
 enum AuthStatus { loading, unauthenticated, unlocked, locked }
 
 class AuthCubit extends Cubit<AuthStatus> {
-  AuthCubit() : super(AuthStatus.loading);
+  AuthCubit() : super(AuthStatus.loading) {
+    // always delete the kek when the app boots.
+    deleteGlobalKek();
+  }
 
   Future<void> checkAuth() async {
     final email = await globalStore.getEmail();
@@ -30,10 +33,14 @@ class AuthCubit extends Cubit<AuthStatus> {
 
   void unlock() => emit(AuthStatus.unlocked);
 
-  void lock() => emit(AuthStatus.locked);
+  void lock() {
+    deleteGlobalKek(); // clean the kek from memory
+    emit(AuthStatus.locked);
+  }
 
   void logout() async {
     await globalStore.flushAll();
+    deleteGlobalKek(); // clean the kek from memory
     emit(AuthStatus.unauthenticated);
   }
 }

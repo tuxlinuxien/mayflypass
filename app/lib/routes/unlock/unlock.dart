@@ -55,12 +55,12 @@ class UnlockPage extends StatelessWidget {
                             dimension: 16,
                             child: CircularProgressIndicator(),
                           )
-                        : Text(l10n.login),
+                        : Text(l10n.unlock),
                   ),
                   Spacer32,
                   const Or(),
                   Spacer32,
-                  TextButton(
+                  OutlinedButton(
                     onPressed: () => context.go('/login'),
                     child: Text(l10n.loginToAccount),
                   ),
