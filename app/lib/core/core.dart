@@ -8,4 +8,4 @@ export 'theme.dart';
 export 'ui.dart';
 export 'widgets/or.dart';
 export 'widgets/password_field.dart';
-export 'storage.dart';
+export 'store.dart';

@@ -5,7 +5,7 @@ import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
 
 void main() {
-  initSecureStorage(StorageTest());
+  initStore(MemoryStore());
   group('FieldError parsing from JSON', () {
     test('FieldErrorEmailInvalid can be parsed from JSON string', () {
       const jsonString = '''

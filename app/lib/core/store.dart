@@ -1,8 +1,11 @@
 import 'package:biometric_storage/biometric_storage.dart';
+import 'package:cryptography_plus/cryptography_plus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hex/hex.dart';
 import 'package:mayflypass/core/logger.dart';
+import 'package:mayflypass/secure/secure.dart';
 
-abstract class Storage {
+abstract class Store {
   Future<String?> getApiRefreshToken();
   Future<void> setApiRefreshToken(String value);
   Future<void> deleteApiRefreshToken();
@@ -12,12 +15,17 @@ abstract class Storage {
 
   Future<List<int>?> getUnlockKey();
   Future<void> setUnlockKey(List<int> value);
+
+  Future<void> setKek(SecretKey value);
+  Future<SecretKey?> getKek();
+
+  Future<void> flushAll();
 }
 
-class StorageTest extends Storage {
+class MemoryStore extends Store {
   final values = <String, dynamic>{};
 
-  StorageTest();
+  MemoryStore();
 
   @override
   Future<String?> getApiRefreshToken() async {
@@ -64,23 +72,32 @@ class StorageTest extends Storage {
     logger.d('setUnlockKey');
     values['unlock_key'] = HEX.encode(value);
   }
+
+  @override
+  Future<void> setKek(SecretKey value) async {}
+
+  @override
+  Future<SecretKey?> getKek() async {
+    return null;
+  }
+
+  @override
+  Future<void> flushAll() async {}
 }
 
-class StorageEncrypted extends Storage {
-  StorageEncrypted();
+class FSStore extends Store {
+  FSStore();
 
   @override
   Future<String?> getApiRefreshToken() async {
     logger.d('getApiRefreshToken');
-    final store = await BiometricStorage().getStorage('api::refresh_token');
-    return store.read();
+    return await FlutterSecureStorage().read(key: 'api::refresh_token');
   }
 
   @override
   Future<void> setApiRefreshToken(String value) async {
     logger.d('setApiRefreshToken');
-    final store = await BiometricStorage().getStorage('api::refresh_token');
-    await store.write(value);
+    await FlutterSecureStorage().write(key: 'api::refresh_token', value: value);
   }
 
   @override
@@ -93,22 +110,19 @@ class StorageEncrypted extends Storage {
   @override
   Future<String?> getEmail() async {
     logger.d('getEmail');
-    final store = await BiometricStorage().getStorage('account::email');
-    return await store.read();
+    return await FlutterSecureStorage().read(key: 'account::email');
   }
 
   @override
   Future<void> setEmail(String value) async {
     logger.d('setEmail');
-    final store = await BiometricStorage().getStorage('account::email');
-    await store.write(value);
+    await FlutterSecureStorage().write(key: 'account::email', value: value);
   }
 
   @override
   Future<List<int>?> getUnlockKey() async {
     logger.d('getUnlockKey');
-    final store = await BiometricStorage().getStorage('account::unlock_key');
-    final value = await store.read();
+    final value = await FlutterSecureStorage().read(key: 'account::unlock_key');
     if (value == null) {
       return null;
     }
@@ -118,13 +132,50 @@ class StorageEncrypted extends Storage {
   @override
   Future<void> setUnlockKey(List<int> value) async {
     logger.d('setUnlockKey');
-    final store = await BiometricStorage().getStorage('account::unlock_key');
-    await store.write(HEX.encode(value));
+    await FlutterSecureStorage().write(
+      key: 'account::unlock_key',
+      value: HEX.encode(value),
+    );
+  }
+
+  @override
+  Future<void> setKek(SecretKey value) async {
+    logger.d('setKek');
+    try {
+      final bs = await BiometricStorage().getStorage('account::kek');
+      final keyBytes = await value.extractBytes();
+      await bs.write(HEX.encode(keyBytes));
+    } catch (e) {
+      logger.e(e);
+    }
+  }
+
+  @override
+  Future<SecretKey?> getKek() async {
+    logger.d('get');
+    try {
+      final bs = await BiometricStorage().getStorage('account::kek');
+      final kekHex = await bs.read();
+      if (kekHex == null) {
+        return null;
+      }
+      final kekBytes = HEX.decode(kekHex);
+      final kek = SecretKey(kekBytes);
+      zeroing(kekBytes);
+      return kek;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> flushAll() async {
+    await FlutterSecureStorage().deleteAll();
   }
 }
 
-late Storage storage;
+late Store storage;
 
-void initSecureStorage(Storage s) {
+void initStore(Store s) {
   storage = s;
 }

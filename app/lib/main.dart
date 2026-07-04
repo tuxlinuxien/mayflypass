@@ -10,7 +10,7 @@ Future<void> main() async {
   final armor = await BiometricStorage().linuxCheckAppArmorError();
   final canAuth = await BiometricStorage().canAuthenticate();
   logger.w('armor $armor canAuth $canAuth');
-  initSecureStorage(StorageTest());
+  initStore(FSStore());
   logger.i('[API_URL] $API_URL');
   initRouter(globalAuth);
   runApp(const MyApp());

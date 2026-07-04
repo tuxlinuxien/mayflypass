@@ -4,7 +4,7 @@ import 'package:mayflypass/core/core.dart';
 import 'api_auth_test.dart';
 
 void main() {
-  initSecureStorage(StorageTest());
+  initStore(MemoryStore());
   group('api account', () {
     test('account info', () async {
       await setupAccount();
