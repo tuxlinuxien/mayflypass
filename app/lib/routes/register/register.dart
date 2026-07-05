@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/forms/confirm_master_password.dart';
+import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/master_password.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/register/form_cubit.dart';
-import 'package:mayflypass/routes/register/form_values.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -51,7 +53,7 @@ class RegisterPage extends StatelessWidget {
                     onChanged: cubit.emailChanged,
                     decoration: InputDecoration(
                       labelText: l10n.email,
-                      errorText: _emailError(
+                      errorText: EmailValueError.toHuman(
                         context,
                         state.email.displayError,
                         state.apiEmailError,
@@ -62,7 +64,7 @@ class RegisterPage extends StatelessWidget {
                   // password
                   PasswordField(
                     labelText: l10n.masterPassword,
-                    errorText: _passwordError(
+                    errorText: MasterPasswordValueError.toHuman(
                       context,
                       state.masterPassword.displayError,
                     ),
@@ -72,7 +74,7 @@ class RegisterPage extends StatelessWidget {
                   // confirm password
                   PasswordField(
                     labelText: l10n.confirmMasterPassword,
-                    errorText: _confirmError(
+                    errorText: ConfirmMasterPasswordValueError.toHuman(
                       context,
                       state.confirmMasterPassword.displayError,
                     ),
@@ -93,7 +95,7 @@ class RegisterPage extends StatelessWidget {
                   Spacer32,
                   const Or(),
                   Spacer32,
-                  TextButton(
+                  OutlinedButton(
                     onPressed: () => context.go('/login'),
                     child: Text(l10n.loginToAccount),
                   ),
@@ -104,42 +106,5 @@ class RegisterPage extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String? _emailError(
-    BuildContext context,
-    EmailError? formError,
-    EmailError? apiError,
-  ) {
-    if (formError == null && apiError == null) return null;
-    final error = formError ?? apiError;
-    if (error == null) return null;
-    final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
-      EmailRequiredError() => l10n.fieldRequired,
-      EmailInvalidError() => l10n.emailInvalid,
-      EmailDuplicatedError() => l10n.accountAlreadyExists,
-    };
-  }
-
-  String? _passwordError(BuildContext context, MasterPasswordError? error) {
-    if (error == null) return null;
-    final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
-      MasterPasswordRequiredError() => l10n.fieldRequired,
-      MasterPasswordMinError(:final min) => l10n.passwordTooShort(min),
-    };
-  }
-
-  String? _confirmError(
-    BuildContext context,
-    ConfirmMasterPasswordError? error,
-  ) {
-    if (error == null) return null;
-    final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
-      ConfirmMasterPasswordRequiredError() => l10n.fieldRequired,
-      ConfirmMasterPasswordMismatchError() => l10n.passwordMismatch,
-    };
   }
 }

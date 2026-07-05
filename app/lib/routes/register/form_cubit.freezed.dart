@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RegisterFormState {
 
- Email get email; MasterPassword get masterPassword; ConfirmMasterPassword get confirmMasterPassword; FormStatus get status; ApiError? get apiError; EmailError? get apiEmailError;
+ EmailValue get email; MasterPasswordValue get masterPassword; ConfirmMasterPasswordValue get confirmMasterPassword; FormStatus get status; ApiError? get apiError; EmailValueError? get apiEmailError;
 /// Create a copy of RegisterFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $RegisterFormStateCopyWith<$Res>  {
   factory $RegisterFormStateCopyWith(RegisterFormState value, $Res Function(RegisterFormState) _then) = _$RegisterFormStateCopyWithImpl;
 @useResult
 $Res call({
- Email email, MasterPassword masterPassword, ConfirmMasterPassword confirmMasterPassword, FormStatus status, ApiError? apiError, EmailError? apiEmailError
+ EmailValue email, MasterPasswordValue masterPassword, ConfirmMasterPasswordValue confirmMasterPassword, FormStatus status, ApiError? apiError, EmailValueError? apiEmailError
 });
 
 
@@ -65,12 +65,12 @@ class _$RegisterFormStateCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? masterPassword = null,Object? confirmMasterPassword = null,Object? status = null,Object? apiError = freezed,Object? apiEmailError = freezed,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as Email,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
-as MasterPassword,confirmMasterPassword: null == confirmMasterPassword ? _self.confirmMasterPassword : confirmMasterPassword // ignore: cast_nullable_to_non_nullable
-as ConfirmMasterPassword,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EmailValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
+as MasterPasswordValue,confirmMasterPassword: null == confirmMasterPassword ? _self.confirmMasterPassword : confirmMasterPassword // ignore: cast_nullable_to_non_nullable
+as ConfirmMasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FormStatus,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
 as ApiError?,apiEmailError: freezed == apiEmailError ? _self.apiEmailError : apiEmailError // ignore: cast_nullable_to_non_nullable
-as EmailError?,
+as EmailValueError?,
   ));
 }
 
@@ -155,7 +155,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Email email,  MasterPassword masterPassword,  ConfirmMasterPassword confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailError? apiEmailError)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( EmailValue email,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailValueError? apiEmailError)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RegisterFormState() when $default != null:
 return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiEmailError);case _:
@@ -176,7 +176,7 @@ return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Email email,  MasterPassword masterPassword,  ConfirmMasterPassword confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailError? apiEmailError)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( EmailValue email,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailValueError? apiEmailError)  $default,) {final _that = this;
 switch (_that) {
 case _RegisterFormState():
 return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiEmailError);case _:
@@ -196,7 +196,7 @@ return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Email email,  MasterPassword masterPassword,  ConfirmMasterPassword confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailError? apiEmailError)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( EmailValue email,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailValueError? apiEmailError)?  $default,) {final _that = this;
 switch (_that) {
 case _RegisterFormState() when $default != null:
 return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiEmailError);case _:
@@ -211,15 +211,15 @@ return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_th
 
 
 class _RegisterFormState implements RegisterFormState {
-  const _RegisterFormState({this.email = const Email.pure(), this.masterPassword = const MasterPassword.pure(), this.confirmMasterPassword = const ConfirmMasterPassword.pure(''), this.status = FormStatus.initial, this.apiError, this.apiEmailError});
+  const _RegisterFormState({this.email = const EmailValue.pure(), this.masterPassword = const MasterPasswordValue.pure(), this.confirmMasterPassword = const ConfirmMasterPasswordValue.pure(''), this.status = FormStatus.initial, this.apiError, this.apiEmailError});
   
 
-@override@JsonKey() final  Email email;
-@override@JsonKey() final  MasterPassword masterPassword;
-@override@JsonKey() final  ConfirmMasterPassword confirmMasterPassword;
+@override@JsonKey() final  EmailValue email;
+@override@JsonKey() final  MasterPasswordValue masterPassword;
+@override@JsonKey() final  ConfirmMasterPasswordValue confirmMasterPassword;
 @override@JsonKey() final  FormStatus status;
 @override final  ApiError? apiError;
-@override final  EmailError? apiEmailError;
+@override final  EmailValueError? apiEmailError;
 
 /// Create a copy of RegisterFormState
 /// with the given fields replaced by the non-null parameter values.
@@ -251,7 +251,7 @@ abstract mixin class _$RegisterFormStateCopyWith<$Res> implements $RegisterFormS
   factory _$RegisterFormStateCopyWith(_RegisterFormState value, $Res Function(_RegisterFormState) _then) = __$RegisterFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- Email email, MasterPassword masterPassword, ConfirmMasterPassword confirmMasterPassword, FormStatus status, ApiError? apiError, EmailError? apiEmailError
+ EmailValue email, MasterPasswordValue masterPassword, ConfirmMasterPasswordValue confirmMasterPassword, FormStatus status, ApiError? apiError, EmailValueError? apiEmailError
 });
 
 
@@ -271,12 +271,12 @@ class __$RegisterFormStateCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? masterPassword = null,Object? confirmMasterPassword = null,Object? status = null,Object? apiError = freezed,Object? apiEmailError = freezed,}) {
   return _then(_RegisterFormState(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as Email,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
-as MasterPassword,confirmMasterPassword: null == confirmMasterPassword ? _self.confirmMasterPassword : confirmMasterPassword // ignore: cast_nullable_to_non_nullable
-as ConfirmMasterPassword,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EmailValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
+as MasterPasswordValue,confirmMasterPassword: null == confirmMasterPassword ? _self.confirmMasterPassword : confirmMasterPassword // ignore: cast_nullable_to_non_nullable
+as ConfirmMasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FormStatus,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
 as ApiError?,apiEmailError: freezed == apiEmailError ? _self.apiEmailError : apiEmailError // ignore: cast_nullable_to_non_nullable
-as EmailError?,
+as EmailValueError?,
   ));
 }
 

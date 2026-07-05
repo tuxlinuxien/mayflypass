@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/forms/master_password.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/secure/secure.dart';
-import 'form.dart';
 
 part 'cubit.freezed.dart';
 
@@ -14,7 +14,7 @@ enum FormStatus { initial, submitting, success, failure }
 @freezed
 abstract class UnlockFormState with _$UnlockFormState {
   const factory UnlockFormState({
-    @Default(MasterPassword.pure()) MasterPassword masterPassword,
+    @Default(MasterPasswordValue.pure()) MasterPasswordValue masterPassword,
     @Default(FormStatus.initial) FormStatus status,
   }) = _UnlockFormState;
 }
@@ -26,7 +26,7 @@ class FormCubit extends Cubit<UnlockFormState> {
     emit(
       state.copyWith(
         status: .initial,
-        masterPassword: MasterPassword.dirty(value),
+        masterPassword: MasterPasswordValue.dirty(value),
       ),
     );
   }

@@ -14,6 +14,6 @@ final unlockSalt = utf8.encode('domain/derive/unlockSalt');
 final unlockOutputLen = secretKeyLength;
 
 final masterPasswordMemCost = 64 * 1024;
-final masterPasswordICost = 15;
-final masterPasswordPCost = 3;
+final masterPasswordICost = 5;
+final masterPasswordPCost = 1;
 final masterPasswordOutputLen = secretKeyLength;

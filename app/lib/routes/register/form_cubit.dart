@@ -6,8 +6,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/forms/confirm_master_password.dart';
+import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/master_password.dart';
 import 'package:mayflypass/secure/secure.dart';
-import 'form_values.dart';
 
 part 'form_cubit.freezed.dart';
 
@@ -16,13 +18,13 @@ enum FormStatus { initial, submitting, success, failure }
 @freezed
 abstract class RegisterFormState with _$RegisterFormState {
   const factory RegisterFormState({
-    @Default(Email.pure()) Email email,
-    @Default(MasterPassword.pure()) MasterPassword masterPassword,
-    @Default(ConfirmMasterPassword.pure(''))
-    ConfirmMasterPassword confirmMasterPassword,
+    @Default(EmailValue.pure()) EmailValue email,
+    @Default(MasterPasswordValue.pure()) MasterPasswordValue masterPassword,
+    @Default(ConfirmMasterPasswordValue.pure(''))
+    ConfirmMasterPasswordValue confirmMasterPassword,
     @Default(FormStatus.initial) FormStatus status,
     ApiError? apiError,
-    EmailError? apiEmailError,
+    EmailValueError? apiEmailError,
   }) = _RegisterFormState;
 }
 
@@ -30,19 +32,19 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
   RegisterFormCubit() : super(RegisterFormState());
 
   void emailChanged(String value) {
-    emit(state.copyWith(email: Email.dirty(value), apiEmailError: null));
+    emit(state.copyWith(email: EmailValue.dirty(value), apiEmailError: null));
   }
 
   void masterPasswordChanged(String value) {
     final confirm = state.confirmMasterPassword.isPure
-        ? ConfirmMasterPassword.pure(value)
-        : ConfirmMasterPassword.dirty(
+        ? ConfirmMasterPasswordValue.pure(value)
+        : ConfirmMasterPasswordValue.dirty(
             value,
             value: state.confirmMasterPassword.value,
           );
     emit(
       state.copyWith(
-        masterPassword: MasterPassword.dirty(value),
+        masterPassword: MasterPasswordValue.dirty(value),
         confirmMasterPassword: confirm,
       ),
     );
@@ -51,7 +53,7 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
   void confirmMasterPasswordChanged(String value) {
     emit(
       state.copyWith(
-        confirmMasterPassword: ConfirmMasterPassword.dirty(
+        confirmMasterPassword: ConfirmMasterPasswordValue.dirty(
           state.masterPassword.value,
           value: value,
         ),
@@ -104,9 +106,9 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
         if (error.field == 'email') {
           switch (error) {
             case FieldErrorEmailInvalid():
-              emit(state.copyWith(apiEmailError: EmailInvalidError()));
+              emit(state.copyWith(apiEmailError: EmailValueInvalidError()));
             case FieldErrorValueDuplicated():
-              emit(state.copyWith(apiEmailError: EmailDuplicatedError()));
+              emit(state.copyWith(apiEmailError: EmailValueDuplicatedError()));
             default:
           }
         }

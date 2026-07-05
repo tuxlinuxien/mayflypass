@@ -6,8 +6,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/master_password.dart';
 import 'package:mayflypass/secure/secure.dart';
-import 'form_values.dart';
 
 part 'form_cubit.freezed.dart';
 
@@ -16,10 +17,10 @@ enum FormStatus { initial, submitting, success, failure }
 @freezed
 abstract class LoginFormState with _$LoginFormState {
   const factory LoginFormState({
-    @Default(Email.pure()) Email email,
-    @Default(MasterPassword.pure()) MasterPassword masterPassword,
+    @Default(EmailValue.pure()) EmailValue email,
+    @Default(MasterPasswordValue.pure()) MasterPasswordValue masterPassword,
     @Default(FormStatus.initial) FormStatus status,
-    EmailError? emailError,
+    EmailValueError? emailError,
     ApiError? apiError,
   }) = _LoginFormState;
 }
@@ -30,7 +31,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
   void emailChanged(String value) {
     emit(
       state.copyWith(
-        email: Email.dirty(value),
+        email: EmailValue.dirty(value),
         apiError: null,
         emailError: null,
       ),
@@ -40,7 +41,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
   void masterPasswordChanged(String value) {
     emit(
       state.copyWith(
-        masterPassword: MasterPassword.dirty(value),
+        masterPassword: MasterPasswordValue.dirty(value),
         apiError: null,
       ),
     );
@@ -89,9 +90,9 @@ class LoginFormCubit extends Cubit<LoginFormState> {
         if (error.field == 'email') {
           switch (error) {
             case FieldErrorCredentialsInvalid():
-              emit(state.copyWith(emailError: EmailInvalidCredentialsError()));
+              emit(state.copyWith(emailError: EmailValueCredentialsError()));
             case FieldErrorEmailInvalid():
-              emit(state.copyWith(emailError: EmailInvalidError()));
+              emit(state.copyWith(emailError: EmailValueInvalidError()));
             default:
           }
         }

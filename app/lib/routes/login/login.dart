@@ -2,7 +2,8 @@ import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mayflypass/routes/login/form_values.dart';
+import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/master_password.dart';
 
 import 'form_cubit.dart';
 
@@ -51,7 +52,7 @@ class LoginPage extends StatelessWidget {
                     onChanged: cubit.emailChanged,
                     decoration: InputDecoration(
                       labelText: l10n.email,
-                      errorText: _emailError(
+                      errorText: EmailValueError.toHuman(
                         context,
                         state.email.displayError,
                         state.emailError,
@@ -61,7 +62,7 @@ class LoginPage extends StatelessWidget {
                   Spacer16,
                   PasswordField(
                     labelText: l10n.masterPassword,
-                    errorText: _passwordError(
+                    errorText: MasterPasswordValueError.toHuman(
                       context,
                       state.masterPassword.displayError,
                     ),
@@ -82,7 +83,7 @@ class LoginPage extends StatelessWidget {
                   Spacer32,
                   const Or(),
                   Spacer32,
-                  TextButton(
+                  OutlinedButton(
                     onPressed: () => context.go('/register'),
                     child: Text(l10n.registerNewAccount),
                   ),
@@ -94,27 +95,4 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-}
-
-String? _emailError(
-  BuildContext context,
-  EmailError? formError,
-  EmailError? apiError,
-) {
-  final error = formError ?? apiError;
-  if (error == null) return null;
-  final l10n = AppLocalizations.of(context)!;
-  return switch (error) {
-    EmailRequiredError() => l10n.fieldRequired,
-    EmailInvalidError() => l10n.emailInvalid,
-    EmailInvalidCredentialsError() => l10n.invalidCrentials,
-  };
-}
-
-String? _passwordError(BuildContext context, MasterPasswordError? error) {
-  if (error == null) return null;
-  final l10n = AppLocalizations.of(context)!;
-  return switch (error) {
-    MasterPasswordRequiredError() => l10n.fieldRequired,
-  };
 }

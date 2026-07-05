@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/forms/master_password.dart';
 import 'cubit.dart';
-import 'form.dart';
 
 class UnlockPage extends StatelessWidget {
   const UnlockPage({super.key});
@@ -39,7 +39,7 @@ class UnlockPage extends StatelessWidget {
                 children: [
                   PasswordField(
                     labelText: l10n.masterPassword,
-                    errorText: _passwordError(
+                    errorText: MasterPasswordValueError.toHuman(
                       context,
                       state.masterPassword.displayError,
                     ),
@@ -72,12 +72,4 @@ class UnlockPage extends StatelessWidget {
       ),
     );
   }
-}
-
-String? _passwordError(BuildContext context, MasterPasswordError? error) {
-  if (error == null) return null;
-  final l10n = AppLocalizations.of(context)!;
-  return switch (error) {
-    MasterPasswordRequiredError() => l10n.fieldRequired,
-  };
 }
