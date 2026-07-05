@@ -170,38 +170,6 @@ class FSStore extends Store {
   }
 
   @override
-  Future<bool> getSettingsBiometricEnabled() async {
-    final value = await _getSafeStorage().read(
-      key: 'settings::biometric_enabled',
-    );
-    return (value ?? 'false') == 'true';
-  }
-
-  @override
-  Future<void> setSettingsBiometricEnabled(bool value) async {
-    await _getSafeStorage().write(
-      key: 'settings::biometric_enabled',
-      value: value ? 'true' : 'false',
-    );
-  }
-
-  @override
-  Future<Duration> getSettingsLockAfterDuration() async {
-    final value = await _getSafeStorage().read(
-      key: 'settings::lock_after_duration',
-    );
-    return Duration(seconds: int.tryParse(value ?? '') ?? 30);
-  }
-
-  @override
-  Future<void> setSettingsLockAfterDuration(Duration value) async {
-    await _getSafeStorage().write(
-      key: 'settings::lock_after_duration',
-      value: value.inSeconds.toString(),
-    );
-  }
-
-  @override
   Future<List<int>?> getUnlockKey() async {
     logger.d('getUnlockKey');
     final value = await _getSafeStorage().read(key: 'account::unlock_key');
@@ -217,6 +185,42 @@ class FSStore extends Store {
     await _getSafeStorage().write(
       key: 'account::unlock_key',
       value: HEX.encode(value),
+    );
+  }
+
+  @override
+  Future<bool> getSettingsBiometricEnabled() async {
+    logger.d('getSettingsBiometricEnabled');
+    final value = await _getSafeStorage().read(
+      key: 'settings::biometric_enabled',
+    );
+    return (value ?? 'false') == 'true';
+  }
+
+  @override
+  Future<void> setSettingsBiometricEnabled(bool value) async {
+    logger.d('setSettingsBiometricEnabled');
+    await _getSafeStorage().write(
+      key: 'settings::biometric_enabled',
+      value: value ? 'true' : 'false',
+    );
+  }
+
+  @override
+  Future<Duration> getSettingsLockAfterDuration() async {
+    logger.d('getSettingsLockAfterDuration');
+    final value = await _getSafeStorage().read(
+      key: 'settings::lock_after_duration',
+    );
+    return Duration(seconds: int.tryParse(value ?? '') ?? 30);
+  }
+
+  @override
+  Future<void> setSettingsLockAfterDuration(Duration value) async {
+    logger.d('setSettingsLockAfterDuration');
+    await _getSafeStorage().write(
+      key: 'settings::lock_after_duration',
+      value: value.inSeconds.toString(),
     );
   }
 
