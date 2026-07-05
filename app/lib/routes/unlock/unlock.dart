@@ -39,10 +39,9 @@ class UnlockPage extends StatelessWidget {
                 children: [
                   PasswordField(
                     labelText: l10n.masterPassword,
-                    errorText: MasterPasswordValueError.toHuman(
-                      context,
+                    errorText: MasterPasswordValueError.toHuman(context, [
                       state.masterPassword.displayError,
-                    ),
+                    ]),
                     onChanged: cubit.masterPasswordChanged,
                   ),
                   Spacer16,

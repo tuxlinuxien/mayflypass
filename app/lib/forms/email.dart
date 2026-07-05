@@ -4,16 +4,10 @@ import 'package:mayflypass/core/core.dart';
 sealed class EmailValueError {
   const EmailValueError();
 
-  static String? toHuman(
-    BuildContext context,
-    EmailValueError? formError,
-    EmailValueError? apiError,
-  ) {
-    if (formError == null && apiError == null) return null;
-    final error = formError ?? apiError;
-    if (error == null) return null;
+  static String? toHuman(BuildContext context, List<EmailValueError?> errors) {
+    if (errors.nonNulls.isEmpty) return null;
     final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
+    return switch (errors.nonNulls.first) {
       EmailValueRequiredError() => l10n.fieldRequired,
       EmailValueInvalidError() => l10n.emailInvalid,
       EmailValueDuplicatedError() => l10n.accountAlreadyExists,

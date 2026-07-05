@@ -6,11 +6,11 @@ sealed class MasterPasswordValueError {
 
   static String? toHuman(
     BuildContext context,
-    MasterPasswordValueError? error,
+    List<MasterPasswordValueError?> errors,
   ) {
-    if (error == null) return null;
+    if (errors.nonNulls.isEmpty) return null;
     final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
+    return switch (errors.nonNulls.first) {
       MasterPasswordValueRequiredError() => l10n.fieldRequired,
       MasterPasswordValueMinError(:final min) => l10n.passwordTooShort(min),
     };

@@ -6,11 +6,11 @@ sealed class ConfirmMasterPasswordValueError {
 
   static String? toHuman(
     BuildContext context,
-    ConfirmMasterPasswordValueError? error,
+    List<ConfirmMasterPasswordValueError?> errors,
   ) {
-    if (error == null) return null;
+    if (errors.nonNulls.isEmpty) return null;
     final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
+    return switch (errors.nonNulls.first) {
       ConfirmMasterPasswordValueRequiredError() => l10n.fieldRequired,
       ConfirmMasterPasswordValueMismatchError() => l10n.passwordMismatch,
     };

@@ -53,21 +53,19 @@ class RegisterPage extends StatelessWidget {
                     onChanged: cubit.emailChanged,
                     decoration: InputDecoration(
                       labelText: l10n.email,
-                      errorText: EmailValueError.toHuman(
-                        context,
+                      errorText: EmailValueError.toHuman(context, [
                         state.email.displayError,
                         state.apiEmailError,
-                      ),
+                      ]),
                     ),
                   ),
                   Spacer16,
                   // password
                   PasswordField(
                     labelText: l10n.masterPassword,
-                    errorText: MasterPasswordValueError.toHuman(
-                      context,
+                    errorText: MasterPasswordValueError.toHuman(context, [
                       state.masterPassword.displayError,
-                    ),
+                    ]),
                     onChanged: cubit.masterPasswordChanged,
                   ),
                   Spacer16,
@@ -76,7 +74,7 @@ class RegisterPage extends StatelessWidget {
                     labelText: l10n.confirmMasterPassword,
                     errorText: ConfirmMasterPasswordValueError.toHuman(
                       context,
-                      state.confirmMasterPassword.displayError,
+                      [state.confirmMasterPassword.displayError],
                     ),
                     onChanged: cubit.confirmMasterPasswordChanged,
                   ),
