@@ -1,6 +1,5 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/router.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -12,13 +11,16 @@ class HomePage extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.appName),
         actions: [
           IconButton(
-            icon: const Icon(Icons.lock_outline),
-            tooltip: 'Lock vault',
-            onPressed: () => context.read<AuthCubit>().lock(),
+            onPressed: () => router.push('/settings'),
+            icon: const Icon(Icons.settings),
           ),
         ],
       ),
       body: const Center(child: Text('Vault unlocked')),
+      floatingActionButton: IconButton.filled(
+        onPressed: () {},
+        icon: Icon(Icons.add),
+      ),
     );
   }
 }

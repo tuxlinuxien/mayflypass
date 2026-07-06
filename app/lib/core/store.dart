@@ -275,6 +275,10 @@ void setGlobalKek(SecretKey kek) {
   _globalKek = kek;
 }
 
+void setGlobalTestKek() {
+  _globalKek = SecretKey(List.filled(32, 0));
+}
+
 SecretKey? getGlobalKek() {
   return _globalKek;
 }

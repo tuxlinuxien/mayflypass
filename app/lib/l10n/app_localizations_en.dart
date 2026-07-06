@@ -71,4 +71,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlock => 'Unlock';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get logout => 'Logout';
 }

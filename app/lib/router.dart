@@ -6,6 +6,7 @@ import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/routes/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
+import 'package:mayflypass/routes/settings/settings.dart';
 import 'package:mayflypass/routes/splash.dart';
 import 'package:mayflypass/routes/unlock/unlock.dart';
 
@@ -26,12 +27,12 @@ GoRouter createRouter(AuthCubit authCubit) {
           return loc == '/splash' ? null : '/splash';
         case AuthStatus.unauthenticated:
           return ['/login', '/register'].contains(loc) ? null : '/login';
-        case AuthStatus.unlocked:
-          return loc == '/home' ? null : '/home';
         case AuthStatus.locked:
           return ['/unlock', '/login', '/register'].contains(loc)
               ? null
               : '/unlock';
+        case AuthStatus.unlocked:
+          return ['/home', '/settings'].contains(loc) ? null : '/home';
       }
     },
     routes: [
@@ -40,6 +41,7 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(path: '/register', builder: (ctx, state) => const RegisterPage()),
       GoRoute(path: '/unlock', builder: (ctx, state) => const UnlockPage()),
       GoRoute(path: '/home', builder: (ctx, state) => const HomePage()),
+      GoRoute(path: '/settings', builder: (ctx, state) => const SettingsPage()),
     ],
   );
 }

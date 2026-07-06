@@ -15,6 +15,7 @@ class AuthCubit extends Cubit<AuthStatus> {
       emit(AuthStatus.unauthenticated);
       return;
     }
+
     // try to get the kek from storage but continue if it's not present
     final kek = await globalStore.getKek();
     if (kek != null) {

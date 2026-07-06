@@ -52,5 +52,9 @@
   "invalidMasterPassword": "Invalid master password",
   "@invalidMasterPassword": {},
   "unlock": "Unlock",
-  "@unlock": {}
+  "@unlock": {},
+  "settings": "Settings",
+  "@settings": {},
+  "logout": "Logout",
+  "@logout": {}
 }

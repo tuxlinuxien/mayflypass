@@ -4,10 +4,19 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+const testing = true;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (testing) {
+    initStore(MemoryStore());
+    setGlobalTestKek();
+    await globalStore.setEmail('yoann@mail.com');
+    globalAuth.unlock();
+  } else {
+    initStore(FSStore());
+  }
 
-  initStore(FSStore());
   logger.i('[API_URL] $API_URL');
   initRouter(globalAuth);
   runApp(const MyApp());
@@ -24,7 +33,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    globalAuth.checkAuth();
+    if (testing == false) {
+      globalAuth.checkAuth();
+    }
   }
 
   @override
@@ -46,8 +57,9 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [Locale('en')],
-        //theme: AppTheme.dark,
-        // darkTheme: AppTheme.dark,
+        theme: ThemeData.dark(useMaterial3: true),
+        darkTheme: ThemeData.dark(useMaterial3: true),
+        themeMode: .dark,
         routerConfig: router,
       ),
     );
