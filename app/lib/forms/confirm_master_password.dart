@@ -8,11 +8,11 @@ sealed class ConfirmMasterPasswordValueError {
     BuildContext context,
     List<ConfirmMasterPasswordValueError?> errors,
   ) {
-    if (errors.nonNulls.isEmpty) return null;
     final l10n = AppLocalizations.of(context)!;
-    return switch (errors.nonNulls.first) {
+    return switch (errors.nonNulls.firstOrNull) {
       ConfirmMasterPasswordValueRequiredError() => l10n.fieldRequired,
       ConfirmMasterPasswordValueMismatchError() => l10n.passwordMismatch,
+      null => null,
     };
   }
 }

@@ -8,6 +8,7 @@ var logger = Logger(
     colors: true, // Colorful log messages
     printEmojis: true, // Print an emoji for each log message
     // Should each log print contain a timestamp
+    noBoxingByDefault: true,
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
   ),
 );
@@ -19,6 +20,7 @@ var apiLogger = Logger(
     lineLength: 120, // Width of the output
     colors: true, // Colorful log messages
     printEmojis: true, // Print an emoji for each log message
+    noBoxingByDefault: true,
     // Should each log print contain a timestamp
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
   ),

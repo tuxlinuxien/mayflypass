@@ -5,13 +5,13 @@ sealed class EmailValueError {
   const EmailValueError();
 
   static String? toHuman(BuildContext context, List<EmailValueError?> errors) {
-    if (errors.nonNulls.isEmpty) return null;
     final l10n = AppLocalizations.of(context)!;
-    return switch (errors.nonNulls.first) {
+    return switch (errors.nonNulls.firstOrNull) {
       EmailValueRequiredError() => l10n.fieldRequired,
       EmailValueInvalidError() => l10n.emailInvalid,
       EmailValueDuplicatedError() => l10n.accountAlreadyExists,
       EmailValueCredentialsError() => l10n.invalidCrentials,
+      null => null,
     };
   }
 }
