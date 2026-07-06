@@ -4,11 +4,9 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-const testing = true;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (testing) {
+  if (DEV_MODE) {
     initStore(MemoryStore());
     setGlobalTestKek();
     await globalStore.setEmail('yoann@mail.com');
@@ -33,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    if (testing == false) {
+    if (!DEV_MODE) {
       globalAuth.checkAuth();
     }
   }

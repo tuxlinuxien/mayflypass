@@ -33,7 +33,6 @@ class SettingsPage extends StatelessWidget {
                           value: state.biometricUnlock ?? false,
                           onChnaged: cubit.updateBiometricUnlock,
                         ),
-                        Divider(),
                         LockoutAfterItem(
                           value: state.lockoutAfter ?? Duration(seconds: 30),
                           onChanged: cubit.updateLockoutAfter,
