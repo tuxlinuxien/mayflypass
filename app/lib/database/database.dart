@@ -85,6 +85,18 @@ class AppDatabase extends _$AppDatabase {
       ),
     );
   }
+
+  Future<void> deleteStorage(String id) async {
+    await upsert(
+      LocalStorageData(
+        id: id,
+        version: DateTime.now().millisecondsSinceEpoch,
+        deleted: true,
+        encryptedDek: Uint8List(0),
+        encryptedPayload: Uint8List(0),
+      ),
+    );
+  }
 }
 
 QueryExecutor _openConnection() {
