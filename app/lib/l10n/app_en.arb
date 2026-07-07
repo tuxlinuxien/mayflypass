@@ -56,5 +56,7 @@
   "settings": "Settings",
   "@settings": {},
   "logout": "Logout",
-  "@logout": {}
+  "@logout": {},
+  "newTotp": "New TOTP",
+  "@newTotp": {}
 }

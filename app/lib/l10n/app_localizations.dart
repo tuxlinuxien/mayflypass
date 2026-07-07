@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logout'**
   String get logout;
+
+  /// No description provided for @newTotp.
+  ///
+  /// In en, this message translates to:
+  /// **'New TOTP'**
+  String get newTotp;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

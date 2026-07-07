@@ -15,6 +15,7 @@ message Totp {
     int32           period = 6 [default = 30];
     bool            favorite = 7;
     int64           created_at_ms = 8;
+    repeated string tags = 9;
 }
 
 message DataBox {
