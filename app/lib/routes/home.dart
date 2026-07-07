@@ -1,4 +1,5 @@
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/router.dart';
 
 class HomePage extends StatelessWidget {
@@ -21,6 +22,7 @@ class HomePage extends StatelessWidget {
         onPressed: () async {
           final refresh = await router.push<bool?>('/totp');
           logger.i(refresh);
+          logger.d('total items ${await gloablDB.countStorage()}');
         },
         icon: Icon(Icons.add),
       ),

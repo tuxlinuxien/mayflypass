@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/forms/totp_issuer.dart';
@@ -14,7 +15,14 @@ class TotpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TotpCubit()..load(id),
-      child: BlocBuilder<TotpCubit, TotpState>(
+      child: BlocConsumer<TotpCubit, TotpState>(
+        listener: (context, state) {
+          switch (state.status) {
+            case TotpStatus.success:
+              context.pop(true);
+            default:
+          }
+        },
         builder: (context, state) {
           final l10i = AppLocalizations.of(context)!;
           final cubit = context.read<TotpCubit>();

@@ -1,6 +1,7 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:drift/native.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -8,11 +9,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (DEV_MODE) {
     initStore(MemoryStore());
+    initDB(NativeDatabase.memory(logStatements: true));
     setGlobalTestKek();
     await globalStore.setEmail('yoann@mail.com');
     globalAuth.unlock();
   } else {
     initStore(FSStore());
+    initDB();
   }
 
   logger.i('[API_URL] $API_URL');

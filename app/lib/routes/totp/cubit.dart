@@ -134,7 +134,9 @@ class TotpCubit extends Cubit<TotpState> {
       encryptedPayload: encryptedPayload,
     );
 
-    // TODO: add entry to the database.
+    logger.i('upsert into database...');
+    await gloablDB.upsert(entry);
+    logger.i('upsered [OK]');
 
     emit(state.copyWith(status: .success));
     return true;

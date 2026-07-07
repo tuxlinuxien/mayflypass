@@ -6,6 +6,12 @@ import 'local_storage.dart';
 
 part 'database.g.dart';
 
+late final AppDatabase gloablDB;
+
+void initDB([QueryExecutor? executor]) {
+  gloablDB = AppDatabase(executor);
+}
+
 @DriftDatabase(tables: [LocalStorage])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
@@ -37,6 +43,28 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> upsertStorage(ApiStorage value) async {
     final input = localStorageDataFromApiStorage(value);
+    await into(localStorage).insert(
+      LocalStorageCompanion.insert(
+        id: input.id,
+        version: input.version,
+        deleted: input.deleted,
+        encryptedDek: input.encryptedDek,
+        encryptedPayload: input.encryptedPayload,
+      ),
+      onConflict: DoUpdate(
+        (_) => LocalStorageCompanion(
+          version: Value(input.version),
+          deleted: Value(input.deleted),
+          encryptedDek: Value(input.encryptedDek),
+          encryptedPayload: Value(input.encryptedPayload),
+        ),
+        where: (old) =>
+            localStorage.version.isSmallerThan(Variable(input.version)),
+      ),
+    );
+  }
+
+  Future<void> upsert(LocalStorageData input) async {
     await into(localStorage).insert(
       LocalStorageCompanion.insert(
         id: input.id,
