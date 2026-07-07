@@ -272,17 +272,21 @@ void initStore(Store s) {
 SecretKey? _globalKek;
 
 void setGlobalKek(SecretKey kek) {
+  logger.d('set global kek');
   _globalKek = kek;
 }
 
 void setGlobalTestKek() {
+  logger.d('set global test kek');
   _globalKek = SecretKey(List.filled(32, 0));
 }
 
 SecretKey? getGlobalKek() {
+  logger.d('get global test kek');
   return _globalKek;
 }
 
 void deleteGlobalKek() {
+  logger.d('delete global kek');
   _globalKek = null;
 }

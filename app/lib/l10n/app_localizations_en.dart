@@ -43,7 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String passwordTooShort(int min) {
-    return 'Password must be at least $min characters';
+    return 'Password must be at least $min characters long';
   }
 
   @override
@@ -80,4 +80,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newTotp => 'New TOTP';
+
+  @override
+  String totpSecretTooShort(int min) {
+    return 'Secrete must be at least $min characters long';
+  }
+
+  @override
+  String totpPeriodSeconds(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: '$seconds seconds',
+      one: '1 second',
+      zero: '0 seconds',
+    );
+    return '$_temp0';
+  }
 }

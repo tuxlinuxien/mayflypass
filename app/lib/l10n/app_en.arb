@@ -23,7 +23,7 @@
   "@fieldRequired": {},
   "emailInvalid": "Invalid email address",
   "@emailInvalid": {},
-  "passwordTooShort": "Password must be at least {min} characters",
+  "passwordTooShort": "Password must be at least {min} characters long",
   "@passwordTooShort": {
     "placeholders": {
       "min": {
@@ -58,5 +58,21 @@
   "logout": "Logout",
   "@logout": {},
   "newTotp": "New TOTP",
-  "@newTotp": {}
+  "@newTotp": {},
+  "totpSecretTooShort": "Secrete must be at least {min} characters long",
+  "@totpSecretTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "totpPeriodSeconds": "{seconds, plural, =0{0 seconds} =1{1 second} other{{seconds} seconds}}",
+  "@totpPeriodSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  }
 }

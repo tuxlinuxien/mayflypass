@@ -18,7 +18,10 @@ class HomePage extends StatelessWidget {
       ),
       body: const Center(child: Text('Vault unlocked')),
       floatingActionButton: IconButton.filled(
-        onPressed: () {},
+        onPressed: () async {
+          final refresh = await router.push<bool?>('/totp');
+          logger.i(refresh);
+        },
         icon: Icon(Icons.add),
       ),
     );

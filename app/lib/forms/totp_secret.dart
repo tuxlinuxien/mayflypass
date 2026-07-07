@@ -8,7 +8,12 @@ sealed class TotpSecretValueError {
     BuildContext context,
     List<TotpSecretValueError?> errors,
   ) {
-    return null;
+    final error = errors.nonNulls.firstOrNull;
+    final l10i = AppLocalizations.of(context)!;
+    return switch (error) {
+      TotpSecretValueErrorMin() => l10i.totpSecretTooShort(error.min),
+      null => null,
+    };
   }
 }
 

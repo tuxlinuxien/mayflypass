@@ -162,7 +162,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordTooShort.
   ///
   /// In en, this message translates to:
-  /// **'Password must be at least {min} characters'**
+  /// **'Password must be at least {min} characters long'**
   String passwordTooShort(int min);
 
   /// No description provided for @passwordMismatch.
@@ -230,6 +230,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New TOTP'**
   String get newTotp;
+
+  /// No description provided for @totpSecretTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Secrete must be at least {min} characters long'**
+  String totpSecretTooShort(int min);
+
+  /// No description provided for @totpPeriodSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =0{0 seconds} =1{1 second} other{{seconds} seconds}}'**
+  String totpPeriodSeconds(int seconds);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

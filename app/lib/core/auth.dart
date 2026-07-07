@@ -1,15 +1,12 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mayflypass/core/core.dart';
 
 enum AuthStatus { loading, unauthenticated, unlocked, locked }
 
 class AuthCubit extends Cubit<AuthStatus> {
-  AuthCubit() : super(AuthStatus.loading) {
-    // always delete the kek when the app boots.
-    deleteGlobalKek();
-  }
+  AuthCubit() : super(AuthStatus.loading);
 
   Future<void> checkAuth() async {
+    logger.d('check auth');
     final email = await globalStore.getEmail();
     if (email == null) {
       emit(AuthStatus.unauthenticated);
