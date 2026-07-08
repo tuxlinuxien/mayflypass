@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
-import 'package:mayflypass/routes/home.dart';
+import 'package:mayflypass/routes/home/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
 import 'package:mayflypass/routes/totp/widgets/scanner.dart';
