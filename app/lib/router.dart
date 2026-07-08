@@ -6,6 +6,7 @@ import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/routes/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
+import 'package:mayflypass/routes/totp/widgets/scanner.dart';
 import 'package:mayflypass/routes/settings/settings.dart';
 import 'package:mayflypass/routes/splash.dart';
 import 'package:mayflypass/routes/totp/totp.dart';
@@ -33,7 +34,9 @@ GoRouter createRouter(AuthCubit authCubit) {
               ? null
               : '/unlock';
         case AuthStatus.unlocked:
-          return ['/home', '/settings', '/totp'].contains(loc) ? null : '/home';
+          return ['/home', '/settings', '/totp', '/totp-scanner'].contains(loc)
+              ? null
+              : '/home';
       }
     },
     routes: [
@@ -44,6 +47,10 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(path: '/home', builder: (ctx, state) => const HomePage()),
       GoRoute(path: '/settings', builder: (ctx, state) => const SettingsPage()),
       GoRoute(path: '/totp', builder: (ctx, state) => const TotpPage(id: null)),
+      GoRoute(
+        path: '/totp-scanner',
+        builder: (ctx, state) => const ScannerPage(),
+      ),
     ],
   );
 }

@@ -3,7 +3,9 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/forms/totp_issuer.dart';
 import 'package:mayflypass/forms/totp_secret.dart';
+import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/totp/cubit.dart';
+import 'package:mayflypass/routes/totp/widgets/scanner.dart';
 import 'package:uuid/uuid.dart';
 
 class TotpPage extends StatelessWidget {
@@ -110,6 +112,14 @@ class TotpPage extends StatelessWidget {
                   ),
                   Spacer16,
                   FilledButton(onPressed: cubit.submit, child: Text('Save')),
+                  Spacer32,
+                  OutlinedButton(
+                    onPressed: () async {
+                      final code = await context.push<String?>('/totp-scanner');
+                      logger.i(code);
+                    },
+                    child: Icon(Icons.qr_code_2),
+                  ),
                 ],
               ),
             ),
