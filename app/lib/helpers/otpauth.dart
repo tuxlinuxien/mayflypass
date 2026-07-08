@@ -95,8 +95,8 @@ class OtpAuthResult {
     }
 
     return OtpAuthResult(
-      issuer: issuer,
-      account: account,
+      issuer: Uri.decodeComponent(issuer),
+      account: Uri.decodeComponent(account),
       secret: secret,
       algorithm: algorithm,
       digits: digits,

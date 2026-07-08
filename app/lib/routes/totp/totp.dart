@@ -31,12 +31,14 @@ class __TotpPageState extends State<_TotpPage> {
   final _issuerController = TextEditingController();
   final _accountController = TextEditingController();
   final _secretController = TextEditingController();
+  final _tagsController = TextEditingController();
 
   @override
   void dispose() {
     _issuerController.dispose();
     _accountController.dispose();
     _secretController.dispose();
+    _tagsController.dispose();
     super.dispose();
   }
 
@@ -53,6 +55,7 @@ class __TotpPageState extends State<_TotpPage> {
               _issuerController.text = state.issuer.value;
               _accountController.text = state.account.value;
               _secretController.text = state.secret.value;
+              _tagsController.text = state.tags.join(',');
             default:
           }
         },
@@ -138,7 +141,7 @@ class __TotpPageState extends State<_TotpPage> {
                   Spacer16,
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Tags'),
-                    initialValue: state.tags.join(','),
+                    controller: _tagsController,
                     onChanged: cubit.changeTags,
                   ),
                   Spacer16,
@@ -151,13 +154,9 @@ class __TotpPageState extends State<_TotpPage> {
                       if (otpA == null) {
                         return;
                       }
-                      logger.i('======> $code');
                       cubit.changeIssuer(otpA.issuer);
-
                       cubit.changeAccount(otpA.account);
-                      _accountController.text = otpA.account;
                       cubit.changeSecret(otpA.secret);
-                      _secretController.text = otpA.secret;
                       cubit.changeAlgorithm(otpA.algorithm);
                       cubit.changeDigits(otpA.digits);
                       cubit.changePeriod(otpA.period);

@@ -46,44 +46,61 @@ class TotpCubit extends Cubit<TotpState> {
 
   Future<void> load(UuidValue? id) async {
     if (id == null) {
-      emit(state.copyWith(status: TotpStatus.ready));
+      emit(state.copyWith(status: .ready));
       return;
     }
   }
 
   void changeIssuer(String value) {
-    emit(state.copyWith(issuer: TotpIssuerValue.dirty(value.trim())));
+    emit(
+      state.copyWith(
+        status: .ready,
+        issuer: TotpIssuerValue.dirty(value.trim()),
+      ),
+    );
   }
 
   void changeAccount(String value) {
-    emit(state.copyWith(account: TotpAccountValue.dirty(value.trim())));
+    emit(
+      state.copyWith(
+        status: .ready,
+        account: TotpAccountValue.dirty(value.trim()),
+      ),
+    );
   }
 
   void changeSecret(String value) {
-    emit(state.copyWith(secret: TotpSecretValue.dirty(value.trim())));
+    emit(
+      state.copyWith(
+        status: .ready,
+        secret: TotpSecretValue.dirty(value.trim()),
+      ),
+    );
   }
 
   void changeAlgorithm(TotpAlgorithm? value) {
-    emit(state.copyWith(algorithm: value ?? TotpAlgorithm.SHA1));
+    emit(
+      state.copyWith(status: .ready, algorithm: value ?? TotpAlgorithm.SHA1),
+    );
   }
 
   void changeDigits(int? value) {
-    emit(state.copyWith(digits: value ?? 6));
+    emit(state.copyWith(status: .ready, digits: value ?? 6));
   }
 
   void changePeriod(int? value) {
-    emit(state.copyWith(period: value ?? 30));
+    emit(state.copyWith(status: .ready, period: value ?? 30));
   }
 
   void changeFavorite(bool? value) {
-    emit(state.copyWith(favorite: value ?? false));
+    emit(state.copyWith(status: .ready, favorite: value ?? false));
   }
 
   void changeTags(String value) {
     var tags = value.trim().split(',');
     tags = tags.map((tag) => tag.trim()).toList();
     tags.removeWhere((tag) => tag.isEmpty);
-    emit(state.copyWith(tags: tags));
+    emit(state.copyWith(status: .ready, tags: tags));
   }
 
   Future<bool> submit() async {
@@ -116,16 +133,6 @@ class TotpCubit extends Cubit<TotpState> {
       getGlobalKek()!,
       databox,
     );
-
-    // try to decrypt the payload to make sure the entry is not corrupted.
-    try {
-      decryptDataBox(getGlobalKek()!, encryptedDek, encryptedPayload);
-    } catch (e) {
-      logger.e(e);
-      emit(state.copyWith(status: .failure));
-      emit(state.copyWith(status: .ready));
-      return false;
-    }
 
     final entry = LocalStorageData(
       id: Uuid.unparse(state.id.toBytes()),
