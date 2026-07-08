@@ -123,6 +123,7 @@ class TotpCubit extends Cubit<TotpState> {
     } catch (e) {
       logger.e(e);
       emit(state.copyWith(status: .failure));
+      emit(state.copyWith(status: .ready));
       return false;
     }
 

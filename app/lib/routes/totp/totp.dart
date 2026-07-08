@@ -3,9 +3,8 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/forms/totp_issuer.dart';
 import 'package:mayflypass/forms/totp_secret.dart';
-import 'package:mayflypass/router.dart';
+import 'package:mayflypass/helpers/otpauth.dart';
 import 'package:mayflypass/routes/totp/cubit.dart';
-import 'package:mayflypass/routes/totp/widgets/scanner.dart';
 import 'package:uuid/uuid.dart';
 
 class TotpPage extends StatelessWidget {
@@ -15,13 +14,45 @@ class TotpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _TotpPage(id: id);
+  }
+}
+
+class _TotpPage extends StatefulWidget {
+  final UuidValue? id;
+
+  const _TotpPage({this.id});
+
+  @override
+  State<_TotpPage> createState() => __TotpPageState();
+}
+
+class __TotpPageState extends State<_TotpPage> {
+  final _issuerController = TextEditingController();
+  final _accountController = TextEditingController();
+  final _secretController = TextEditingController();
+
+  @override
+  void dispose() {
+    _issuerController.dispose();
+    _accountController.dispose();
+    _secretController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TotpCubit()..load(id),
+      create: (context) => TotpCubit()..load(widget.id),
       child: BlocConsumer<TotpCubit, TotpState>(
         listener: (context, state) {
           switch (state.status) {
             case TotpStatus.success:
               context.pop(true);
+            case TotpStatus.ready:
+              _issuerController.text = state.issuer.value;
+              _accountController.text = state.account.value;
+              _secretController.text = state.secret.value;
             default:
           }
         },
@@ -41,13 +72,13 @@ class TotpPage extends StatelessWidget {
                         state.issuer.displayError,
                       ]),
                     ),
-                    initialValue: state.issuer.value,
+                    controller: _issuerController,
                     onChanged: cubit.changeIssuer,
                   ),
                   Spacer16,
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Account'),
-                    initialValue: state.account.value,
+                    controller: _accountController,
                     onChanged: cubit.changeAccount,
                   ),
                   Spacer16,
@@ -58,7 +89,7 @@ class TotpPage extends StatelessWidget {
                         state.secret.displayError,
                       ]),
                     ),
-                    initialValue: state.secret.value,
+                    controller: _secretController,
                     onChanged: cubit.changeSecret,
                   ),
                   Spacer16,
@@ -74,7 +105,7 @@ class TotpPage extends StatelessWidget {
                   Text('Digits'),
                   DropdownButton<int>(
                     value: state.digits,
-                    items: [6, 8].map((e) {
+                    items: [6, 7, 8].map((e) {
                       return DropdownMenuItem(
                         value: e,
                         child: Text(e.toString()),
@@ -86,7 +117,7 @@ class TotpPage extends StatelessWidget {
                   Text('Period'),
                   DropdownButton<int>(
                     value: state.period,
-                    items: [30, 60].map((e) {
+                    items: [15, 30, 60].map((e) {
                       return DropdownMenuItem(
                         value: e,
                         child: Text(l10i.totpPeriodSeconds(e)),
@@ -116,7 +147,20 @@ class TotpPage extends StatelessWidget {
                   OutlinedButton(
                     onPressed: () async {
                       final code = await context.push<String?>('/totp-scanner');
-                      logger.i(code);
+                      final otpA = OtpAuthResult.parse(code);
+                      if (otpA == null) {
+                        return;
+                      }
+                      logger.i('======> $code');
+                      cubit.changeIssuer(otpA.issuer);
+
+                      cubit.changeAccount(otpA.account);
+                      _accountController.text = otpA.account;
+                      cubit.changeSecret(otpA.secret);
+                      _secretController.text = otpA.secret;
+                      cubit.changeAlgorithm(otpA.algorithm);
+                      cubit.changeDigits(otpA.digits);
+                      cubit.changePeriod(otpA.period);
                     },
                     child: Icon(Icons.qr_code_2),
                   ),

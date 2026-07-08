@@ -4,7 +4,6 @@ import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/secure/secure.dart';
-import 'package:uuid/uuid.dart';
 
 part 'home.freezed.dart';
 
