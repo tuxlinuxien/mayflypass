@@ -45,9 +45,40 @@ class TotpCubit extends Cubit<TotpState> {
   TotpCubit() : super(TotpState.init());
 
   Future<void> load(UuidValue? id) async {
+    logger.w('with id: $id');
     if (id == null) {
       emit(state.copyWith(status: .ready));
       return;
+    }
+    final entry = await gloablDB.getStorage(id);
+    if (entry == null) {
+      emit(state.copyWith(status: .ready));
+      return;
+    }
+    try {
+      final dbox = await decryptDataBox(
+        getGlobalKek()!,
+        entry.encryptedDek,
+        entry.encryptedPayload,
+      );
+      emit(
+        state.copyWith(
+          id: id,
+          issuer: TotpIssuerValue.dirty(dbox.totp.issuer),
+          account: TotpAccountValue.dirty(dbox.totp.account),
+          secret: TotpSecretValue.dirty(dbox.totp.secret),
+          algorithm: dbox.totp.algorithm,
+          digits: dbox.totp.digits,
+          period: dbox.totp.period,
+          favorite: dbox.totp.favorite,
+          tags: dbox.totp.tags,
+        ),
+      );
+      logger.i('totp entry loaded');
+    } catch (e) {
+      logger.e(e);
+    } finally {
+      emit(state.copyWith(status: .ready));
     }
   }
 

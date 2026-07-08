@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
+import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/routes/home/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
@@ -11,6 +12,7 @@ import 'package:mayflypass/routes/settings/settings.dart';
 import 'package:mayflypass/routes/splash.dart';
 import 'package:mayflypass/routes/totp/totp.dart';
 import 'package:mayflypass/routes/unlock/unlock.dart';
+import 'package:uuid/uuid.dart';
 
 late final GoRouter router;
 
@@ -34,9 +36,14 @@ GoRouter createRouter(AuthCubit authCubit) {
               ? null
               : '/unlock';
         case AuthStatus.unlocked:
-          return ['/home', '/settings', '/totp', '/totp-scanner'].contains(loc)
-              ? null
-              : '/home';
+          if (loc == '/home') {
+            return '/home';
+          } else if (loc == '/settings') {
+            return '/settings';
+          } else if (loc.startsWith('/totp')) {
+            return loc;
+          }
+          return '/home';
       }
     },
     routes: [
@@ -46,7 +53,19 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(path: '/unlock', builder: (ctx, state) => const UnlockPage()),
       GoRoute(path: '/home', builder: (ctx, state) => const HomePage()),
       GoRoute(path: '/settings', builder: (ctx, state) => const SettingsPage()),
-      GoRoute(path: '/totp', builder: (ctx, state) => const TotpPage(id: null)),
+      GoRoute(
+        path: '/totp',
+        builder: (ctx, state) {
+          return const TotpPage(id: null);
+        },
+      ),
+      GoRoute(
+        path: '/totp/:id',
+        builder: (ctx, state) {
+          final id = UuidValue.fromString(state.pathParameters['id']!);
+          return TotpPage(id: id);
+        },
+      ),
       GoRoute(
         path: '/totp-scanner',
         builder: (ctx, state) => const ScannerPage(),

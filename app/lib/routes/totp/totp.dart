@@ -68,64 +68,39 @@ class __TotpPageState extends State<_TotpPage> {
               child: Column(
                 crossAxisAlignment: .stretch,
                 children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Issuer',
-                      errorText: TotpIssuerValueError.toHuman(context, [
-                        state.issuer.displayError,
-                      ]),
-                    ),
+                  IssuerInput(
                     controller: _issuerController,
                     onChanged: cubit.changeIssuer,
+                    errorText: TotpIssuerValueError.toHuman(context, [
+                      state.issuer.displayError,
+                    ]),
                   ),
                   Spacer16,
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Account'),
+                  AccountInput(
                     controller: _accountController,
                     onChanged: cubit.changeAccount,
                   ),
                   Spacer16,
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Secret',
-                      errorText: TotpSecretValueError.toHuman(context, [
-                        state.secret.displayError,
-                      ]),
-                    ),
+                  SecretInput(
                     controller: _secretController,
                     onChanged: cubit.changeSecret,
+                    errorText: TotpSecretValueError.toHuman(context, [
+                      state.secret.displayError,
+                    ]),
                   ),
                   Spacer16,
-                  Text('Algorithm'),
-                  DropdownButton<TotpAlgorithm>(
+                  AlgorithmSelector(
                     value: state.algorithm,
-                    items: TotpAlgorithm.values.map((e) {
-                      return DropdownMenuItem(value: e, child: Text(e.name));
-                    }).toList(),
                     onChanged: cubit.changeAlgorithm,
                   ),
                   Spacer16,
-                  Text('Digits'),
-                  DropdownButton<int>(
+                  DigitsSelector(
                     value: state.digits,
-                    items: [6, 7, 8].map((e) {
-                      return DropdownMenuItem(
-                        value: e,
-                        child: Text(e.toString()),
-                      );
-                    }).toList(),
                     onChanged: cubit.changeDigits,
                   ),
                   Spacer16,
-                  Text('Period'),
-                  DropdownButton<int>(
+                  PeriodSelector(
                     value: state.period,
-                    items: [15, 30, 60].map((e) {
-                      return DropdownMenuItem(
-                        value: e,
-                        child: Text(l10i.totpPeriodSeconds(e)),
-                      );
-                    }).toList(),
                     onChanged: cubit.changePeriod,
                   ),
                   Spacer16,
@@ -169,6 +144,160 @@ class __TotpPageState extends State<_TotpPage> {
           );
         },
       ),
+    );
+  }
+}
+
+class IssuerInput extends StatelessWidget {
+  final TextEditingController controller;
+  final Function(String)? onChanged;
+  final String? errorText;
+
+  const IssuerInput({
+    super.key,
+    required this.controller,
+    this.onChanged,
+    this.errorText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Issuer', errorText: errorText),
+      controller: controller,
+      onChanged: onChanged,
+    );
+  }
+}
+
+class AccountInput extends StatelessWidget {
+  final TextEditingController controller;
+  final Function(String)? onChanged;
+  final String? errorText;
+
+  const AccountInput({
+    super.key,
+    required this.controller,
+    this.onChanged,
+    this.errorText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Account', errorText: errorText),
+      controller: controller,
+      onChanged: onChanged,
+    );
+  }
+}
+
+class SecretInput extends StatelessWidget {
+  final TextEditingController controller;
+  final Function(String)? onChanged;
+  final String? errorText;
+
+  const SecretInput({
+    super.key,
+    required this.controller,
+    this.onChanged,
+    this.errorText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Secret', errorText: errorText),
+      controller: controller,
+      onChanged: onChanged,
+    );
+  }
+}
+
+class AlgorithmSelector extends StatelessWidget {
+  final TotpAlgorithm? value;
+  final Function(TotpAlgorithm?) onChanged;
+
+  const AlgorithmSelector({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Text('Algorithm'),
+        DropdownButton<TotpAlgorithm>(
+          value: value,
+          items: TotpAlgorithm.values.map((e) {
+            return DropdownMenuItem(value: e, child: Text(e.name));
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class DigitsSelector extends StatelessWidget {
+  final int? value;
+  final Function(int?) onChanged;
+
+  const DigitsSelector({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Text('Digits'),
+        DropdownButton<int>(
+          value: value,
+          items: [6, 7, 8].map((e) {
+            return DropdownMenuItem(value: e, child: Text(e.toString()));
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class PeriodSelector extends StatelessWidget {
+  final int? value;
+  final Function(int?) onChanged;
+
+  const PeriodSelector({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Text('Period'),
+        DropdownButton<int>(
+          value: value,
+          items: [15, 30, 60].map((e) {
+            return DropdownMenuItem(
+              value: e,
+              child: Text(l10i.totpPeriodSeconds(e)),
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ],
     );
   }
 }

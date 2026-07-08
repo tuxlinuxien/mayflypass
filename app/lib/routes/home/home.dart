@@ -4,6 +4,7 @@ import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/secure/secure.dart';
+import 'package:uuid/uuid.dart';
 
 part 'home.freezed.dart';
 
@@ -97,6 +98,19 @@ class HomePage extends StatelessWidget {
                         foregroundColor: Colors.white,
                         icon: Icons.delete,
                         label: 'Delete',
+                      ),
+                      SlidableAction(
+                        onPressed: (_) async {
+                          await router.push(
+                            '/totp/${state.databoxes[index].$1}',
+                          );
+                          // reload the entries
+                          await cubit.load();
+                        },
+                        backgroundColor: Colors.grey.shade900,
+                        foregroundColor: Colors.white,
+                        icon: Icons.edit,
+                        label: 'Edit',
                       ),
                     ],
                   ),
