@@ -13,7 +13,7 @@ import 'package:uuid/v7.dart';
 
 part 'cubit.freezed.dart';
 
-enum TotpStatus { loading, ready, success, failure }
+enum TotpStatus { loading, loaded, ready, success, failure }
 
 @freezed
 abstract class TotpState with _$TotpState {
@@ -63,6 +63,7 @@ class TotpCubit extends Cubit<TotpState> {
       );
       emit(
         state.copyWith(
+          status: .loaded, // tell the ui to update text controllers
           id: id,
           issuer: TotpIssuerValue.dirty(dbox.totp.issuer),
           account: TotpAccountValue.dirty(dbox.totp.account),

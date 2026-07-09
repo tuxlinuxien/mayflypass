@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
@@ -51,7 +53,7 @@ class __TotpPageState extends State<_TotpPage> {
           switch (state.status) {
             case TotpStatus.success:
               context.pop(true);
-            case TotpStatus.ready:
+            case TotpStatus.loaded:
               _issuerController.text = state.issuer.value;
               _accountController.text = state.account.value;
               _secretController.text = state.secret.value;
@@ -59,6 +61,7 @@ class __TotpPageState extends State<_TotpPage> {
             default:
           }
         },
+
         builder: (context, state) {
           final l10i = AppLocalizations.of(context)!;
           final cubit = context.read<TotpCubit>();
@@ -67,7 +70,7 @@ class __TotpPageState extends State<_TotpPage> {
             body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: .stretch,
-                children: [
+                children: <Widget?>[
                   IssuerInput(
                     controller: _issuerController,
                     onChanged: cubit.changeIssuer,
@@ -114,31 +117,38 @@ class __TotpPageState extends State<_TotpPage> {
                     ],
                   ),
                   Spacer16,
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Tags'),
+                  MTextFormField(
+                    labelText: 'Tags',
                     controller: _tagsController,
                     onChanged: cubit.changeTags,
                   ),
                   Spacer16,
                   FilledButton(onPressed: cubit.submit, child: Text('Save')),
-                  Spacer32,
-                  OutlinedButton(
-                    onPressed: () async {
-                      final code = await context.push<String?>('/totp-scanner');
-                      final otpA = OtpAuthResult.parse(code);
-                      if (otpA == null) {
-                        return;
-                      }
-                      cubit.changeIssuer(otpA.issuer);
-                      cubit.changeAccount(otpA.account);
-                      cubit.changeSecret(otpA.secret);
-                      cubit.changeAlgorithm(otpA.algorithm);
-                      cubit.changeDigits(otpA.digits);
-                      cubit.changePeriod(otpA.period);
-                    },
-                    child: Icon(Icons.qr_code_2),
-                  ),
-                ],
+                  (Platform.isAndroid || Platform.isIOS) ? Spacer32 : null,
+                  (Platform.isAndroid || Platform.isIOS)
+                      ? OutlinedButton(
+                          onPressed: () async {
+                            final code = await context.push<String?>(
+                              '/totp-scanner',
+                            );
+                            final otpA = OtpAuthResult.parse(code);
+                            if (otpA == null) {
+                              return;
+                            }
+                            cubit.changeIssuer(otpA.issuer);
+                            cubit.changeAccount(otpA.account);
+                            cubit.changeSecret(otpA.secret);
+                            cubit.changeAlgorithm(otpA.algorithm);
+                            cubit.changeDigits(otpA.digits);
+                            cubit.changePeriod(otpA.period);
+                            _issuerController.text = otpA.issuer;
+                            _accountController.text = otpA.account;
+                            _secretController.text = otpA.secret;
+                          },
+                          child: Icon(Icons.qr_code_2),
+                        )
+                      : null,
+                ].nonNulls.toList(),
               ),
             ),
           );
@@ -162,8 +172,9 @@ class IssuerInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(labelText: 'Issuer', errorText: errorText),
+    return MTextFormField(
+      labelText: 'Issuer',
+      errorText: errorText,
       controller: controller,
       onChanged: onChanged,
     );
@@ -184,8 +195,9 @@ class AccountInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(labelText: 'Account', errorText: errorText),
+    return MTextFormField(
+      labelText: 'Account',
+      hintText: '(optional)',
       controller: controller,
       onChanged: onChanged,
     );
@@ -206,8 +218,9 @@ class SecretInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(labelText: 'Secret', errorText: errorText),
+    return MTextFormField(
+      labelText: 'Secret',
+      errorText: errorText,
       controller: controller,
       onChanged: onChanged,
     );
@@ -229,9 +242,11 @@ class AlgorithmSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        Text('Algorithm'),
-        DropdownButton<TotpAlgorithm>(
-          value: value,
+        MLabel(text: 'Algorithm'),
+        Spacer4,
+        DropdownButtonFormField<TotpAlgorithm>(
+          decoration: InputDecoration(border: OutlineInputBorder()),
+          initialValue: value,
           items: TotpAlgorithm.values.map((e) {
             return DropdownMenuItem(value: e, child: Text(e.name));
           }).toList(),
@@ -257,9 +272,11 @@ class DigitsSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        Text('Digits'),
-        DropdownButton<int>(
-          value: value,
+        MLabel(text: 'Digits'),
+        Spacer4,
+        DropdownButtonFormField<int>(
+          decoration: InputDecoration(border: OutlineInputBorder()),
+          initialValue: value,
           items: [6, 7, 8].map((e) {
             return DropdownMenuItem(value: e, child: Text(e.toString()));
           }).toList(),
@@ -286,9 +303,11 @@ class PeriodSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        Text('Period'),
-        DropdownButton<int>(
-          value: value,
+        MLabel(text: 'Period'),
+        Spacer4,
+        DropdownButtonFormField<int>(
+          initialValue: value,
+          decoration: InputDecoration(border: OutlineInputBorder()),
           items: [15, 30, 60].map((e) {
             return DropdownMenuItem(
               value: e,

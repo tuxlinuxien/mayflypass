@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/router.dart';
+import 'package:mayflypass/routes/home/timer.dart';
 import 'package:mayflypass/secure/secure.dart';
 
 part 'home.freezed.dart';
@@ -117,12 +120,25 @@ class HomePage extends StatelessWidget {
                     elevation: 0.0,
                     child: Padding(
                       padding: EdgeInsets.all(DEFAULT_SPACING),
-                      child: Column(
-                        crossAxisAlignment: .stretch,
+                      child: Row(
                         children: [
-                          Text(state.databoxes[index].$1),
-                          Text(state.databoxes[index].$2.totp.issuer),
-                          Text(state.databoxes[index].$2.totp.account),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: <Widget>[
+                                Text(state.databoxes[index].$2.totp.issuer),
+                                Text(state.databoxes[index].$2.totp.account),
+                                Code(
+                                  algorithm:
+                                      state.databoxes[index].$2.totp.algorithm,
+                                  secret: state.databoxes[index].$2.totp.secret,
+                                  digits: state.databoxes[index].$2.totp.digits,
+                                  period: state.databoxes[index].$2.totp.period,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Timer(period: state.databoxes[index].$2.totp.period),
                         ],
                       ),
                     ),

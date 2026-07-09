@@ -1,7 +1,12 @@
+import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:mayflypass/api/models.dart';
+import 'package:mayflypass/databox/databox.dart';
+import 'package:mayflypass/secure/encryption.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v7.dart';
 import 'local_storage.dart';
 
 part 'database.g.dart';
@@ -10,6 +15,56 @@ late final AppDatabase gloablDB;
 
 void initDB([QueryExecutor? executor]) {
   gloablDB = AppDatabase(executor);
+}
+
+Future<void> initDBTestFixtures(SecretKey kek) async {
+  var databox = DataBox.create();
+  databox.totp = Totp(
+    issuer: 'Issuer 1',
+    account: 'yoann@mail.com',
+    secret: 'AAAAAAAAAAAAAAAA',
+    algorithm: TotpAlgorithm.SHA1,
+    createdAtMs: Int64(DateTime.now().millisecondsSinceEpoch),
+    digits: 6,
+    period: 30,
+    favorite: true,
+    tags: [],
+  );
+
+  var (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
+  await gloablDB.upsert(
+    LocalStorageData(
+      id: UuidV7().generate(),
+      version: DateTime.now().millisecondsSinceEpoch,
+      deleted: false,
+      encryptedDek: encryptedDek,
+      encryptedPayload: encryptedPayload,
+    ),
+  );
+
+  databox = DataBox.create();
+  databox.totp = Totp(
+    issuer: 'Issuer 2',
+    account: 'yoann@mail.com',
+    secret: 'BBBBBBBBBBBBBBBB',
+    algorithm: TotpAlgorithm.SHA1,
+    createdAtMs: Int64(DateTime.now().millisecondsSinceEpoch),
+    digits: 6,
+    period: 60,
+    favorite: false,
+    tags: [],
+  );
+
+  (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
+  await gloablDB.upsert(
+    LocalStorageData(
+      id: UuidV7().generate(),
+      version: DateTime.now().millisecondsSinceEpoch,
+      deleted: false,
+      encryptedDek: encryptedDek,
+      encryptedPayload: encryptedPayload,
+    ),
+  );
 }
 
 @DriftDatabase(tables: [LocalStorage])

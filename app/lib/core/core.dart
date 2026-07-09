@@ -10,4 +10,5 @@ export 'theme.dart';
 export 'ui.dart';
 export 'widgets/or.dart';
 export 'widgets/password_field.dart';
+export 'widgets/textfield.dart';
 export 'store.dart';

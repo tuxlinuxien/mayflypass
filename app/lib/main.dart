@@ -8,9 +8,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (DEV_MODE) {
+    setGlobalTestKek();
     initStore(MemoryStore());
     initDB(NativeDatabase.memory(logStatements: true));
-    setGlobalTestKek();
+    initDBTestFixtures(getGlobalKek()!);
     await globalStore.setEmail('yoann@mail.com');
     globalAuth.unlock();
   } else {
