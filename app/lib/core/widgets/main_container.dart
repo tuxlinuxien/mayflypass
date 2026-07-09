@@ -9,7 +9,7 @@ class MainContainer extends StatelessWidget {
     return Padding(
       padding: EdgeInsetsGeometry.directional(
         top: DEFAULT_SPACING,
-        bottom: DEFAULT_SPACING * 4,
+        bottom: DEFAULT_SPACING * 6,
         start: DEFAULT_SPACING,
         end: DEFAULT_SPACING,
       ),

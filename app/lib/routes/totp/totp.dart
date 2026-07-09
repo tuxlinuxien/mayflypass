@@ -72,7 +72,7 @@ class __TotpPageState extends State<_TotpPage> {
               child: MainContainer(
                 child: Column(
                   crossAxisAlignment: .stretch,
-                  children: <Widget?>[
+                  children: <Widget>[
                     Text(
                       'Configuration',
                       style: Theme.of(context).textTheme.bodyLarge,
@@ -164,34 +164,35 @@ class __TotpPageState extends State<_TotpPage> {
                     ),
                     Spacer16,
                     FilledButton(onPressed: cubit.submit, child: Text('Save')),
-                    (Platform.isAndroid || Platform.isIOS) ? Spacer32 : null,
-                    (Platform.isAndroid || Platform.isIOS)
-                        ? OutlinedButton(
-                            onPressed: () async {
-                              final code = await context.push<String?>(
-                                '/totp-scanner',
-                              );
-                              final otpA = OtpAuthResult.parse(code);
-                              if (otpA == null) {
-                                return;
-                              }
-                              cubit.changeIssuer(otpA.issuer);
-                              cubit.changeAccount(otpA.account);
-                              cubit.changeSecret(otpA.secret);
-                              cubit.changeAlgorithm(otpA.algorithm);
-                              cubit.changeDigits(otpA.digits);
-                              cubit.changePeriod(otpA.period);
-                              _issuerController.text = otpA.issuer;
-                              _accountController.text = otpA.account;
-                              _secretController.text = otpA.secret;
-                            },
-                            child: Icon(Icons.qr_code_2),
-                          )
-                        : null,
-                  ].nonNulls.toList(),
+                  ],
                 ),
               ),
             ),
+            floatingActionButton: (Platform.isAndroid || Platform.isIOS)
+                ? IconButton.filled(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.amber),
+                      foregroundColor: WidgetStatePropertyAll(Colors.black),
+                    ),
+                    onPressed: () async {
+                      final code = await context.push<String?>('/totp-scanner');
+                      final otpA = OtpAuthResult.parse(code);
+                      if (otpA == null) {
+                        return;
+                      }
+                      cubit.changeIssuer(otpA.issuer);
+                      cubit.changeAccount(otpA.account);
+                      cubit.changeSecret(otpA.secret);
+                      cubit.changeAlgorithm(otpA.algorithm);
+                      cubit.changeDigits(otpA.digits);
+                      cubit.changePeriod(otpA.period);
+                      _issuerController.text = otpA.issuer;
+                      _accountController.text = otpA.account;
+                      _secretController.text = otpA.secret;
+                    },
+                    icon: Icon(Icons.qr_code_scanner),
+                  )
+                : null,
           );
         },
       ),
