@@ -63,7 +63,7 @@ class Code extends StatelessWidget {
     );
   }
 
-  String _genCode(state) {
+  String _genCode(int state) {
     final algo = switch (algorithm) {
       .SHA1 => Algorithm.SHA1,
       .SHA256 => Algorithm.SHA256,
