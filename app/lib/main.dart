@@ -59,11 +59,39 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [Locale('en')],
-        theme: ThemeData.dark(useMaterial3: true),
-        darkTheme: ThemeData.dark(useMaterial3: true),
+        theme: generateThemeData(),
+        darkTheme: generateThemeData(),
         themeMode: .dark,
         routerConfig: router,
       ),
     );
   }
+}
+
+ThemeData generateThemeData() {
+  return ThemeData.dark(useMaterial3: true).copyWith(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Color.fromARGB(0xff, 0x6D, 0x28, 0xD9),
+      brightness: Brightness.dark,
+    ),
+
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DEFAULT_RADIUS),
+          ),
+        ),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: ButtonStyle(
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DEFAULT_RADIUS),
+          ),
+        ),
+      ),
+    ),
+  );
 }

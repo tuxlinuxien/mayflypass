@@ -65,7 +65,9 @@ class __TotpPageState extends State<_TotpPage> {
           final l10i = AppLocalizations.of(context)!;
           final cubit = context.read<TotpCubit>();
           return Scaffold(
-            appBar: AppBar(title: Text(l10i.newTotp)),
+            appBar: AppBar(
+              title: Text(widget.id == null ? l10i.newTotp : 'Update TOTP'),
+            ),
             body: SingleChildScrollView(
               child: MainContainer(
                 child: Column(
@@ -138,7 +140,16 @@ class __TotpPageState extends State<_TotpPage> {
                     Spacer16,
                     Row(
                       children: [
-                        Expanded(child: MLabel(text: 'Favorite')),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              MLabel(text: 'Favorite'),
+                              Spacer4,
+                              Text('Add this item to the "Favorites" list'),
+                            ],
+                          ),
+                        ),
                         Switch(
                           value: state.favorite,
                           onChanged: cubit.changeFavorite,
