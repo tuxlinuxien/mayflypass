@@ -47,16 +47,13 @@ class RegisterPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // email
-                  TextField(
-                    autofocus: true,
+                  MTextFormField(
+                    labelText: l10n.email,
                     onChanged: cubit.emailChanged,
-                    decoration: InputDecoration(
-                      labelText: l10n.email,
-                      errorText: EmailValueError.toHuman(context, [
-                        state.email.displayError,
-                        state.apiEmailError,
-                      ]),
-                    ),
+                    errorText: EmailValueError.toHuman(context, [
+                      state.email.displayError,
+                      state.apiEmailError,
+                    ]),
                   ),
                   Spacer16,
                   // password

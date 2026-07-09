@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mayflypass/core/widgets/textfield.dart';
 
 class PasswordField extends StatefulWidget {
   final Function(String)? onChanged;
@@ -21,14 +22,12 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-        errorText: widget.errorText,
-        suffixIcon: IconButton(
-          icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-          onPressed: () => setState(() => _obscure = !_obscure),
-        ),
+    return MTextFormField(
+      labelText: widget.labelText,
+      errorText: widget.errorText,
+      suffixIcon: IconButton(
+        icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+        onPressed: () => setState(() => _obscure = !_obscure),
       ),
       onChanged: widget.onChanged,
       obscureText: _obscure,

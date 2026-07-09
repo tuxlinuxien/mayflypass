@@ -21,9 +21,10 @@ class MTextFormField extends StatelessWidget {
   final String? initialValue;
   final String? hintText;
   final String? errorText;
-  final Icon? prefixIcon;
-  final Icon? suffixIcon;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final TextEditingController? controller;
+  final bool obscureText;
   final Function(String)? onChanged;
 
   const MTextFormField({
@@ -36,6 +37,7 @@ class MTextFormField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onChanged,
+    this.obscureText = false,
   });
 
   @override
@@ -59,6 +61,7 @@ class MTextFormField extends StatelessWidget {
           initialValue: initialValue,
           controller: controller,
           onChanged: onChanged,
+          obscureText: obscureText,
         ),
       ].nonNulls.toList(),
     );

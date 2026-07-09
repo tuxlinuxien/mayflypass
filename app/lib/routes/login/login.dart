@@ -46,16 +46,13 @@ class LoginPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextField(
-                    autofocus: true,
+                  MTextFormField(
+                    labelText: l10n.email,
                     onChanged: cubit.emailChanged,
-                    decoration: InputDecoration(
-                      labelText: l10n.email,
-                      errorText: EmailValueError.toHuman(context, [
-                        state.email.displayError,
-                        state.emailError,
-                      ]),
-                    ),
+                    errorText: EmailValueError.toHuman(context, [
+                      state.email.displayError,
+                      state.emailError,
+                    ]),
                   ),
                   Spacer16,
                   PasswordField(
