@@ -62,8 +62,7 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(
         path: '/totp/:id',
         builder: (ctx, state) {
-          final id = UuidValue.fromString(state.pathParameters['id']!);
-          return TotpPage(id: id);
+          return TotpPage(id: state.pathParameters['id']);
         },
       ),
       GoRoute(

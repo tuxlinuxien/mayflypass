@@ -7,10 +7,9 @@ import 'package:mayflypass/forms/totp_issuer.dart';
 import 'package:mayflypass/forms/totp_secret.dart';
 import 'package:mayflypass/helpers/otpauth.dart';
 import 'package:mayflypass/routes/totp/cubit.dart';
-import 'package:uuid/uuid.dart';
 
 class TotpPage extends StatelessWidget {
-  final UuidValue? id;
+  final String? id;
 
   const TotpPage({super.key, this.id});
 
@@ -21,7 +20,7 @@ class TotpPage extends StatelessWidget {
 }
 
 class _TotpPage extends StatefulWidget {
-  final UuidValue? id;
+  final String? id;
 
   const _TotpPage({this.id});
 

@@ -5,7 +5,7 @@ use uuid::Uuid;
 pub struct Storage {
     pub id: Uuid,
     pub account_id: Uuid,
-    pub version: i64,
+    pub updated_at_ms: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
     pub encrypted_payload: Vec<u8>,
@@ -14,7 +14,7 @@ pub struct Storage {
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct StorageUpsert {
     pub id: Uuid,
-    pub version: i64,
+    pub updated_at_ms: i64,
     pub deleted: bool,
     pub encrypted_dek: Vec<u8>,
     pub encrypted_payload: Vec<u8>,
@@ -27,7 +27,7 @@ pub async fn get<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Option<Storage>, error::Error> {
     let item = sqlx::query_as::<_, Storage>(
         r#"
-        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
+        SELECT id, account_id, updated_at_ms, deleted, encrypted_dek, encrypted_payload
         FROM storage
         WHERE id = ? AND account_id = ?
         "#,
@@ -45,7 +45,7 @@ pub async fn select<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Vec<Storage>, error::Error> {
     let items = sqlx::query_as::<_, Storage>(
         r#"
-        SELECT id, account_id, version, deleted, encrypted_dek, encrypted_payload
+        SELECT id, account_id, updated_at_ms, deleted, encrypted_dek, encrypted_payload
         FROM storage
         WHERE account_id = ?
         "#,
@@ -68,29 +68,29 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     }
     let res = sqlx::query_as::<_, Storage>(
         r#"
-        INSERT INTO storage (id, account_id, version, deleted, encrypted_dek, encrypted_payload)
+        INSERT INTO storage (id, account_id, updated_at_ms, deleted, encrypted_dek, encrypted_payload)
         VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT (id, account_id)
         DO UPDATE SET
-            version = excluded.version,
+            updated_at_ms = excluded.updated_at_ms,
             deleted = excluded.deleted,
             encrypted_dek = excluded.encrypted_dek,
             encrypted_payload = excluded.encrypted_payload
         WHERE
-            storage.version < excluded.version
-        RETURNING id, account_id, version, deleted, encrypted_dek, encrypted_payload
+            storage.updated_at_ms < excluded.updated_at_ms
+        RETURNING id, account_id, updated_at_ms, deleted, encrypted_dek, encrypted_payload
         "#,
     )
     // values
     .bind(upsert.id)
     .bind(account_id)
-    .bind(upsert.version)
+    .bind(upsert.updated_at_ms)
     .bind(upsert.deleted)
     .bind(upsert.encrypted_dek)
     .bind(upsert.encrypted_payload)
     // where
     .bind(account_id)
-    .bind(upsert.version)
+    .bind(upsert.updated_at_ms)
     .fetch_optional(executor)
     .await?;
     Ok(res)
@@ -127,7 +127,7 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                version: 1,
+                updated_at_ms: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
                 encrypted_payload: vec![4, 5, 6],
@@ -142,7 +142,7 @@ mod test {
             .unwrap();
         assert_eq!(result.id, test_storage_id());
         assert_eq!(result.account_id, account.id);
-        assert_eq!(result.version, 1);
+        assert_eq!(result.updated_at_ms, 1);
         assert_eq!(result.deleted, false);
         assert_eq!(result.encrypted_dek, vec![1, 2, 3]);
         assert_eq!(result.encrypted_payload, vec![4, 5, 6]);
@@ -172,7 +172,7 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                version: 1,
+                updated_at_ms: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
                 encrypted_payload: vec![4, 5, 6],
@@ -187,7 +187,7 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                version: 2,
+                updated_at_ms: 2,
                 deleted: false,
                 encrypted_dek: vec![7, 8, 9],
                 encrypted_payload: vec![10, 11, 12],
@@ -201,7 +201,7 @@ mod test {
             .unwrap()
             .unwrap();
         assert_eq!(result.id, test_storage_id());
-        assert_eq!(result.version, 2);
+        assert_eq!(result.updated_at_ms, 2);
         assert_eq!(result.deleted, false);
         assert_eq!(result.encrypted_dek, vec![7, 8, 9]);
         assert_eq!(result.encrypted_payload, vec![10, 11, 12]);
@@ -212,7 +212,7 @@ mod test {
             &account.id,
             &StorageUpsert {
                 id: test_storage_id(),
-                version: 3,
+                updated_at_ms: 3,
                 deleted: true,
                 encrypted_dek: vec![7, 8, 9],
                 encrypted_payload: vec![10, 11, 12],
@@ -226,7 +226,7 @@ mod test {
             .unwrap()
             .unwrap();
         assert_eq!(result.id, test_storage_id());
-        assert_eq!(result.version, 3);
+        assert_eq!(result.updated_at_ms, 3);
         assert_eq!(result.deleted, true);
         assert_eq!(result.encrypted_dek.len(), 0);
         assert_eq!(result.encrypted_payload.len(), 0);
@@ -252,21 +252,21 @@ mod test {
 
         let mut item = StorageUpsert {
             id: test_storage_id(),
-            version: 2,
+            updated_at_ms: 2,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
             encrypted_payload: vec![4, 5, 6],
         };
 
-        // Insert initial version
+        // Insert initial updated_at_ms
         upsert(&pool, &account.id, &item).await.unwrap();
 
-        // Try to update with same version and should not update
+        // Try to update with same updated_at_ms and should not update
         let result = upsert(&pool, &account.id, &item).await;
         assert!(result.unwrap().is_none());
 
-        // Try to update with lower version and should not update
-        item.version = 1;
+        // Try to update with lower updated_at_ms and should not update
+        item.updated_at_ms = 1;
         let result = upsert(&pool, &account.id, &item).await;
         assert!(result.unwrap().is_none());
     }
@@ -293,14 +293,14 @@ mod test {
         let item2_id = uuid::Uuid::from_u128(22222222222222222222222222222222);
         let item1 = StorageUpsert {
             id: item1_id,
-            version: 1,
+            updated_at_ms: 1,
             deleted: false,
             encrypted_dek: vec![1, 1, 1],
             encrypted_payload: vec![2, 2, 2],
         };
         let item2 = StorageUpsert {
             id: item2_id,
-            version: 1,
+            updated_at_ms: 1,
             deleted: false,
             encrypted_dek: vec![3, 3, 3],
             encrypted_payload: vec![4, 4, 4],

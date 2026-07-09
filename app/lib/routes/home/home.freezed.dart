@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'home.dart';
@@ -9,12 +9,13 @@ part of 'home.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- HomeStatus get status; List<(String, DataBox)> get databoxes;
+ HomeStatus get status; List<(String, DataBox,)> get databoxes;
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +46,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- HomeStatus status, List<(String, DataBox)> databoxes
+ HomeStatus status, List<(String, DataBox,)> databoxes
 });
 
 
@@ -63,10 +64,10 @@ class _$HomeStateCopyWithImpl<$Res>
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? databoxes = null,}) {
-  return _then(_self.copyWith(
+  return _then(HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HomeStatus,databoxes: null == databoxes ? _self.databoxes : databoxes // ignore: cast_nullable_to_non_nullable
-as List<(String, DataBox)>,
+as List<(String, DataBox,)>,
   ));
 }
 
@@ -151,7 +152,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, DataBox)> databoxes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, DataBox,)> databoxes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
 return $default(_that.status,_that.databoxes);case _:
@@ -172,7 +173,7 @@ return $default(_that.status,_that.databoxes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, DataBox)> databoxes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, DataBox,)> databoxes)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
 return $default(_that.status,_that.databoxes);case _:
@@ -192,7 +193,7 @@ return $default(_that.status,_that.databoxes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  List<(String, DataBox)> databoxes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  List<(String, DataBox,)> databoxes)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
 return $default(_that.status,_that.databoxes);case _:
@@ -207,12 +208,12 @@ return $default(_that.status,_that.databoxes);case _:
 
 
 class _HomeState implements HomeState {
-  const _HomeState({this.status = HomeStatus.loading, final  List<(String, DataBox)> databoxes = const []}): _databoxes = databoxes;
+  const _HomeState({this.status = HomeStatus.loading,  List<(String, DataBox,)> databoxes = const []}): _databoxes = databoxes;
   
 
 @override@JsonKey() final  HomeStatus status;
- final  List<(String, DataBox)> _databoxes;
-@override@JsonKey() List<(String, DataBox)> get databoxes {
+ final  List<(String, DataBox,)> _databoxes;
+@override@JsonKey() List<(String, DataBox,)> get databoxes {
   if (_databoxes is EqualUnmodifiableListView) return _databoxes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_databoxes);
@@ -249,7 +250,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- HomeStatus status, List<(String, DataBox)> databoxes
+ HomeStatus status, List<(String, DataBox,)> databoxes
 });
 
 
@@ -270,7 +271,7 @@ class __$HomeStateCopyWithImpl<$Res>
   return _then(_HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HomeStatus,databoxes: null == databoxes ? _self._databoxes : databoxes // ignore: cast_nullable_to_non_nullable
-as List<(String, DataBox)>,
+as List<(String, DataBox,)>,
   ));
 }
 

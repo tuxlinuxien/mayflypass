@@ -104,8 +104,8 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
 };
 
 ApiStorage _$ApiStorageFromJson(Map<String, dynamic> json) => ApiStorage(
-  id: const UuidConverter().fromJson(json['id'] as String),
-  version: (json['version'] as num).toInt(),
+  id: json['id'] as String,
+  updatedAtMs: (json['updated_at_ms'] as num).toInt(),
   deleted: json['deleted'] as bool,
   encryptedDek: const HexBytesConverter().fromJson(
     json['encrypted_dek'] as String,
@@ -117,8 +117,8 @@ ApiStorage _$ApiStorageFromJson(Map<String, dynamic> json) => ApiStorage(
 
 Map<String, dynamic> _$ApiStorageToJson(ApiStorage instance) =>
     <String, dynamic>{
-      'id': const UuidConverter().toJson(instance.id),
-      'version': instance.version,
+      'id': instance.id,
+      'updated_at_ms': instance.updatedAtMs,
       'deleted': instance.deleted,
       'encrypted_dek': const HexBytesConverter().toJson(instance.encryptedDek),
       'encrypted_payload': const HexBytesConverter().toJson(

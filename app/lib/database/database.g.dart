@@ -18,12 +18,12 @@ class $LocalStorageTable extends LocalStorage
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _versionMeta = const VerificationMeta(
-    'version',
+  static const VerificationMeta _updatedAtMsMeta = const VerificationMeta(
+    'updatedAtMs',
   );
   @override
-  late final GeneratedColumn<int> version = GeneratedColumn<int>(
-    'version',
+  late final GeneratedColumn<int> updatedAtMs = GeneratedColumn<int>(
+    'updated_at_ms',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -70,7 +70,7 @@ class $LocalStorageTable extends LocalStorage
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    version,
+    updatedAtMs,
     deleted,
     encryptedDek,
     encryptedPayload,
@@ -92,13 +92,16 @@ class $LocalStorageTable extends LocalStorage
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('version')) {
+    if (data.containsKey('updated_at_ms')) {
       context.handle(
-        _versionMeta,
-        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+        _updatedAtMsMeta,
+        updatedAtMs.isAcceptableOrUnknown(
+          data['updated_at_ms']!,
+          _updatedAtMsMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_versionMeta);
+      context.missing(_updatedAtMsMeta);
     }
     if (data.containsKey('deleted')) {
       context.handle(
@@ -143,9 +146,9 @@ class $LocalStorageTable extends LocalStorage
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      version: attachedDatabase.typeMapping.read(
+      updatedAtMs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}version'],
+        data['${effectivePrefix}updated_at_ms'],
       )!,
       deleted: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
@@ -171,13 +174,13 @@ class $LocalStorageTable extends LocalStorage
 class LocalStorageData extends DataClass
     implements Insertable<LocalStorageData> {
   final String id;
-  final int version;
+  final int updatedAtMs;
   final bool deleted;
   final Uint8List encryptedDek;
   final Uint8List encryptedPayload;
   const LocalStorageData({
     required this.id,
-    required this.version,
+    required this.updatedAtMs,
     required this.deleted,
     required this.encryptedDek,
     required this.encryptedPayload,
@@ -186,7 +189,7 @@ class LocalStorageData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['version'] = Variable<int>(version);
+    map['updated_at_ms'] = Variable<int>(updatedAtMs);
     map['deleted'] = Variable<bool>(deleted);
     map['encrypted_dek'] = Variable<Uint8List>(encryptedDek);
     map['encrypted_payload'] = Variable<Uint8List>(encryptedPayload);
@@ -196,7 +199,7 @@ class LocalStorageData extends DataClass
   LocalStorageCompanion toCompanion(bool nullToAbsent) {
     return LocalStorageCompanion(
       id: Value(id),
-      version: Value(version),
+      updatedAtMs: Value(updatedAtMs),
       deleted: Value(deleted),
       encryptedDek: Value(encryptedDek),
       encryptedPayload: Value(encryptedPayload),
@@ -210,7 +213,7 @@ class LocalStorageData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalStorageData(
       id: serializer.fromJson<String>(json['id']),
-      version: serializer.fromJson<int>(json['version']),
+      updatedAtMs: serializer.fromJson<int>(json['updatedAtMs']),
       deleted: serializer.fromJson<bool>(json['deleted']),
       encryptedDek: serializer.fromJson<Uint8List>(json['encryptedDek']),
       encryptedPayload: serializer.fromJson<Uint8List>(
@@ -223,7 +226,7 @@ class LocalStorageData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'version': serializer.toJson<int>(version),
+      'updatedAtMs': serializer.toJson<int>(updatedAtMs),
       'deleted': serializer.toJson<bool>(deleted),
       'encryptedDek': serializer.toJson<Uint8List>(encryptedDek),
       'encryptedPayload': serializer.toJson<Uint8List>(encryptedPayload),
@@ -232,13 +235,13 @@ class LocalStorageData extends DataClass
 
   LocalStorageData copyWith({
     String? id,
-    int? version,
+    int? updatedAtMs,
     bool? deleted,
     Uint8List? encryptedDek,
     Uint8List? encryptedPayload,
   }) => LocalStorageData(
     id: id ?? this.id,
-    version: version ?? this.version,
+    updatedAtMs: updatedAtMs ?? this.updatedAtMs,
     deleted: deleted ?? this.deleted,
     encryptedDek: encryptedDek ?? this.encryptedDek,
     encryptedPayload: encryptedPayload ?? this.encryptedPayload,
@@ -246,7 +249,9 @@ class LocalStorageData extends DataClass
   LocalStorageData copyWithCompanion(LocalStorageCompanion data) {
     return LocalStorageData(
       id: data.id.present ? data.id.value : this.id,
-      version: data.version.present ? data.version.value : this.version,
+      updatedAtMs: data.updatedAtMs.present
+          ? data.updatedAtMs.value
+          : this.updatedAtMs,
       deleted: data.deleted.present ? data.deleted.value : this.deleted,
       encryptedDek: data.encryptedDek.present
           ? data.encryptedDek.value
@@ -261,7 +266,7 @@ class LocalStorageData extends DataClass
   String toString() {
     return (StringBuffer('LocalStorageData(')
           ..write('id: $id, ')
-          ..write('version: $version, ')
+          ..write('updatedAtMs: $updatedAtMs, ')
           ..write('deleted: $deleted, ')
           ..write('encryptedDek: $encryptedDek, ')
           ..write('encryptedPayload: $encryptedPayload')
@@ -272,7 +277,7 @@ class LocalStorageData extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
-    version,
+    updatedAtMs,
     deleted,
     $driftBlobEquality.hash(encryptedDek),
     $driftBlobEquality.hash(encryptedPayload),
@@ -282,7 +287,7 @@ class LocalStorageData extends DataClass
       identical(this, other) ||
       (other is LocalStorageData &&
           other.id == this.id &&
-          other.version == this.version &&
+          other.updatedAtMs == this.updatedAtMs &&
           other.deleted == this.deleted &&
           $driftBlobEquality.equals(other.encryptedDek, this.encryptedDek) &&
           $driftBlobEquality.equals(
@@ -293,14 +298,14 @@ class LocalStorageData extends DataClass
 
 class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
   final Value<String> id;
-  final Value<int> version;
+  final Value<int> updatedAtMs;
   final Value<bool> deleted;
   final Value<Uint8List> encryptedDek;
   final Value<Uint8List> encryptedPayload;
   final Value<int> rowid;
   const LocalStorageCompanion({
     this.id = const Value.absent(),
-    this.version = const Value.absent(),
+    this.updatedAtMs = const Value.absent(),
     this.deleted = const Value.absent(),
     this.encryptedDek = const Value.absent(),
     this.encryptedPayload = const Value.absent(),
@@ -308,19 +313,19 @@ class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
   });
   LocalStorageCompanion.insert({
     required String id,
-    required int version,
+    required int updatedAtMs,
     required bool deleted,
     required Uint8List encryptedDek,
     required Uint8List encryptedPayload,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       version = Value(version),
+       updatedAtMs = Value(updatedAtMs),
        deleted = Value(deleted),
        encryptedDek = Value(encryptedDek),
        encryptedPayload = Value(encryptedPayload);
   static Insertable<LocalStorageData> custom({
     Expression<String>? id,
-    Expression<int>? version,
+    Expression<int>? updatedAtMs,
     Expression<bool>? deleted,
     Expression<Uint8List>? encryptedDek,
     Expression<Uint8List>? encryptedPayload,
@@ -328,7 +333,7 @@ class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (version != null) 'version': version,
+      if (updatedAtMs != null) 'updated_at_ms': updatedAtMs,
       if (deleted != null) 'deleted': deleted,
       if (encryptedDek != null) 'encrypted_dek': encryptedDek,
       if (encryptedPayload != null) 'encrypted_payload': encryptedPayload,
@@ -338,7 +343,7 @@ class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
 
   LocalStorageCompanion copyWith({
     Value<String>? id,
-    Value<int>? version,
+    Value<int>? updatedAtMs,
     Value<bool>? deleted,
     Value<Uint8List>? encryptedDek,
     Value<Uint8List>? encryptedPayload,
@@ -346,7 +351,7 @@ class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
   }) {
     return LocalStorageCompanion(
       id: id ?? this.id,
-      version: version ?? this.version,
+      updatedAtMs: updatedAtMs ?? this.updatedAtMs,
       deleted: deleted ?? this.deleted,
       encryptedDek: encryptedDek ?? this.encryptedDek,
       encryptedPayload: encryptedPayload ?? this.encryptedPayload,
@@ -360,8 +365,8 @@ class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (version.present) {
-      map['version'] = Variable<int>(version.value);
+    if (updatedAtMs.present) {
+      map['updated_at_ms'] = Variable<int>(updatedAtMs.value);
     }
     if (deleted.present) {
       map['deleted'] = Variable<bool>(deleted.value);
@@ -382,7 +387,7 @@ class LocalStorageCompanion extends UpdateCompanion<LocalStorageData> {
   String toString() {
     return (StringBuffer('LocalStorageCompanion(')
           ..write('id: $id, ')
-          ..write('version: $version, ')
+          ..write('updatedAtMs: $updatedAtMs, ')
           ..write('deleted: $deleted, ')
           ..write('encryptedDek: $encryptedDek, ')
           ..write('encryptedPayload: $encryptedPayload, ')
@@ -406,7 +411,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$LocalStorageTableCreateCompanionBuilder =
     LocalStorageCompanion Function({
       required String id,
-      required int version,
+      required int updatedAtMs,
       required bool deleted,
       required Uint8List encryptedDek,
       required Uint8List encryptedPayload,
@@ -415,7 +420,7 @@ typedef $$LocalStorageTableCreateCompanionBuilder =
 typedef $$LocalStorageTableUpdateCompanionBuilder =
     LocalStorageCompanion Function({
       Value<String> id,
-      Value<int> version,
+      Value<int> updatedAtMs,
       Value<bool> deleted,
       Value<Uint8List> encryptedDek,
       Value<Uint8List> encryptedPayload,
@@ -436,8 +441,8 @@ class $$LocalStorageTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get version => $composableBuilder(
-    column: $table.version,
+  ColumnFilters<int> get updatedAtMs => $composableBuilder(
+    column: $table.updatedAtMs,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -471,8 +476,8 @@ class $$LocalStorageTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get version => $composableBuilder(
-    column: $table.version,
+  ColumnOrderings<int> get updatedAtMs => $composableBuilder(
+    column: $table.updatedAtMs,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -504,8 +509,10 @@ class $$LocalStorageTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<int> get version =>
-      $composableBuilder(column: $table.version, builder: (column) => column);
+  GeneratedColumn<int> get updatedAtMs => $composableBuilder(
+    column: $table.updatedAtMs,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get deleted =>
       $composableBuilder(column: $table.deleted, builder: (column) => column);
@@ -553,14 +560,14 @@ class $$LocalStorageTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int> updatedAtMs = const Value.absent(),
                 Value<bool> deleted = const Value.absent(),
                 Value<Uint8List> encryptedDek = const Value.absent(),
                 Value<Uint8List> encryptedPayload = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LocalStorageCompanion(
                 id: id,
-                version: version,
+                updatedAtMs: updatedAtMs,
                 deleted: deleted,
                 encryptedDek: encryptedDek,
                 encryptedPayload: encryptedPayload,
@@ -569,14 +576,14 @@ class $$LocalStorageTableTableManager
           createCompanionCallback:
               ({
                 required String id,
-                required int version,
+                required int updatedAtMs,
                 required bool deleted,
                 required Uint8List encryptedDek,
                 required Uint8List encryptedPayload,
                 Value<int> rowid = const Value.absent(),
               }) => LocalStorageCompanion.insert(
                 id: id,
-                version: version,
+                updatedAtMs: updatedAtMs,
                 deleted: deleted,
                 encryptedDek: encryptedDek,
                 encryptedPayload: encryptedPayload,

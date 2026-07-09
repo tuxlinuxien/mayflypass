@@ -12,7 +12,7 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SelectResponse {
     id: Uuid,
-    version: i64,
+    updated_at_ms: i64,
     deleted: bool,
     #[serde_as(as = "serde_with::hex::Hex")]
     encrypted_dek: Vec<u8>,
@@ -29,7 +29,7 @@ pub async fn select(
         .into_iter()
         .map(|result| SelectResponse {
             id: result.id,
-            version: result.version,
+            updated_at_ms: result.updated_at_ms,
             deleted: result.deleted,
             encrypted_dek: result.encrypted_dek,
             encrypted_payload: result.encrypted_payload,
@@ -66,7 +66,7 @@ mod test {
             &account.id,
             &storage::StorageUpsert {
                 id: uuid::Uuid::now_v7(),
-                version: 1,
+                updated_at_ms: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
                 encrypted_payload: vec![4, 5, 6],
@@ -79,7 +79,7 @@ mod test {
             &account.id,
             &storage::StorageUpsert {
                 id: uuid::Uuid::now_v7(),
-                version: 1,
+                updated_at_ms: 1,
                 deleted: false,
                 encrypted_dek: vec![1, 2, 3],
                 encrypted_payload: vec![4, 5, 6],
@@ -94,7 +94,7 @@ mod test {
         assert_eq!(2, results.len());
 
         for result in &results {
-            assert_eq!(1, result.version);
+            assert_eq!(1, result.updated_at_ms);
             assert_eq!(false, result.deleted);
             assert_eq!(vec![1, 2, 3], result.encrypted_dek);
             assert_eq!(vec![4, 5, 6], result.encrypted_payload);

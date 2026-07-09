@@ -15,7 +15,7 @@ void main() {
       );
       final response = await API().storageUpsert(input);
       expect(response.id, input.id);
-      expect(response.version, input.version);
+      expect(response.updatedAtMs, input.updatedAtMs);
       expect(response.deleted, input.deleted);
       expect(response.encryptedDek, input.encryptedDek);
       expect(response.encryptedPayload, input.encryptedPayload);

@@ -19,7 +19,7 @@ enum TotpStatus { loading, loaded, ready, success, failure }
 abstract class TotpState with _$TotpState {
   const factory TotpState({
     @Default(TotpStatus.loading) TotpStatus status,
-    required UuidValue id,
+    required String id,
     required int createdAtMs,
     @Default(TotpIssuerValue.pure()) TotpIssuerValue issuer,
     @Default(TotpAccountValue.pure()) TotpAccountValue account,
@@ -32,10 +32,8 @@ abstract class TotpState with _$TotpState {
   }) = _TotpState;
 
   factory TotpState.init() {
-    final newId = UuidValue.fromString(UuidV7().generate());
-
     return TotpState(
-      id: newId,
+      id: UuidV7().generate(),
       createdAtMs: DateTime.now().millisecondsSinceEpoch,
     );
   }
@@ -44,7 +42,7 @@ abstract class TotpState with _$TotpState {
 class TotpCubit extends Cubit<TotpState> {
   TotpCubit() : super(TotpState.init());
 
-  Future<void> load(UuidValue? id) async {
+  Future<void> load(String? id) async {
     logger.w('with id: $id');
     if (id == null) {
       emit(state.copyWith(status: .ready));
@@ -167,15 +165,15 @@ class TotpCubit extends Cubit<TotpState> {
     );
 
     final entry = LocalStorageData(
-      id: Uuid.unparse(state.id.toBytes()),
-      version: DateTime.now().millisecondsSinceEpoch,
+      id: state.id,
+      updatedAtMs: DateTime.now().millisecondsSinceEpoch,
       deleted: false,
       encryptedDek: encryptedDek,
       encryptedPayload: encryptedPayload,
     );
 
     logger.i('upsert into database...');
-    await gloablDB.upsert(entry);
+    await gloablDB.upsertLocalStorage(entry);
     logger.i('upsered [OK]');
 
     emit(state.copyWith(status: .success));

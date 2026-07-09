@@ -11,7 +11,7 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpsertInput {
     id: Uuid,
-    version: i64,
+    updated_at_ms: i64,
     deleted: bool,
     #[serde_as(as = "serde_with::hex::Hex")]
     encrypted_dek: Vec<u8>,
@@ -23,7 +23,7 @@ pub struct UpsertInput {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpsertResponse {
     id: Uuid,
-    version: i64,
+    updated_at_ms: i64,
     deleted: bool,
     #[serde_as(as = "serde_with::hex::Hex")]
     encrypted_dek: Vec<u8>,
@@ -38,7 +38,7 @@ pub async fn upsert(
 ) -> Result<Json<UpsertResponse>, ApiError> {
     let input = database::storage::StorageUpsert {
         id: payload.id,
-        version: payload.version,
+        updated_at_ms: payload.updated_at_ms,
         deleted: payload.deleted,
         encrypted_dek: payload.encrypted_dek,
         encrypted_payload: payload.encrypted_payload,
@@ -53,7 +53,7 @@ pub async fn upsert(
     };
     Ok(Json(UpsertResponse {
         id: result.id,
-        version: result.version,
+        updated_at_ms: result.updated_at_ms,
         deleted: result.deleted,
         encrypted_dek: result.encrypted_dek,
         encrypted_payload: result.encrypted_payload,
@@ -72,7 +72,7 @@ mod test {
     fn create_test_input() -> UpsertInput {
         UpsertInput {
             id: test_storage_id(),
-            version: 1,
+            updated_at_ms: 1,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
             encrypted_payload: vec![4, 5, 6],

@@ -32,10 +32,10 @@ Future<void> initDBTestFixtures(SecretKey kek) async {
   );
 
   var (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
-  await gloablDB.upsert(
+  await gloablDB.upsertLocalStorage(
     LocalStorageData(
       id: UuidV7().generate(),
-      version: DateTime.now().millisecondsSinceEpoch,
+      updatedAtMs: DateTime.now().millisecondsSinceEpoch,
       deleted: false,
       encryptedDek: encryptedDek,
       encryptedPayload: encryptedPayload,
@@ -56,10 +56,10 @@ Future<void> initDBTestFixtures(SecretKey kek) async {
   );
 
   (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
-  await gloablDB.upsert(
+  await gloablDB.upsertLocalStorage(
     LocalStorageData(
       id: UuidV7().generate(),
-      version: DateTime.now().millisecondsSinceEpoch,
+      updatedAtMs: DateTime.now().millisecondsSinceEpoch,
       deleted: false,
       encryptedDek: encryptedDek,
       encryptedPayload: encryptedPayload,
@@ -82,9 +82,9 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {},
   );
 
-  Future<LocalStorageData?> getStorage(UuidValue value) async {
+  Future<LocalStorageData?> getStorage(String id) async {
     return await managers.localStorage
-        .filter((t) => t.id.equals(value.uuid))
+        .filter((t) => t.id.equals(id))
         .getSingleOrNull();
   }
 
@@ -96,56 +96,33 @@ class AppDatabase extends _$AppDatabase {
     return managers.localStorage.count();
   }
 
-  Future<void> upsertStorage(ApiStorage value) async {
-    final input = localStorageDataFromApiStorage(value);
+  Future<void> upsertLocalStorage(LocalStorageData input) async {
     await into(localStorage).insert(
       LocalStorageCompanion.insert(
         id: input.id,
-        version: input.version,
+        updatedAtMs: input.updatedAtMs,
         deleted: input.deleted,
         encryptedDek: input.encryptedDek,
         encryptedPayload: input.encryptedPayload,
       ),
       onConflict: DoUpdate(
         (_) => LocalStorageCompanion(
-          version: Value(input.version),
+          updatedAtMs: Value(input.updatedAtMs),
           deleted: Value(input.deleted),
           encryptedDek: Value(input.encryptedDek),
           encryptedPayload: Value(input.encryptedPayload),
         ),
         where: (old) =>
-            localStorage.version.isSmallerThan(Variable(input.version)),
-      ),
-    );
-  }
-
-  Future<void> upsert(LocalStorageData input) async {
-    await into(localStorage).insert(
-      LocalStorageCompanion.insert(
-        id: input.id,
-        version: input.version,
-        deleted: input.deleted,
-        encryptedDek: input.encryptedDek,
-        encryptedPayload: input.encryptedPayload,
-      ),
-      onConflict: DoUpdate(
-        (_) => LocalStorageCompanion(
-          version: Value(input.version),
-          deleted: Value(input.deleted),
-          encryptedDek: Value(input.encryptedDek),
-          encryptedPayload: Value(input.encryptedPayload),
-        ),
-        where: (old) =>
-            localStorage.version.isSmallerThan(Variable(input.version)),
+            localStorage.updatedAtMs.isSmallerThan(Variable(input.updatedAtMs)),
       ),
     );
   }
 
   Future<void> deleteStorage(String id) async {
-    await upsert(
+    await upsertLocalStorage(
       LocalStorageData(
         id: id,
-        version: DateTime.now().millisecondsSinceEpoch,
+        updatedAtMs: DateTime.now().millisecondsSinceEpoch,
         deleted: true,
         encryptedDek: Uint8List(0),
         encryptedPayload: Uint8List(0),
@@ -160,9 +137,9 @@ QueryExecutor _openConnection() {
 
 LocalStorageData localStorageDataFromApiStorage(ApiStorage api) {
   return LocalStorageData(
-    id: Uuid.unparse(api.id.toBytes()),
+    id: api.id,
     deleted: api.deleted,
-    version: api.version,
+    updatedAtMs: api.updatedAtMs,
     encryptedDek: api.encryptedDek,
     encryptedPayload: api.encryptedPayload,
   );

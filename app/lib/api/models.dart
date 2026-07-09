@@ -185,8 +185,8 @@ class Account {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ApiStorage {
   @UuidConverter()
-  final UuidValue id;
-  int version;
+  final String id;
+  int updatedAtMs;
   bool deleted;
   @JsonKey(name: 'encrypted_dek')
   @HexBytesConverter()
@@ -197,7 +197,7 @@ class ApiStorage {
 
   ApiStorage({
     required this.id,
-    required this.version,
+    required this.updatedAtMs,
     required this.deleted,
     required this.encryptedDek,
     required this.encryptedPayload,
@@ -213,8 +213,8 @@ class ApiStorage {
     required Uint8List encryptedPayload,
   }) {
     return ApiStorage(
-      id: UuidValue.fromString(UuidV7().generate()),
-      version: DateTime.now().millisecondsSinceEpoch,
+      id: UuidV7().generate(),
+      updatedAtMs: DateTime.now().millisecondsSinceEpoch,
       deleted: false,
       encryptedDek: encryptedDek,
       encryptedPayload: encryptedPayload,
