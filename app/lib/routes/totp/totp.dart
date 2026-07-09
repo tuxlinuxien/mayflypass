@@ -71,46 +71,75 @@ class __TotpPageState extends State<_TotpPage> {
                 child: Column(
                   crossAxisAlignment: .stretch,
                   children: <Widget?>[
-                    IssuerInput(
-                      controller: _issuerController,
-                      onChanged: cubit.changeIssuer,
-                      errorText: TotpIssuerValueError.toHuman(context, [
-                        state.issuer.displayError,
-                      ]),
+                    Text(
+                      'Configuration',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Spacer8,
+                    Surface(
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
+                        child: Column(
+                          children: [
+                            IssuerInput(
+                              controller: _issuerController,
+                              onChanged: cubit.changeIssuer,
+                              errorText: TotpIssuerValueError.toHuman(context, [
+                                state.issuer.displayError,
+                              ]),
+                            ),
+                            Spacer16,
+                            AccountInput(
+                              controller: _accountController,
+                              onChanged: cubit.changeAccount,
+                            ),
+                            Spacer16,
+                            SecretInput(
+                              controller: _secretController,
+                              onChanged: cubit.changeSecret,
+                              errorText: TotpSecretValueError.toHuman(context, [
+                                state.secret.displayError,
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     Spacer16,
-                    AccountInput(
-                      controller: _accountController,
-                      onChanged: cubit.changeAccount,
+                    Text(
+                      'Advanced',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Spacer16,
-                    SecretInput(
-                      controller: _secretController,
-                      onChanged: cubit.changeSecret,
-                      errorText: TotpSecretValueError.toHuman(context, [
-                        state.secret.displayError,
-                      ]),
-                    ),
-                    Spacer16,
-                    AlgorithmSelector(
-                      value: state.algorithm,
-                      onChanged: cubit.changeAlgorithm,
-                    ),
-                    Spacer16,
-                    DigitsSelector(
-                      value: state.digits,
-                      onChanged: cubit.changeDigits,
-                    ),
-                    Spacer16,
-                    PeriodSelector(
-                      value: state.period,
-                      onChanged: cubit.changePeriod,
+                    Spacer8,
+                    Surface(
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
+                        child: Column(
+                          crossAxisAlignment: .stretch,
+                          children: [
+                            AlgorithmSelector(
+                              value: state.algorithm,
+                              onChanged: cubit.changeAlgorithm,
+                            ),
+                            Spacer16,
+                            DigitsSelector(
+                              value: state.digits,
+                              onChanged: cubit.changeDigits,
+                            ),
+                            Spacer16,
+                            PeriodSelector(
+                              value: state.period,
+                              onChanged: cubit.changePeriod,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     Spacer16,
                     Row(
                       children: [
-                        Expanded(child: Text('Favorite')),
-                        Checkbox(
+                        Expanded(child: MLabel(text: 'Favorite')),
+                        Switch(
                           value: state.favorite,
                           onChanged: cubit.changeFavorite,
                         ),
