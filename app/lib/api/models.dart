@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:mayflypass/helpers/json.dart';
-import 'package:uuid/uuid.dart';
 import 'package:uuid/v7.dart';
 
 part 'models.g.dart';
