@@ -1,32 +1,7 @@
-import 'dart:async';
-
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
+import 'package:mayflypass/routes/home/widgets/epoch_cubit.dart';
 import 'package:otp/otp.dart';
-
-int currentEpochMs() {
-  return (DateTime.now().millisecondsSinceEpoch).floor();
-}
-
-final _timerTicker = Stream.periodic(
-  const Duration(milliseconds: 250),
-  (_) => currentEpochMs,
-).asBroadcastStream();
-
-class EpochCubit extends Cubit<int> {
-  late final StreamSubscription<int Function()> _sub;
-  EpochCubit() : super(currentEpochMs()) {
-    _sub = _timerTicker.listen((ts) {
-      emit(ts());
-    });
-  }
-
-  @override
-  Future<void> close() {
-    _sub.cancel();
-    return super.close();
-  }
-}
 
 class Timer extends StatelessWidget {
   final int period;
@@ -86,10 +61,6 @@ class Code extends StatelessWidget {
         },
       ),
     );
-  }
-
-  int _beginPeriod(int state) {
-    return state - (state % (period * 1000));
   }
 
   String _genCode(state) {

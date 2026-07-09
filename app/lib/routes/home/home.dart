@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/router.dart';
-import 'package:mayflypass/routes/home/timer.dart';
+import 'package:mayflypass/routes/home/widgets/timer.dart';
+import 'package:mayflypass/routes/home/widgets/otp_code.dart';
 import 'package:mayflypass/secure/secure.dart';
 
 part 'home.freezed.dart';
@@ -67,7 +66,6 @@ class HomePage extends StatelessWidget {
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           final cubit = context.read<HomeCubit>();
-          final l10i = AppLocalizations.of(context)!;
           return Scaffold(
             appBar: AppBar(
               title: Text(AppLocalizations.of(context)!.appName),
@@ -128,7 +126,7 @@ class HomePage extends StatelessWidget {
                               children: <Widget>[
                                 Text(state.databoxes[index].$2.totp.issuer),
                                 Text(state.databoxes[index].$2.totp.account),
-                                Code(
+                                OTPCode(
                                   algorithm:
                                       state.databoxes[index].$2.totp.algorithm,
                                   secret: state.databoxes[index].$2.totp.secret,
