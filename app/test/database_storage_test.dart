@@ -27,9 +27,9 @@ void main() {
         encryptedDek: Uint8List(0),
         encryptedPayload: Uint8List(0),
       );
-      expect(await db.countStorage(), 0);
+      expect(await db.countLocalStorage(), 0);
       await db.upsertLocalStorage(input);
-      expect(await db.countStorage(), 1);
+      expect(await db.countLocalStorage(), 1);
     });
 
     test('upsert', () async {
@@ -41,7 +41,7 @@ void main() {
         encryptedPayload: Uint8List(0),
       );
       await db.upsertLocalStorage(input);
-      var row = await db.getStorage(input.id);
+      var row = await db.getLocalStorage(input.id);
       expect(row!.updatedAtMs, 1);
       expect(row.encryptedDek.length, 0);
       expect(row.encryptedPayload.length, 0);
@@ -52,7 +52,7 @@ void main() {
         encryptedPayload: Uint8List(1),
       );
       await db.upsertLocalStorage(input);
-      row = await db.getStorage(input.id);
+      row = await db.getLocalStorage(input.id);
       expect(row!.updatedAtMs, 2);
       expect(row.encryptedDek.length, 1);
       expect(row.encryptedPayload.length, 1);
@@ -63,7 +63,7 @@ void main() {
         encryptedPayload: Uint8List(3),
       );
       await db.upsertLocalStorage(input);
-      row = await db.getStorage(input.id);
+      row = await db.getLocalStorage(input.id);
       expect(row!.updatedAtMs, 2);
       expect(row.encryptedDek.length, 1);
       expect(row.encryptedPayload.length, 1);

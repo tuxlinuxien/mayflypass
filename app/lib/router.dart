@@ -12,7 +12,6 @@ import 'package:mayflypass/routes/settings/settings.dart';
 import 'package:mayflypass/routes/splash.dart';
 import 'package:mayflypass/routes/totp/totp.dart';
 import 'package:mayflypass/routes/unlock/unlock.dart';
-import 'package:uuid/uuid.dart';
 
 late final GoRouter router;
 

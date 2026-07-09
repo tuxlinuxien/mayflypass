@@ -8,7 +8,6 @@ import 'package:mayflypass/forms/totp_account.dart';
 import 'package:mayflypass/forms/totp_issuer.dart';
 import 'package:mayflypass/forms/totp_secret.dart';
 import 'package:mayflypass/secure/secure.dart';
-import 'package:uuid/uuid.dart';
 import 'package:uuid/v7.dart';
 
 part 'cubit.freezed.dart';
@@ -48,7 +47,7 @@ class TotpCubit extends Cubit<TotpState> {
       emit(state.copyWith(status: .ready));
       return;
     }
-    final entry = await gloablDB.getStorage(id);
+    final entry = await gloablDB.getLocalStorage(id);
     if (entry == null) {
       emit(state.copyWith(status: .ready));
       return;

@@ -5,7 +5,6 @@ import 'package:fixnum/fixnum.dart';
 import 'package:mayflypass/api/models.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/secure/encryption.dart';
-import 'package:uuid/uuid.dart';
 import 'package:uuid/v7.dart';
 import 'local_storage.dart';
 
@@ -82,7 +81,7 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {},
   );
 
-  Future<LocalStorageData?> getStorage(String id) async {
+  Future<LocalStorageData?> getLocalStorage(String id) async {
     return await managers.localStorage
         .filter((t) => t.id.equals(id))
         .getSingleOrNull();
@@ -92,7 +91,7 @@ class AppDatabase extends _$AppDatabase {
     return await managers.localStorage.get();
   }
 
-  Future<int> countStorage() async {
+  Future<int> countLocalStorage() async {
     return managers.localStorage.count();
   }
 
