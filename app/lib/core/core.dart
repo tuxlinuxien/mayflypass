@@ -11,4 +11,6 @@ export 'ui.dart';
 export 'widgets/or.dart';
 export 'widgets/password_field.dart';
 export 'widgets/textfield.dart';
+export 'widgets/main_container.dart';
+export 'widgets/surface.dart';
 export 'store.dart';

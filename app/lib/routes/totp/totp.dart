@@ -67,87 +67,89 @@ class __TotpPageState extends State<_TotpPage> {
           return Scaffold(
             appBar: AppBar(title: Text(l10i.newTotp)),
             body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: .stretch,
-                children: <Widget?>[
-                  IssuerInput(
-                    controller: _issuerController,
-                    onChanged: cubit.changeIssuer,
-                    errorText: TotpIssuerValueError.toHuman(context, [
-                      state.issuer.displayError,
-                    ]),
-                  ),
-                  Spacer16,
-                  AccountInput(
-                    controller: _accountController,
-                    onChanged: cubit.changeAccount,
-                  ),
-                  Spacer16,
-                  SecretInput(
-                    controller: _secretController,
-                    onChanged: cubit.changeSecret,
-                    errorText: TotpSecretValueError.toHuman(context, [
-                      state.secret.displayError,
-                    ]),
-                  ),
-                  Spacer16,
-                  AlgorithmSelector(
-                    value: state.algorithm,
-                    onChanged: cubit.changeAlgorithm,
-                  ),
-                  Spacer16,
-                  DigitsSelector(
-                    value: state.digits,
-                    onChanged: cubit.changeDigits,
-                  ),
-                  Spacer16,
-                  PeriodSelector(
-                    value: state.period,
-                    onChanged: cubit.changePeriod,
-                  ),
-                  Spacer16,
-                  Row(
-                    children: [
-                      Expanded(child: Text('Favorite')),
-                      Checkbox(
-                        value: state.favorite,
-                        onChanged: cubit.changeFavorite,
-                      ),
-                    ],
-                  ),
-                  Spacer16,
-                  MTextFormField(
-                    labelText: 'Tags',
-                    controller: _tagsController,
-                    onChanged: cubit.changeTags,
-                  ),
-                  Spacer16,
-                  FilledButton(onPressed: cubit.submit, child: Text('Save')),
-                  (Platform.isAndroid || Platform.isIOS) ? Spacer32 : null,
-                  (Platform.isAndroid || Platform.isIOS)
-                      ? OutlinedButton(
-                          onPressed: () async {
-                            final code = await context.push<String?>(
-                              '/totp-scanner',
-                            );
-                            final otpA = OtpAuthResult.parse(code);
-                            if (otpA == null) {
-                              return;
-                            }
-                            cubit.changeIssuer(otpA.issuer);
-                            cubit.changeAccount(otpA.account);
-                            cubit.changeSecret(otpA.secret);
-                            cubit.changeAlgorithm(otpA.algorithm);
-                            cubit.changeDigits(otpA.digits);
-                            cubit.changePeriod(otpA.period);
-                            _issuerController.text = otpA.issuer;
-                            _accountController.text = otpA.account;
-                            _secretController.text = otpA.secret;
-                          },
-                          child: Icon(Icons.qr_code_2),
-                        )
-                      : null,
-                ].nonNulls.toList(),
+              child: MainContainer(
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  children: <Widget?>[
+                    IssuerInput(
+                      controller: _issuerController,
+                      onChanged: cubit.changeIssuer,
+                      errorText: TotpIssuerValueError.toHuman(context, [
+                        state.issuer.displayError,
+                      ]),
+                    ),
+                    Spacer16,
+                    AccountInput(
+                      controller: _accountController,
+                      onChanged: cubit.changeAccount,
+                    ),
+                    Spacer16,
+                    SecretInput(
+                      controller: _secretController,
+                      onChanged: cubit.changeSecret,
+                      errorText: TotpSecretValueError.toHuman(context, [
+                        state.secret.displayError,
+                      ]),
+                    ),
+                    Spacer16,
+                    AlgorithmSelector(
+                      value: state.algorithm,
+                      onChanged: cubit.changeAlgorithm,
+                    ),
+                    Spacer16,
+                    DigitsSelector(
+                      value: state.digits,
+                      onChanged: cubit.changeDigits,
+                    ),
+                    Spacer16,
+                    PeriodSelector(
+                      value: state.period,
+                      onChanged: cubit.changePeriod,
+                    ),
+                    Spacer16,
+                    Row(
+                      children: [
+                        Expanded(child: Text('Favorite')),
+                        Checkbox(
+                          value: state.favorite,
+                          onChanged: cubit.changeFavorite,
+                        ),
+                      ],
+                    ),
+                    Spacer16,
+                    MTextFormField(
+                      labelText: 'Tags',
+                      controller: _tagsController,
+                      onChanged: cubit.changeTags,
+                    ),
+                    Spacer16,
+                    FilledButton(onPressed: cubit.submit, child: Text('Save')),
+                    (Platform.isAndroid || Platform.isIOS) ? Spacer32 : null,
+                    (Platform.isAndroid || Platform.isIOS)
+                        ? OutlinedButton(
+                            onPressed: () async {
+                              final code = await context.push<String?>(
+                                '/totp-scanner',
+                              );
+                              final otpA = OtpAuthResult.parse(code);
+                              if (otpA == null) {
+                                return;
+                              }
+                              cubit.changeIssuer(otpA.issuer);
+                              cubit.changeAccount(otpA.account);
+                              cubit.changeSecret(otpA.secret);
+                              cubit.changeAlgorithm(otpA.algorithm);
+                              cubit.changeDigits(otpA.digits);
+                              cubit.changePeriod(otpA.period);
+                              _issuerController.text = otpA.issuer;
+                              _accountController.text = otpA.account;
+                              _secretController.text = otpA.secret;
+                            },
+                            child: Icon(Icons.qr_code_2),
+                          )
+                        : null,
+                  ].nonNulls.toList(),
+                ),
               ),
             ),
           );

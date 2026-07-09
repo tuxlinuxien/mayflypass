@@ -41,7 +41,7 @@ class RegisterPage extends StatelessWidget {
           final cubit = context.read<RegisterFormCubit>();
           final l10n = AppLocalizations.of(context)!;
           return Scaffold(
-            body: Center(
+            body: MainContainer(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -19,38 +19,95 @@ class SettingsPage extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(title: Text(l10i.settings)),
             body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: .stretch,
-                children: [
-                  Card(child: AccountItem(email: state.email ?? '')),
-                  Spacer16,
-                  Card(
-                    child: Column(
-                      crossAxisAlignment: .stretch,
-                      children: [
-                        BiometricUnlockItem(
-                          value: state.biometricUnlock ?? false,
-                          onChnaged: cubit.updateBiometricUnlock,
-                        ),
-                        LockoutAfterItem(
-                          value: state.lockoutAfter ?? Duration(seconds: 30),
-                          onChanged: cubit.updateLockoutAfter,
-                        ),
-                      ],
+              child: MainContainer(
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    Text(
+                      'Account',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  ),
-                  Spacer16,
-                  Divider(),
-                  Spacer16,
-                  FilledButton(
-                    onPressed: () => globalAuth.logout(),
-                    child: Text(l10i.logout),
-                  ),
-                ],
+                    Spacer8,
+                    AccountBlock(email: state.email ?? ''),
+                    Spacer16,
+                    Text(
+                      'Security',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Spacer8,
+                    SecurityBlock(
+                      biometricUnlockValue: state.biometricUnlock ?? false,
+                      onBiometricUnlockChanged: cubit.updateBiometricUnlock,
+                      lockoutAfterValue:
+                          state.lockoutAfter ?? Duration(seconds: 30),
+                      onLockoutAfterValueChanges: cubit.updateLockoutAfter,
+                    ),
+                    Spacer16,
+                    Divider(),
+                    Spacer16,
+                    FilledButton(
+                      onPressed: () => globalAuth.logout(),
+                      child: Text(l10i.logout),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class AccountBlock extends StatelessWidget {
+  final String email;
+  const AccountBlock({super.key, required this.email});
+
+  @override
+  Widget build(BuildContext context) {
+    return Surface(
+      child: Padding(
+        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
+        child: AccountItem(email: email),
+      ),
+    );
+  }
+}
+
+class SecurityBlock extends StatelessWidget {
+  final bool biometricUnlockValue;
+  final Function(bool) onBiometricUnlockChanged;
+  final Duration lockoutAfterValue;
+  final Function(Duration) onLockoutAfterValueChanges;
+
+  const SecurityBlock({
+    super.key,
+    required this.biometricUnlockValue,
+    required this.onBiometricUnlockChanged,
+    required this.lockoutAfterValue,
+    required this.onLockoutAfterValueChanges,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Surface(
+      child: Padding(
+        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
+        child: Column(
+          crossAxisAlignment: .stretch,
+          children: [
+            BiometricUnlockItem(
+              value: biometricUnlockValue,
+              onChnaged: onBiometricUnlockChanged,
+            ),
+            Spacer16,
+            LockoutAfterItem(
+              value: lockoutAfterValue,
+              onChanged: onLockoutAfterValueChanges,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -13,9 +13,19 @@ class BiometricUnlockItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      spacing: DEFAULT_SPACING,
       children: [
-        Expanded(child: Text('biometric unlock')),
-        Checkbox(value: value, onChanged: (value) => onChnaged(value ?? false)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              MLabel(text: 'Biometric Unlock'),
+              Spacer4,
+              Text('Unlock the application using your fingerprint'),
+            ],
+          ),
+        ),
+        Switch(value: value, onChanged: (value) => onChnaged(value)),
       ],
     );
   }

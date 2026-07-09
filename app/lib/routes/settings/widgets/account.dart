@@ -9,7 +9,11 @@ class AccountItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .stretch,
-      children: [Text('account'), Text(email)],
+      children: [
+        MLabel(text: 'E-mail'),
+        Spacer4,
+        Text(email),
+      ],
     );
   }
 }

@@ -13,8 +13,20 @@ class LockoutAfterItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      spacing: DEFAULT_SPACING,
       children: [
-        Expanded(child: Text('Lockout after')),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              MLabel(text: 'Automatic Lock'),
+              Spacer4,
+              Text(
+                'Lock the application automatically when incative after a certain amount of time',
+              ),
+            ],
+          ),
+        ),
         DropdownButton<Duration>(
           items: buildPossibleLockoutDurations(),
           value: value,
