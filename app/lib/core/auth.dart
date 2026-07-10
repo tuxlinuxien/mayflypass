@@ -9,6 +9,7 @@ class AuthCubit extends Cubit<AuthStatus> {
     logger.d('check auth');
     final email = await globalStore.getEmail();
     if (email == null) {
+      logger.w('email not stored');
       emit(AuthStatus.unauthenticated);
       return;
     }
@@ -20,12 +21,13 @@ class AuthCubit extends Cubit<AuthStatus> {
       emit(AuthStatus.unlocked);
       return;
     }
-    final unlockKeyBytes = await globalStore.getUnlockKey();
-    if (unlockKeyBytes == null) {
-      await globalStore.flushAll();
-      emit(AuthStatus.unauthenticated);
-    } else {
+
+    if (await globalStore.hasSession()) {
       emit(AuthStatus.locked);
+    } else {
+      await globalStore.flushAll();
+      deleteGlobalKek();
+      emit(AuthStatus.unauthenticated);
     }
   }
 

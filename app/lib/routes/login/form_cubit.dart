@@ -58,26 +58,20 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       state.masterPassword.value,
     );
     final authKey = await deriveAuthKey(masterKey);
-    final unlockKey = await deriveUnlockKey(masterKey);
+    final sessionKey = await deriveSessionKey(masterKey);
 
     try {
-      // remove all account data
-      await globalStore.flushAll();
-      // no need to keep the kek
-      deleteGlobalKek();
+      final email = state.email.value.trim().toLowerCase();
       // generate the auth key since we will need it for unlocking
       final authKeyBytes = await authKey.extractBytes();
       // now do an api query
       await API().login(
-        LoginInput(
-          email: state.email.value,
-          password: Uint8List.fromList(authKeyBytes),
-        ),
+        LoginInput(email: email, password: Uint8List.fromList(authKeyBytes)),
       );
       // if the response is successfull, store the email and the unlock key.
       // the email will be used to rebuild the masterKey.
-      await globalStore.setEmail(state.email.value.trim().toLowerCase());
-      await globalStore.setUnlockKey(await unlockKey.extractBytes());
+      await globalStore.setEmail(email);
+      await globalStore.setSession(sessionKey);
       // keep the kek in memory
       final kek = await deriveKek(masterKey);
       setGlobalKek(kek);
@@ -106,9 +100,8 @@ class LoginFormCubit extends Cubit<LoginFormState> {
     } finally {
       masterKey.destroy();
       authKey.destroy();
-      unlockKey.destroy();
+      sessionKey.destroy();
     }
-
     emit(state.copyWith(status: FormStatus.success));
   }
 }

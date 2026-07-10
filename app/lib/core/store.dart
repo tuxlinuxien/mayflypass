@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hex/hex.dart';
 import 'package:mayflypass/core/logger.dart';
 import 'package:mayflypass/secure/secure.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v7.dart';
 
 abstract class Store {
   // api
@@ -15,8 +18,9 @@ abstract class Store {
   // account
   Future<String?> getEmail();
   Future<void> setEmail(String value);
-  Future<List<int>?> getUnlockKey();
-  Future<void> setUnlockKey(List<int> value);
+  Future<bool?> unlockSession(SecretKey sessionKey);
+  Future<void> setSession(SecretKey sessionKey);
+  Future<bool> hasSession();
 
   // kek secure store
   Future<void> setKek(SecretKey value);
@@ -67,19 +71,34 @@ class MemoryStore extends Store {
   }
 
   @override
-  Future<List<int>?> getUnlockKey() async {
-    logger.d('getUnlockKey');
-    final value = values['unlock_key'] as String?;
+  Future<bool?> unlockSession(SecretKey sessionKey) async {
+    logger.d('unlockSession');
+    final value = values['session_token'] as String?;
     if (value == null) {
       return null;
     }
-    return HEX.decode(value);
+    final encryptedPayload = HEX.decode(value);
+    try {
+      await decrypt(sessionKey, Uint8List.fromList(encryptedPayload));
+    } catch (e) {
+      logger.e(e);
+    }
+    return false;
   }
 
   @override
-  Future<void> setUnlockKey(List<int> value) async {
-    logger.d('setUnlockKey');
-    values['unlock_key'] = HEX.encode(value);
+  Future<bool> hasSession() async {
+    logger.d('hasSession');
+    final value = values['session_token'] as String?;
+    return value == null ? false : true;
+  }
+
+  @override
+  Future<void> setSession(SecretKey sessionKey) async {
+    logger.d('setSession');
+    final sessionPayload = Uuid.parseAsByteList(UuidV7().generate());
+    final encryptedPayload = await encrypt(sessionKey, sessionPayload);
+    values['session_token'] = HEX.encode(encryptedPayload);
   }
 
   @override
@@ -170,21 +189,37 @@ class FSStore extends Store {
   }
 
   @override
-  Future<List<int>?> getUnlockKey() async {
-    logger.d('getUnlockKey');
-    final value = await _getSafeStorage().read(key: 'account::unlock_key');
+  Future<bool?> unlockSession(SecretKey sessionKey) async {
+    logger.d('unlockSession');
+    final value = await _getSafeStorage().read(key: 'account::session_token');
     if (value == null) {
       return null;
     }
-    return HEX.decode(value);
+    final encryptedPayload = HEX.decode(value);
+    try {
+      await decrypt(sessionKey, Uint8List.fromList(encryptedPayload));
+      return true;
+    } catch (e) {
+      logger.e(e);
+    }
+    return false;
   }
 
   @override
-  Future<void> setUnlockKey(List<int> value) async {
-    logger.d('setUnlockKey');
+  Future<bool> hasSession() async {
+    logger.d('hasSession');
+    final value = await _getSafeStorage().read(key: 'account::session_token');
+    return value == null ? false : true;
+  }
+
+  @override
+  Future<void> setSession(SecretKey sessionKey) async {
+    logger.d('setSession');
+    final sessionPayload = Uuid.parseAsByteList(UuidV7().generate());
+    final encryptedPayload = await encrypt(sessionKey, sessionPayload);
     await _getSafeStorage().write(
-      key: 'account::unlock_key',
-      value: HEX.encode(value),
+      key: 'account::session_token',
+      value: HEX.encode(encryptedPayload),
     );
   }
 

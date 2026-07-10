@@ -1,8 +1,8 @@
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:formz/formz.dart';
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/forms/master_password.dart';
-import 'package:mayflypass/router.dart';
 import 'package:mayflypass/secure/secure.dart';
 
 part 'cubit.freezed.dart';
@@ -36,27 +36,31 @@ class FormCubit extends Cubit<UnlockFormState> {
     emit(state.copyWith(status: .submitting));
 
     final email = await globalStore.getEmail();
-    final unlockKeyBytes = await globalStore.getUnlockKey();
-    if (email == null || unlockKeyBytes == null) {
-      zeroing(unlockKeyBytes ?? []);
-      router.go('/login');
+    if (email == null) {
+      globalAuth.logout();
       return;
     }
 
     final password = state.masterPassword.value;
     final masterKey = await deriveMasterPassword(email, password);
-    final unlockKey = await deriveUnlockKey(masterKey);
-    final isMatch = await compareUnlockKeys(unlockKeyBytes, unlockKey);
-    // clean up memory now
-    zeroing(unlockKeyBytes);
-    unlockKey.destroy();
-    // now we compare that the password is correct
-    if (isMatch == false) {
-      logger.e('invalid password');
-      emit(state.copyWith(status: .failure));
-      return;
+    final sessionKey = await deriveSessionKey(masterKey);
+    final kek = await deriveKek(masterKey);
+
+    // delete masterKey because it's not used anymore.
+    masterKey.destroy();
+
+    final ok = await globalStore.unlockSession(sessionKey);
+    // already used delete it now as well.
+    sessionKey.destroy();
+    switch (ok) {
+      case true:
+        setGlobalKek(kek);
+        emit(state.copyWith(status: .success));
+      case false:
+        emit(state.copyWith(status: .failure));
+      case null:
+        globalAuth.logout();
     }
-    emit(state.copyWith(status: .success));
   }
 }
 
