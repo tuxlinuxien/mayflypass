@@ -81,75 +81,83 @@ class HomePage extends StatelessWidget {
             body: RefreshIndicator(
               onRefresh: () => cubit.load(),
               child: ListView.separated(
-              itemCount: state.databoxes.length,
-              itemBuilder: (context, index) {
-                return Slidable(
-                  direction: .horizontal,
-                  enabled: true,
-                  endActionPane: ActionPane(
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableAction(
-                        onPressed: (_) async {
-                          // remove record
-                          await gloablDB.deleteStorage(
-                            state.databoxes[index].$1,
-                          );
-                          // reload the entries
-                          await cubit.load();
-                        },
-                        backgroundColor: Color(0xFFFE4A49),
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: 'Delete',
-                      ),
-                      SlidableAction(
-                        onPressed: (_) async {
-                          await router.push(
-                            '/totp/${state.databoxes[index].$1}',
-                          );
-                          // reload the entries
-                          await cubit.load();
-                        },
-                        backgroundColor: Colors.grey.shade900,
-                        foregroundColor: Colors.white,
-                        icon: Icons.edit,
-                        label: 'Edit',
-                      ),
-                    ],
-                  ),
-                  child: Card(
-                    elevation: 0.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(DEFAULT_SPACING),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: <Widget>[
-                                Text(state.databoxes[index].$2.totp.issuer),
-                                Text(state.databoxes[index].$2.totp.account),
-                                OTPCode(
-                                  algorithm:
-                                      state.databoxes[index].$2.totp.algorithm,
-                                  secret: state.databoxes[index].$2.totp.secret,
-                                  digits: state.databoxes[index].$2.totp.digits,
-                                  period: state.databoxes[index].$2.totp.period,
-                                ),
-                              ],
+                itemCount: state.databoxes.length,
+                itemBuilder: (context, index) {
+                  return Slidable(
+                    direction: .horizontal,
+                    enabled: true,
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (_) async {
+                            // remove record
+                            await gloablDB.deleteStorage(
+                              state.databoxes[index].$1,
+                            );
+                            // reload the entries
+                            await cubit.load();
+                          },
+                          backgroundColor: Color(0xFFFE4A49),
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                        SlidableAction(
+                          onPressed: (_) async {
+                            await router.push(
+                              '/totp/${state.databoxes[index].$1}',
+                            );
+                            // reload the entries
+                            await cubit.load();
+                          },
+                          backgroundColor: Colors.grey.shade900,
+                          foregroundColor: Colors.white,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                        ),
+                      ],
+                    ),
+                    child: Card(
+                      elevation: 0.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(DEFAULT_SPACING),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: .start,
+                                children: <Widget>[
+                                  Text(state.databoxes[index].$2.totp.issuer),
+                                  Text(state.databoxes[index].$2.totp.account),
+                                  OTPCode(
+                                    algorithm: state
+                                        .databoxes[index]
+                                        .$2
+                                        .totp
+                                        .algorithm,
+                                    secret:
+                                        state.databoxes[index].$2.totp.secret,
+                                    digits:
+                                        state.databoxes[index].$2.totp.digits,
+                                    period:
+                                        state.databoxes[index].$2.totp.period,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Timer(period: state.databoxes[index].$2.totp.period),
-                        ],
+                            Timer(
+                              period: state.databoxes[index].$2.totp.period,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Spacer16;
-              },
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return Spacer16;
+                },
               ),
             ),
             floatingActionButton: IconButton.filled(

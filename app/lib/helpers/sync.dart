@@ -19,23 +19,28 @@ Future<void> syncLocalAndRemote() async {
         ),
       );
     } on ApiErrorNoNetwork {
+      logger.i('no network');
       continue;
-    } on ApiError {
-      rethrow;
+    } on ApiError catch (e) {
+      logger.e(e);
     }
   }
   logger.i('get all entries from the api');
-  final remoteEntries = await API().storageSelect();
-  for (final item in remoteEntries) {
-    logger.i('api -> local ${item.id}');
-    await gloablDB.upsertLocalStorage(
-      LocalStorageData(
-        id: item.id,
-        updatedAtMs: item.updatedAtMs,
-        deleted: item.deleted,
-        encryptedDek: item.encryptedDek,
-        encryptedPayload: item.encryptedPayload,
-      ),
-    );
+  try {
+    final remoteEntries = await API().storageSelect();
+    for (final item in remoteEntries) {
+      logger.i('api -> local ${item.id}');
+      await gloablDB.upsertLocalStorage(
+        LocalStorageData(
+          id: item.id,
+          updatedAtMs: item.updatedAtMs,
+          deleted: item.deleted,
+          encryptedDek: item.encryptedDek,
+          encryptedPayload: item.encryptedPayload,
+        ),
+      );
+    }
+  } catch (e) {
+    logger.e(e);
   }
 }
