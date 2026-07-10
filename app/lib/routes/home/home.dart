@@ -2,6 +2,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/databox/databox.dart';
+import 'package:mayflypass/helpers/sync.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/home/widgets/timer.dart';
 import 'package:mayflypass/routes/home/widgets/otp_code.dart';
@@ -26,6 +27,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(status: .loading));
     logger.d('loading entried from database');
     try {
+      await syncLocalAndRemote();
       // get all entried from the database
       final entries = await gloablDB.selectStorage();
       // remove the deleted ones

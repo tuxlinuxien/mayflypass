@@ -17,6 +17,7 @@ abstract class _API {
   Future<AccountInfo> accountInfo();
   // storage
   Future<ApiStorage> storageUpsert(ApiStorage storage);
+  Future<List<ApiStorage>> storageSelect();
 }
 
 class API extends _API {
@@ -169,5 +170,13 @@ class API extends _API {
   Future<ApiStorage> storageUpsert(ApiStorage input) async {
     final response = await postProtected('/api/storage', data: input.toJson());
     return ApiStorage.fromJson(response.data);
+  }
+
+  @override
+  Future<List<ApiStorage>> storageSelect() async {
+    final response = await getProtected('/api/storage');
+    return (response.data as List<dynamic>).map((item) {
+      return ApiStorage.fromJson(item as Map<String, dynamic>);
+    }).toList();
   }
 }
