@@ -25,7 +25,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       state.copyWith(
         email: await globalStore.getEmail(),
         lockoutAfter: await globalStore.getSettingsLockAfterDuration(),
-        biometricUnlock: await globalStore.getSettingsBiometricEnabled(),
+        biometricUnlock: await globalStore.hasKek(),
         biometricUnlockAvailable: (Platform.isAndroid || Platform.isIOS),
         status: SettingsStatus.ready,
       ),
@@ -34,8 +34,20 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> updateBiometricUnlock(bool value) async {
     emit(state.copyWith(status: .loading));
-    await globalStore.setSettingsBiometricEnabled(value);
-    emit(state.copyWith(status: .ready, biometricUnlock: value));
+    final kek = getGlobalKek();
+    if (kek == null) {
+      emit(state.copyWith(status: .ready, biometricUnlock: false));
+      return;
+    }
+    var hasKek = await globalStore.hasKek();
+    if (hasKek) {
+      await globalStore.deleteKek();
+    } else {
+      await globalStore.setKek(kek);
+    }
+
+    hasKek = await globalStore.hasKek();
+    emit(state.copyWith(status: .ready, biometricUnlock: hasKek));
   }
 
   Future<void> updateLockoutAfter(Duration value) async {

@@ -15,10 +15,18 @@ class AuthCubit extends Cubit<AuthStatus> {
     }
 
     // try to get the kek from storage but continue if it's not present
-    final kek = await globalStore.getKek();
-    if (kek != null) {
-      setGlobalKek(kek);
-      emit(AuthStatus.unlocked);
+    final hasKek = await globalStore.hasKek();
+    if (hasKek) {
+      logger.i('has kek biometric store: true');
+      final kek = await globalStore.getKek();
+      if (kek != null) {
+        logger.i('kek biometric store returned');
+        setGlobalKek(kek);
+        emit(AuthStatus.unlocked);
+      } else {
+        logger.i('kek biometric store missing');
+        emit(AuthStatus.locked);
+      }
       return;
     }
 

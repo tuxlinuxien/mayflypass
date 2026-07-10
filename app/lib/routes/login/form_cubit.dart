@@ -75,8 +75,6 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       // keep the kek in memory
       final kek = await deriveKek(masterKey);
       setGlobalKek(kek);
-      // keep it in the encrypted storage
-      await globalStore.setKek(kek);
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {
