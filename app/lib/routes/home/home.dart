@@ -78,7 +78,9 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-            body: ListView.separated(
+            body: RefreshIndicator(
+              onRefresh: () => cubit.load(),
+              child: ListView.separated(
               itemCount: state.databoxes.length,
               itemBuilder: (context, index) {
                 return Slidable(
@@ -148,6 +150,7 @@ class HomePage extends StatelessWidget {
               separatorBuilder: (context, index) {
                 return Spacer16;
               },
+              ),
             ),
             floatingActionButton: IconButton.filled(
               onPressed: () async {
