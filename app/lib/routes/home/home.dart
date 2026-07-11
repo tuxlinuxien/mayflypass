@@ -23,11 +23,16 @@ abstract class HomeState with _$HomeState {
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeState());
 
+  Future<void> sync() async {
+    emit(state.copyWith(status: .loading));
+    await syncLocalAndRemote();
+    await load();
+  }
+
   Future<void> load() async {
     emit(state.copyWith(status: .loading));
     logger.d('loading entried from database');
     try {
-      await syncLocalAndRemote();
       // get all entried from the database
       final entries = await gloablDB.selectStorage();
       // remove the deleted ones
@@ -79,7 +84,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
             body: RefreshIndicator(
-              onRefresh: () => cubit.load(),
+              onRefresh: () => cubit.sync(),
               child: ListView.separated(
                 itemCount: state.databoxes.length,
                 itemBuilder: (context, index) {

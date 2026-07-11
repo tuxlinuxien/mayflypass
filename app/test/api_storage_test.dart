@@ -21,5 +21,35 @@ void main() {
       expect(response[0].encryptedDek, input.encryptedDek);
       expect(response[0].encryptedPayload, input.encryptedPayload);
     });
+
+    test('upsert many', () async {
+      await setupAccount();
+      final inputs = [
+        ApiStorage.create(
+          encryptedDek: Uint8List(0),
+          encryptedPayload: Uint8List(0),
+        ),
+        ApiStorage.create(
+          encryptedDek: Uint8List(0),
+          encryptedPayload: Uint8List(0),
+        ),
+        ApiStorage.create(
+          encryptedDek: Uint8List(0),
+          encryptedPayload: Uint8List(0),
+        ),
+        ApiStorage.create(
+          encryptedDek: Uint8List(0),
+          encryptedPayload: Uint8List(0),
+        ),
+        ApiStorage.create(
+          encryptedDek: Uint8List(0),
+          encryptedPayload: Uint8List(0),
+        ),
+      ];
+
+      await API().storageUpsert(inputs);
+      final response = await API().storageSelect();
+      expect(response.length, inputs.length);
+    });
   });
 }

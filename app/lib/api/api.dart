@@ -167,8 +167,8 @@ class API extends _API {
   }
 
   @override
-  Future<void> storageUpsert(ApiStorage input) async {
-    await postProtected('/api/storage', data: input.toJson());
+  Future<void> storageUpsert(dynamic input) async {
+    await postProtected('/api/storage', data: jsonEncode(input));
   }
 
   @override

@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
-pub struct UpsertInput {
+pub struct UpsertItem {
     id: Uuid,
     updated_at_ms: i64,
     deleted: bool,
@@ -19,20 +19,55 @@ pub struct UpsertInput {
     encrypted_payload: Vec<u8>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpsertInput {
+    One(UpsertItem),
+    Many(Vec<UpsertItem>),
+}
+
+impl From<UpsertItem> for database::storage::StorageUpsert {
+    fn from(value: UpsertItem) -> Self {
+        Self {
+            id: value.id,
+            updated_at_ms: value.updated_at_ms,
+            deleted: value.deleted,
+            encrypted_dek: value.encrypted_dek,
+            encrypted_payload: value.encrypted_payload,
+        }
+    }
+}
+
 pub async fn upsert(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,
     Json(payload): Json<UpsertInput>,
 ) -> Result<(), ApiError> {
-    let input = database::storage::StorageUpsert {
-        id: payload.id,
-        updated_at_ms: payload.updated_at_ms,
-        deleted: payload.deleted,
-        encrypted_dek: payload.encrypted_dek,
-        encrypted_payload: payload.encrypted_payload,
+    // move all the UpsertInput values into a list of UpsertItem so we can
+    // use a single method to process them later
+    let items: Vec<database::storage::StorageUpsert> = match payload {
+        UpsertInput::One(item) => vec![item.into()],
+        UpsertInput::Many(items) => items.into_iter().map(|item| item.into()).collect(),
     };
-    // do not return the result
-    let _ = database::storage::upsert(&state.pool, &account_id, &input).await?;
+    // upsert all the rows with a transaction
+    let mut tx = state
+        .pool
+        .begin()
+        .await
+        .map_err(|e| ApiError::InternalError(e.into()))?;
+    for item in &items {
+        // if a single error is found, stop the processing now an return the error to the client
+        if let Err(err) = database::storage::upsert(tx.as_mut(), &account_id, item.into()).await {
+            tx.rollback()
+                .await
+                .map_err(|e| ApiError::InternalError(e.into()))?;
+            return Err(err)?;
+        }
+    }
+    // commit all the changes
+    tx.commit()
+        .await
+        .map_err(|e| ApiError::InternalError(e.into()))?;
     Ok(())
 }
 
@@ -46,23 +81,54 @@ mod test {
     }
 
     fn create_test_input() -> UpsertInput {
-        UpsertInput {
+        UpsertInput::One(UpsertItem {
             id: test_storage_id(),
             updated_at_ms: 1,
             deleted: false,
             encrypted_dek: vec![1, 2, 3],
             encrypted_payload: vec![4, 5, 6],
-        }
+        })
     }
 
     #[tokio::test]
-    async fn test_upsert_insert_success() {
+    async fn test_upsert_insert_single_item_success() {
         let (app, state) = testing::init_test_server().await;
         let account = testing::build_default_account(&state.pool).await;
         let server = testing::build_user_server(&account, &app).await;
 
         // first insert
         let input = create_test_input();
+        let response = server.post("/api/storage").json(&input).await;
+        response.assert_status_ok();
+
+        assert!(
+            storage::select(&state.pool, &account.id)
+                .await
+                .unwrap()
+                .len()
+                == 1
+        );
+
+        // insert it again
+        let response = server.post("/api/storage").json(&input).await;
+        response.assert_status_ok();
+        assert!(
+            storage::select(&state.pool, &account.id)
+                .await
+                .unwrap()
+                .len()
+                == 1
+        )
+    }
+
+    #[tokio::test]
+    async fn test_upsert_insert_multiple_item_success() {
+        let (app, state) = testing::init_test_server().await;
+        let account = testing::build_default_account(&state.pool).await;
+        let server = testing::build_user_server(&account, &app).await;
+
+        // send the same item multiple times
+        let input = vec![create_test_input(), create_test_input()];
         let response = server.post("/api/storage").json(&input).await;
         response.assert_status_ok();
 

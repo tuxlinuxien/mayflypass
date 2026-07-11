@@ -4,43 +4,48 @@ import 'package:mayflypass/core/logger.dart';
 import 'package:mayflypass/database/database.dart';
 
 Future<void> syncLocalAndRemote() async {
-  logger.i('get all entries from the database');
-  final localEntries = await gloablDB.selectStorage();
-  for (final item in localEntries) {
+  {
+    logger.i('get all entries from the database');
+    final localEntries = await gloablDB.selectStorage();
+    logger.i('local -> api ${localEntries.length}');
+    final remoteEntries = localEntries
+        .map(
+          (entry) => ApiStorage(
+            id: entry.id,
+            updatedAtMs: entry.updatedAtMs,
+            deleted: entry.deleted,
+            encryptedDek: entry.encryptedDek,
+            encryptedPayload: entry.encryptedPayload,
+          ),
+        )
+        .toList();
     try {
-      logger.i('local -> api ${item.id}');
-      await API().storageUpsert(
-        ApiStorage(
-          id: item.id,
-          updatedAtMs: item.updatedAtMs,
-          deleted: item.deleted,
-          encryptedDek: item.encryptedDek,
-          encryptedPayload: item.encryptedPayload,
-        ),
-      );
+      await API().storageUpsert(remoteEntries);
     } on ApiErrorNoNetwork {
       logger.i('no network');
-      continue;
     } on ApiError catch (e) {
       logger.e(e);
     }
   }
-  logger.i('get all entries from the api');
-  try {
-    final remoteEntries = await API().storageSelect();
-    for (final item in remoteEntries) {
-      logger.i('api -> local ${item.id}');
-      await gloablDB.upsertLocalStorage(
-        LocalStorageData(
-          id: item.id,
-          updatedAtMs: item.updatedAtMs,
-          deleted: item.deleted,
-          encryptedDek: item.encryptedDek,
-          encryptedPayload: item.encryptedPayload,
-        ),
-      );
+
+  {
+    logger.i('get all entries from the api');
+    try {
+      final remoteEntries = await API().storageSelect();
+      logger.i('api -> local ${remoteEntries.length}');
+      for (final item in remoteEntries) {
+        await gloablDB.upsertLocalStorage(
+          LocalStorageData(
+            id: item.id,
+            updatedAtMs: item.updatedAtMs,
+            deleted: item.deleted,
+            encryptedDek: item.encryptedDek,
+            encryptedPayload: item.encryptedPayload,
+          ),
+        );
+      }
+    } catch (e) {
+      logger.e(e);
     }
-  } catch (e) {
-    logger.e(e);
   }
 }
