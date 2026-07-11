@@ -6,7 +6,7 @@ import 'package:mayflypass/database/database.dart';
 Future<void> syncLocalAndRemote() async {
   {
     logger.i('get all entries from the database');
-    final localEntries = await gloablDB.selectStorage();
+    final localEntries = await gloablDB.selectLocalStorage();
     logger.i('local -> api ${localEntries.length}');
     final remoteEntries = localEntries
         .map(

@@ -13,3 +13,8 @@ build:
 
 test:
 	fvm flutter test
+
+clean:
+	fvm flutter clean
+	# remove secrets
+	secret-tool clear account com.mayflypass.mayflypass.secureStorage

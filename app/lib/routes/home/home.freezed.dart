@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- HomeStatus get status; List<(String, DataBox,)> get databoxes;
+ HomeStatus get status; List<(String, Totp,)> get totps;
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.databoxes, databoxes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.totps, totps));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(databoxes));
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(totps));
 
 @override
 String toString() {
-  return 'HomeState(status: $status, databoxes: $databoxes)';
+  return 'HomeState(status: $status, totps: $totps)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- HomeStatus status, List<(String, DataBox,)> databoxes
+ HomeStatus status, List<(String, Totp,)> totps
 });
 
 
@@ -63,11 +63,11 @@ class _$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? databoxes = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? totps = null,}) {
   return _then(HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as HomeStatus,databoxes: null == databoxes ? _self.databoxes : databoxes // ignore: cast_nullable_to_non_nullable
-as List<(String, DataBox,)>,
+as HomeStatus,totps: null == totps ? _self.totps : totps // ignore: cast_nullable_to_non_nullable
+as List<(String, Totp,)>,
   ));
 }
 
@@ -152,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, DataBox,)> databoxes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, Totp,)> totps)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.status,_that.databoxes);case _:
+return $default(_that.status,_that.totps);case _:
   return orElse();
 
 }
@@ -173,10 +173,10 @@ return $default(_that.status,_that.databoxes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, DataBox,)> databoxes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, Totp,)> totps)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
-return $default(_that.status,_that.databoxes);case _:
+return $default(_that.status,_that.totps);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +193,10 @@ return $default(_that.status,_that.databoxes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  List<(String, DataBox,)> databoxes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  List<(String, Totp,)> totps)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.status,_that.databoxes);case _:
+return $default(_that.status,_that.totps);case _:
   return null;
 
 }
@@ -208,15 +208,15 @@ return $default(_that.status,_that.databoxes);case _:
 
 
 class _HomeState implements HomeState {
-  const _HomeState({this.status = HomeStatus.loading,  List<(String, DataBox,)> databoxes = const []}): _databoxes = databoxes;
+  const _HomeState({this.status = HomeStatus.loading,  List<(String, Totp,)> totps = const []}): _totps = totps;
   
 
 @override@JsonKey() final  HomeStatus status;
- final  List<(String, DataBox,)> _databoxes;
-@override@JsonKey() List<(String, DataBox,)> get databoxes {
-  if (_databoxes is EqualUnmodifiableListView) return _databoxes;
+ final  List<(String, Totp,)> _totps;
+@override@JsonKey() List<(String, Totp,)> get totps {
+  if (_totps is EqualUnmodifiableListView) return _totps;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_databoxes);
+  return EqualUnmodifiableListView(_totps);
 }
 
 
@@ -230,16 +230,16 @@ _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._databoxes, _databoxes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._totps, _totps));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_databoxes));
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_totps));
 
 @override
 String toString() {
-  return 'HomeState(status: $status, databoxes: $databoxes)';
+  return 'HomeState(status: $status, totps: $totps)';
 }
 
 
@@ -250,7 +250,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- HomeStatus status, List<(String, DataBox,)> databoxes
+ HomeStatus status, List<(String, Totp,)> totps
 });
 
 
@@ -267,11 +267,11 @@ class __$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? databoxes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? totps = null,}) {
   return _then(_HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as HomeStatus,databoxes: null == databoxes ? _self._databoxes : databoxes // ignore: cast_nullable_to_non_nullable
-as List<(String, DataBox,)>,
+as HomeStatus,totps: null == totps ? _self._totps : totps // ignore: cast_nullable_to_non_nullable
+as List<(String, Totp,)>,
   ));
 }
 

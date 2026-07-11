@@ -16,7 +16,7 @@ enum HomeStatus { loading, ready }
 abstract class HomeState with _$HomeState {
   const factory HomeState({
     @Default(HomeStatus.loading) HomeStatus status,
-    @Default([]) List<(String, DataBox)> databoxes,
+    @Default([]) List<(String, Totp)> totps,
   }) = _HomeState;
 }
 
@@ -34,32 +34,44 @@ class HomeCubit extends Cubit<HomeState> {
     logger.d('loading entried from database');
     try {
       // get all entried from the database
-      final entries = await gloablDB.selectStorage();
-      // remove the deleted ones
-      entries.removeWhere((e) => e.deleted);
+      final entries = await gloablDB.selectLocalStorage(withDeleted: false);
       // for each entry, decrypt the payload and get
-      // the databox.
-      final databoxes = <(String, DataBox)>[];
-      for (var entry in entries) {
-        try {
-          databoxes.add((
-            entry.id,
-            await decryptDataBox(
-              getGlobalKek()!,
-              entry.encryptedDek,
-              entry.encryptedPayload,
-            ),
-          ));
-        } catch (e) {
-          logger.e(e);
-        }
-      }
-      emit(state.copyWith(databoxes: databoxes));
+      // the Totp.
+      final totps = await decryptEntries(entries);
+      sortEntries(totps);
+      emit(state.copyWith(totps: totps));
     } catch (e) {
       logger.e(e);
     } finally {
       emit(state.copyWith(status: .ready));
     }
+  }
+
+  void sortEntries(List<(String, Totp)> entries) {
+    entries.sort((a, b) {
+      var kA = '${a.$2.issuer}:${a.$2.account}';
+      var kB = '${b.$2.issuer}:${b.$2.account}';
+      return kA.compareTo(kB);
+    });
+  }
+
+  Future<List<(String, Totp)>> decryptEntries(
+    List<LocalStorageData> entries,
+  ) async {
+    final totps = <(String, Totp)>[];
+    for (var entry in entries) {
+      try {
+        final databox = await decryptDataBox(
+          getGlobalKek()!,
+          entry.encryptedDek,
+          entry.encryptedPayload,
+        );
+        totps.add((entry.id, databox.totp));
+      } catch (e) {
+        logger.e(e);
+      }
+    }
+    return totps;
   }
 }
 
@@ -86,7 +98,7 @@ class HomePage extends StatelessWidget {
             body: RefreshIndicator(
               onRefresh: () => cubit.sync(),
               child: ListView.separated(
-                itemCount: state.databoxes.length,
+                itemCount: state.totps.length,
                 itemBuilder: (context, index) {
                   return Slidable(
                     direction: .horizontal,
@@ -97,8 +109,8 @@ class HomePage extends StatelessWidget {
                         SlidableAction(
                           onPressed: (_) async {
                             // remove record
-                            await gloablDB.deleteStorage(
-                              state.databoxes[index].$1,
+                            await gloablDB.deleteLocalStorage(
+                              state.totps[index].$1,
                             );
                             // reload the entries
                             await cubit.load();
@@ -110,9 +122,7 @@ class HomePage extends StatelessWidget {
                         ),
                         SlidableAction(
                           onPressed: (_) async {
-                            await router.push(
-                              '/totp/${state.databoxes[index].$1}',
-                            );
+                            await router.push('/totp/${state.totps[index].$1}');
                             // reload the entries
                             await cubit.load();
                           },
@@ -133,27 +143,18 @@ class HomePage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: .start,
                                 children: <Widget>[
-                                  Text(state.databoxes[index].$2.totp.issuer),
-                                  Text(state.databoxes[index].$2.totp.account),
+                                  Text(state.totps[index].$2.issuer),
+                                  Text(state.totps[index].$2.account),
                                   OTPCode(
-                                    algorithm: state
-                                        .databoxes[index]
-                                        .$2
-                                        .totp
-                                        .algorithm,
-                                    secret:
-                                        state.databoxes[index].$2.totp.secret,
-                                    digits:
-                                        state.databoxes[index].$2.totp.digits,
-                                    period:
-                                        state.databoxes[index].$2.totp.period,
+                                    algorithm: state.totps[index].$2.algorithm,
+                                    secret: state.totps[index].$2.secret,
+                                    digits: state.totps[index].$2.digits,
+                                    period: state.totps[index].$2.period,
                                   ),
                                 ],
                               ),
                             ),
-                            Timer(
-                              period: state.databoxes[index].$2.totp.period,
-                            ),
+                            Timer(period: state.totps[index].$2.period),
                           ],
                         ),
                       ),

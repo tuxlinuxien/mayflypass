@@ -87,8 +87,13 @@ class AppDatabase extends _$AppDatabase {
         .getSingleOrNull();
   }
 
-  Future<List<LocalStorageData>> selectStorage() async {
-    return await managers.localStorage.get();
+  Future<List<LocalStorageData>> selectLocalStorage({
+    bool withDeleted = true,
+  }) async {
+    if (withDeleted) {
+      return await managers.localStorage.get();
+    }
+    return managers.localStorage.filter((i) => i.deleted.isFalse()).get();
   }
 
   Future<int> countLocalStorage() async {
@@ -117,7 +122,7 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  Future<void> deleteStorage(String id) async {
+  Future<void> deleteLocalStorage(String id) async {
     await upsertLocalStorage(
       LocalStorageData(
         id: id,
@@ -127,6 +132,10 @@ class AppDatabase extends _$AppDatabase {
         encryptedPayload: Uint8List(0),
       ),
     );
+  }
+
+  Future<void> deleteAllLocalStorage() async {
+    await managers.localStorage.delete();
   }
 }
 

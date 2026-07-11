@@ -4,8 +4,10 @@ import 'package:formz/formz.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/forms/email.dart';
 import 'package:mayflypass/forms/master_password.dart';
+import 'package:mayflypass/helpers/sync.dart';
 import 'package:mayflypass/secure/secure.dart';
 
 part 'form_cubit.freezed.dart';
@@ -75,6 +77,10 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       // keep the kek in memory
       final kek = await deriveKek(masterKey);
       setGlobalKek(kek);
+      // clean up previous entried
+      await gloablDB.deleteAllLocalStorage();
+      // sync data for the first time
+      await syncLocalAndRemote();
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {
@@ -100,6 +106,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       authKey.destroy();
       sessionKey.destroy();
     }
+
     emit(state.copyWith(status: FormStatus.success));
   }
 }
