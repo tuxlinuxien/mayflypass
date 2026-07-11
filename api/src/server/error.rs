@@ -254,6 +254,7 @@ pub enum ApiError {
     BadRequestFieldErrors(Vec<FieldError>),
     #[error("bad request: {0}")]
     BadRequest(anyhow::Error),
+    #[allow(unused)]
     #[error("not found")]
     NotFound,
 }
