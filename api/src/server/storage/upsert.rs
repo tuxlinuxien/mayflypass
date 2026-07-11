@@ -19,23 +19,11 @@ pub struct UpsertInput {
     encrypted_payload: Vec<u8>,
 }
 
-#[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpsertResponse {
-    id: Uuid,
-    updated_at_ms: i64,
-    deleted: bool,
-    #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_dek: Vec<u8>,
-    #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_payload: Vec<u8>,
-}
-
 pub async fn upsert(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,
     Json(payload): Json<UpsertInput>,
-) -> Result<Json<UpsertResponse>, ApiError> {
+) -> Result<(), ApiError> {
     let input = database::storage::StorageUpsert {
         id: payload.id,
         updated_at_ms: payload.updated_at_ms,
@@ -43,21 +31,9 @@ pub async fn upsert(
         encrypted_dek: payload.encrypted_dek,
         encrypted_payload: payload.encrypted_payload,
     };
-    // if no upsert result, try to return the old record for the database
-    let result = match database::storage::upsert(&state.pool, &account_id, &input).await? {
-        Some(result) => result,
-        None => match database::storage::get(&state.pool, &account_id, &payload.id).await? {
-            Some(result) => result,
-            None => return Err(ApiError::NotFound),
-        },
-    };
-    Ok(Json(UpsertResponse {
-        id: result.id,
-        updated_at_ms: result.updated_at_ms,
-        deleted: result.deleted,
-        encrypted_dek: result.encrypted_dek,
-        encrypted_payload: result.encrypted_payload,
-    }))
+    // do not return the result
+    let _ = database::storage::upsert(&state.pool, &account_id, &input).await?;
+    Ok(())
 }
 
 #[cfg(test)]

@@ -13,12 +13,13 @@ void main() {
         encryptedDek: Uint8List(0),
         encryptedPayload: Uint8List(0),
       );
-      final response = await API().storageUpsert(input);
-      expect(response.id, input.id);
-      expect(response.updatedAtMs, input.updatedAtMs);
-      expect(response.deleted, input.deleted);
-      expect(response.encryptedDek, input.encryptedDek);
-      expect(response.encryptedPayload, input.encryptedPayload);
+      await API().storageUpsert(input);
+      final response = await API().storageSelect();
+      expect(response[0].id, input.id);
+      expect(response[0].updatedAtMs, input.updatedAtMs);
+      expect(response[0].deleted, input.deleted);
+      expect(response[0].encryptedDek, input.encryptedDek);
+      expect(response[0].encryptedPayload, input.encryptedPayload);
     });
   });
 }
