@@ -12,6 +12,8 @@ enum FormStatus { initial, submitting, success, failure }
 @freezed
 abstract class UnlockFormState with _$UnlockFormState {
   const factory UnlockFormState({
+    @Default('') String email,
+    @Default(false) bool withBiometricUnlock,
     @Default(MasterPasswordValue.pure()) MasterPasswordValue masterPassword,
     @Default(FormStatus.initial) FormStatus status,
   }) = _UnlockFormState;
@@ -27,6 +29,14 @@ class FormCubit extends Cubit<UnlockFormState> {
         masterPassword: MasterPasswordValue.dirty(value),
       ),
     );
+  }
+
+  void load() async {
+    final email = await globalStore.getEmail();
+    if (email == null) {
+      return;
+    }
+    emit(state.copyWith(status: .initial, email: email));
   }
 
   void unlock() async {

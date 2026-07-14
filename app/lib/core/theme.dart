@@ -9,7 +9,6 @@ abstract final class AppTheme {
   static Color PrimaryColor = Color(0xFF6D28D9);
   static Color BrightColor = Color(0xFF8B5CF6);
 
-  // The FlexColorScheme defined light mode ThemeData.
   static Color DangerColor = Color(0xFFF87171);
   static Color SuccessColor = Color(0xFF4ADE80);
   static Color WarningColor = Color(0xFFFBBF24);
@@ -26,6 +25,19 @@ abstract final class AppTheme {
     fontSize: 11,
     letterSpacing: 1.2,
   );
+
+  static TextStyle helperStyle = TextStyle(
+    color: Color(0xFF948F9E),
+    fontSize: 14,
+  );
+
+  static TextStyle mainTitleStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 29,
+    fontWeight: FontWeight(600),
+  );
+
+  static TextStyle helperStyleLink = helperStyle.copyWith(color: BrightColor);
 
   // The FlexColorScheme defined dark mode ThemeData.
   static ThemeData dark = ThemeData(
@@ -79,6 +91,15 @@ abstract final class AppTheme {
         backgroundColor: PrimaryColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: borderRadius),
+        minimumSize: Size.fromHeight(fieldHeight),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppBackgroundColor,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: borderRadius),
+        side: BorderSide(color: Color(0x1affffff)),
         minimumSize: Size.fromHeight(fieldHeight),
       ),
     ),
