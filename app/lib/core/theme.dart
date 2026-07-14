@@ -85,6 +85,14 @@ abstract final class AppTheme {
       ),
     ),
 
+    // bottom sheet: transparent so the persistent search pill floats freely
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+    ),
+
     // button
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(

@@ -30,16 +30,17 @@ class HomePage extends StatelessWidget {
             body: RefreshIndicator(
               onRefresh: () => cubit.sync(),
               child: SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 66),
                 child: MainContainer(
                   child: Column(
                     children: [
                       TotpEntryList(
-                        items: _fav(state.totps),
+                        items: _fav(_filter(state.totps, state.query)),
                         title: 'favorites',
                       ),
                       SpacerSection,
                       TotpEntryList(
-                        items: _nonFav(state.totps),
+                        items: _nonFav(_filter(state.totps, state.query)),
                         title: 'accounts',
                       ),
                     ],
@@ -47,12 +48,35 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            floatingActionButton: IconButton.filled(
-              onPressed: () async {
-                await router.push<bool?>('/totp');
-                await cubit.load();
-              },
-              icon: Icon(Icons.add),
+
+            bottomSheet: Padding(
+              padding: EdgeInsetsGeometry.directional(
+                bottom: 16,
+                top: 0,
+                start: 20,
+                end: 20,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      onChanged: (q) => cubit.search(q),
+                      decoration: const InputDecoration(
+                        hintText: 'Search',
+                        prefixIcon: Icon(Icons.search),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  IconButton.filled(
+                    onPressed: () async {
+                      await router.push<bool?>('/totp');
+                      await cubit.load();
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -60,12 +84,22 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  List<(String, Totp)> _filter(List<(String, Totp)> totps, String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return totps;
+    return totps.where((item) {
+      final t = item.$2;
+      return t.issuer.toLowerCase().contains(q) ||
+          t.account.toLowerCase().contains(q);
+    }).toList();
+  }
+
   List<(String, Totp)> _fav(List<(String, Totp)> totps) {
-    return totps.takeWhile((item) => item.$2.favorite).toList();
+    return totps.where((item) => item.$2.favorite).toList();
   }
 
   List<(String, Totp)> _nonFav(List<(String, Totp)> totps) {
-    return totps.takeWhile((item) => !item.$2.favorite).toList();
+    return totps.where((item) => !item.$2.favorite).toList();
   }
 }
 
@@ -76,8 +110,15 @@ class TotpEntryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<HomeCubit>();
     final children =
-        items.map((item) => TotpEntryItem(id: item.$1, totp: item.$2)).toList()
+        items.map((item) {
+              return GestureDetector(
+                onLongPress: () =>
+                    _showEntryMenu(context, cubit, item.$1, item.$2),
+                child: TotpEntryItem(id: item.$1, totp: item.$2),
+              );
+            }).toList()
             as List<Widget>;
 
     return Column(
@@ -97,6 +138,74 @@ class TotpEntryList extends StatelessWidget {
       ],
     );
   }
+}
+
+Future<void> _showEntryMenu(
+  BuildContext context,
+  HomeCubit cubit,
+  String id,
+  Totp totp,
+) {
+  return showModalBottomSheet(
+    context: context,
+    backgroundColor: AppTheme.AppBackgroundColor,
+    builder: (sheetCtx) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(totp.favorite ? Icons.star : Icons.star_border),
+            title: Text(
+              totp.favorite ? 'Remove from favorites' : 'Add to favorites',
+            ),
+            onTap: () async {
+              Navigator.pop(sheetCtx);
+              await cubit.toggleFavorite(id, totp);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Update'),
+            onTap: () async {
+              Navigator.pop(sheetCtx);
+              await router.push<bool?>('/totp/$id');
+              await cubit.load();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete_outline),
+            title: const Text('Delete'),
+            onTap: () async {
+              Navigator.pop(sheetCtx);
+              final confirmed = await _confirmDelete(context);
+              if (confirmed) await cubit.delete(id);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Future<bool> _confirmDelete(BuildContext context) async {
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Delete account?'),
+      content: const Text('This will remove this TOTP entry.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Delete'),
+        ),
+      ],
+    ),
+  );
+  return result ?? false;
 }
 
 class TotpEntryItem extends StatelessWidget {
@@ -178,14 +287,14 @@ class TotpEntryItem extends StatelessWidget {
           children: [
             Text(
               totp.issuer,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight(600)),
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight(600)),
             ),
             SizedBox(width: 5),
             Expanded(
               child: Text(
                 totp.account,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 11.5,
                   fontWeight: FontWeight(400),
                   color: Color(0xff7c7788),
                   overflow: .ellipsis,

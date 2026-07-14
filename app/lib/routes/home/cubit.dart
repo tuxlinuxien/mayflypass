@@ -1,3 +1,4 @@
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/helpers/sync.dart';
 import 'package:mayflypass/secure/secure.dart';
@@ -13,6 +14,7 @@ abstract class HomeState with _$HomeState {
   const factory HomeState({
     @Default(HomeStatus.loading) HomeStatus status,
     @Default([]) List<(String, Totp)> totps,
+    @Default('') String query,
   }) = _HomeState;
 }
 
@@ -41,6 +43,39 @@ class HomeCubit extends Cubit<HomeState> {
     } finally {
       emit(state.copyWith(status: .ready));
     }
+  }
+
+  void search(String query) {
+    emit(state.copyWith(query: query));
+  }
+
+  Future<void> delete(String id) async {
+    await gloablDB.deleteLocalStorage(id);
+    await load();
+  }
+
+  Future<void> toggleFavorite(String id, Totp totp) async {
+    final kek = getGlobalKek();
+    if (kek == null) {
+      logger.e('kek is missing');
+      globalAuth.lock();
+      return;
+    }
+    final updated = totp.copyWith((t) => t.favorite = !t.favorite);
+    final (encryptedDek, encryptedPayload) = await encryptDataBox(
+      kek,
+      DataBox(totp: updated),
+    );
+    await gloablDB.upsertLocalStorage(
+      LocalStorageData(
+        id: id,
+        updatedAtMs: DateTime.now().millisecondsSinceEpoch,
+        deleted: false,
+        encryptedDek: encryptedDek,
+        encryptedPayload: encryptedPayload,
+      ),
+    );
+    await load();
   }
 
   void sortEntries(List<(String, Totp)> entries) {

@@ -10,8 +10,8 @@ class MainContainer extends StatelessWidget {
       padding: EdgeInsetsGeometry.directional(
         top: 36,
         bottom: 36,
-        start: 26,
-        end: 26,
+        start: 20,
+        end: 20,
       ),
       child: child,
     );
