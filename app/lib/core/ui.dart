@@ -4,5 +4,8 @@ import 'package:mayflypass/core/core.dart';
 
 final Spacer4 = const SizedBox(height: DEFAULT_SPACING / 4);
 final Spacer8 = const SizedBox(height: DEFAULT_SPACING / 2);
-final Spacer16 = const SizedBox(height: DEFAULT_SPACING);
+
 final Spacer32 = const SizedBox(height: DEFAULT_SPACING * 2);
+
+final SpacerFormField = const SizedBox(height: 18);
+final SpacerHomeEntries = const SizedBox(height: 12);

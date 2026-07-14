@@ -29,7 +29,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                     Spacer8,
                     AccountBlock(email: state.email ?? ''),
-                    Spacer16,
+                    SpacerFormField,
                     Text(
                       'Security',
                       style: Theme.of(context).textTheme.bodyLarge,
@@ -42,9 +42,9 @@ class SettingsPage extends StatelessWidget {
                           state.lockoutAfter ?? Duration(seconds: 30),
                       onLockoutAfterValueChanges: cubit.updateLockoutAfter,
                     ),
-                    Spacer16,
+                    SpacerFormField,
                     Divider(),
-                    Spacer16,
+                    SpacerFormField,
                     FilledButton(
                       onPressed: () => globalAuth.logout(),
                       child: Text(l10i.logout),
@@ -101,7 +101,7 @@ class SecurityBlock extends StatelessWidget {
               value: biometricUnlockValue,
               onChnaged: onBiometricUnlockChanged,
             ),
-            Spacer16,
+            SpacerFormField,
             LockoutAfterItem(
               value: lockoutAfterValue,
               onChanged: onLockoutAfterValueChanges,

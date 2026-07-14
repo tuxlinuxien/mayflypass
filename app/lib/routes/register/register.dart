@@ -55,7 +55,7 @@ class RegisterPage extends StatelessWidget {
                       state.apiEmailError,
                     ]),
                   ),
-                  Spacer16,
+                  SpacerFormField,
                   // password
                   PasswordField(
                     labelText: l10n.masterPassword,
@@ -64,7 +64,7 @@ class RegisterPage extends StatelessWidget {
                     ]),
                     onChanged: cubit.masterPasswordChanged,
                   ),
-                  Spacer16,
+                  SpacerFormField,
                   // confirm password
                   PasswordField(
                     labelText: l10n.confirmMasterPassword,
@@ -74,7 +74,7 @@ class RegisterPage extends StatelessWidget {
                     ),
                     onChanged: cubit.confirmMasterPasswordChanged,
                   ),
-                  Spacer16,
+                  SpacerFormField,
                   FilledButton(
                     onPressed: state.status == FormStatus.submitting
                         ? null

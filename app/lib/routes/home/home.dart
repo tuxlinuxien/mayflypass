@@ -162,7 +162,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return Spacer16;
+                  return SpacerHomeEntries;
                 },
               ),
             ),

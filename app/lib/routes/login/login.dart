@@ -54,7 +54,7 @@ class LoginPage extends StatelessWidget {
                       state.emailError,
                     ]),
                   ),
-                  Spacer16,
+                  SpacerFormField,
                   PasswordField(
                     labelText: l10n.masterPassword,
                     errorText: MasterPasswordValueError.toHuman(context, [
@@ -62,7 +62,7 @@ class LoginPage extends StatelessWidget {
                     ]),
                     onChanged: cubit.masterPasswordChanged,
                   ),
-                  Spacer16,
+                  SpacerFormField,
                   FilledButton(
                     onPressed: state.status == FormStatus.submitting
                         ? null
@@ -76,6 +76,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   Spacer32,
                   const Or(),
+
                   Spacer32,
                   OutlinedButton(
                     onPressed: () => context.go('/register'),

@@ -43,7 +43,7 @@ class UnlockPage extends StatelessWidget {
                     ]),
                     onChanged: cubit.masterPasswordChanged,
                   ),
-                  Spacer16,
+                  SpacerFormField,
                   FilledButton(
                     onPressed: state.status == FormStatus.submitting
                         ? null

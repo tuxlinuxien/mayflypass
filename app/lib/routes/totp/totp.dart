@@ -90,12 +90,12 @@ class __TotpPageState extends State<_TotpPage> {
                                 state.issuer.displayError,
                               ]),
                             ),
-                            Spacer16,
+                            SpacerFormField,
                             AccountInput(
                               controller: _accountController,
                               onChanged: cubit.changeAccount,
                             ),
-                            Spacer16,
+                            SpacerFormField,
                             SecretInput(
                               controller: _secretController,
                               onChanged: cubit.changeSecret,
@@ -107,7 +107,7 @@ class __TotpPageState extends State<_TotpPage> {
                         ),
                       ),
                     ),
-                    Spacer16,
+                    SpacerFormField,
                     Text(
                       'Advanced',
                       style: Theme.of(context).textTheme.bodyLarge,
@@ -123,12 +123,12 @@ class __TotpPageState extends State<_TotpPage> {
                               value: state.algorithm,
                               onChanged: cubit.changeAlgorithm,
                             ),
-                            Spacer16,
+                            SpacerFormField,
                             DigitsSelector(
                               value: state.digits,
                               onChanged: cubit.changeDigits,
                             ),
-                            Spacer16,
+                            SpacerFormField,
                             PeriodSelector(
                               value: state.period,
                               onChanged: cubit.changePeriod,
@@ -137,7 +137,7 @@ class __TotpPageState extends State<_TotpPage> {
                         ),
                       ),
                     ),
-                    Spacer16,
+                    SpacerFormField,
                     Row(
                       children: [
                         Expanded(
@@ -156,13 +156,13 @@ class __TotpPageState extends State<_TotpPage> {
                         ),
                       ],
                     ),
-                    Spacer16,
+                    SpacerFormField,
                     MTextFormField(
                       labelText: 'Tags',
                       controller: _tagsController,
                       onChanged: cubit.changeTags,
                     ),
-                    Spacer16,
+                    SpacerFormField,
                     FilledButton(onPressed: cubit.submit, child: Text('Save')),
                   ],
                 ),

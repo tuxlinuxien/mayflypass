@@ -7,12 +7,7 @@ class MLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-        color: Theme.of(context).colorScheme.primary,
-      ),
-    );
+    return Text(text.toUpperCase(), style: AppTheme.labelStyle);
   }
 }
 
@@ -54,9 +49,6 @@ class MTextFormField extends StatelessWidget {
             errorText: errorText,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-            ),
           ),
           initialValue: initialValue,
           controller: controller,
