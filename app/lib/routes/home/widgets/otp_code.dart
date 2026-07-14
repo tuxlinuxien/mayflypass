@@ -24,12 +24,23 @@ class OTPCode extends StatelessWidget {
       child: BlocBuilder<EpochCubit, int>(
         builder: (context, state) {
           return Text(
-            _genCode(state),
-            style: Theme.of(context).textTheme.headlineMedium,
+            _splitCode(_genCode(state)),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight(600),
+              letterSpacing: 4,
+              fontFamily: 'Roboto Mono',
+            ),
           );
         },
       ),
     );
+  }
+
+  String _splitCode(String code) {
+    if (code.length <= 3) return code;
+    return '${code.substring(0, 3)} ${code.substring(3)}';
   }
 
   String _genCode(int state) {

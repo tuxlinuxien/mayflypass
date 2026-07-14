@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'home.dart';
+part of 'cubit.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- HomeStatus get status; List<(String, Totp,)> get totps;
+ HomeStatus get status; List<(String, Totp)> get totps;
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -46,7 +46,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- HomeStatus status, List<(String, Totp,)> totps
+ HomeStatus status, List<(String, Totp)> totps
 });
 
 
@@ -67,7 +67,7 @@ class _$HomeStateCopyWithImpl<$Res>
   return _then(HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HomeStatus,totps: null == totps ? _self.totps : totps // ignore: cast_nullable_to_non_nullable
-as List<(String, Totp,)>,
+as List<(String, Totp)>,
   ));
 }
 
@@ -152,7 +152,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, Totp,)> totps)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, Totp)> totps)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
 return $default(_that.status,_that.totps);case _:
@@ -173,7 +173,7 @@ return $default(_that.status,_that.totps);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, Totp,)> totps)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  List<(String, Totp)> totps)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
 return $default(_that.status,_that.totps);case _:
@@ -193,7 +193,7 @@ return $default(_that.status,_that.totps);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  List<(String, Totp,)> totps)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  List<(String, Totp)> totps)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
 return $default(_that.status,_that.totps);case _:
@@ -208,12 +208,12 @@ return $default(_that.status,_that.totps);case _:
 
 
 class _HomeState implements HomeState {
-  const _HomeState({this.status = HomeStatus.loading,  List<(String, Totp,)> totps = const []}): _totps = totps;
+  const _HomeState({this.status = HomeStatus.loading,  List<(String, Totp)> totps = const []}): _totps = totps;
   
 
 @override@JsonKey() final  HomeStatus status;
- final  List<(String, Totp,)> _totps;
-@override@JsonKey() List<(String, Totp,)> get totps {
+ final  List<(String, Totp)> _totps;
+@override@JsonKey() List<(String, Totp)> get totps {
   if (_totps is EqualUnmodifiableListView) return _totps;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_totps);
@@ -250,7 +250,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- HomeStatus status, List<(String, Totp,)> totps
+ HomeStatus status, List<(String, Totp)> totps
 });
 
 
@@ -271,7 +271,7 @@ class __$HomeStateCopyWithImpl<$Res>
   return _then(_HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HomeStatus,totps: null == totps ? _self._totps : totps // ignore: cast_nullable_to_non_nullable
-as List<(String, Totp,)>,
+as List<(String, Totp)>,
   ));
 }
 

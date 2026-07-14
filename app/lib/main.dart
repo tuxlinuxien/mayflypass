@@ -13,7 +13,7 @@ Future<void> main() async {
     initDB(NativeDatabase.memory(logStatements: true));
     initDBTestFixtures(getGlobalKek()!);
     await globalStore.setEmail('yoann@mail.com');
-    globalAuth.lock();
+    globalAuth.unlock();
   } else {
     initStore(FSStore());
     initDB();

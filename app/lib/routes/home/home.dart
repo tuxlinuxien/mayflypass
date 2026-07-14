@@ -1,79 +1,10 @@
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/database/database.dart';
+import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/databox/databox.dart';
-import 'package:mayflypass/helpers/sync.dart';
 import 'package:mayflypass/router.dart';
+import 'package:mayflypass/routes/home/cubit.dart';
 import 'package:mayflypass/routes/home/widgets/timer.dart';
 import 'package:mayflypass/routes/home/widgets/otp_code.dart';
-import 'package:mayflypass/secure/secure.dart';
-
-part 'home.freezed.dart';
-
-enum HomeStatus { loading, ready }
-
-@freezed
-abstract class HomeState with _$HomeState {
-  const factory HomeState({
-    @Default(HomeStatus.loading) HomeStatus status,
-    @Default([]) List<(String, Totp)> totps,
-  }) = _HomeState;
-}
-
-class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState());
-
-  Future<void> sync() async {
-    emit(state.copyWith(status: .loading));
-    await syncLocalAndRemote();
-    await load();
-  }
-
-  Future<void> load() async {
-    emit(state.copyWith(status: .loading));
-    logger.d('loading entried from database');
-    try {
-      // get all entried from the database
-      final entries = await gloablDB.selectLocalStorage(withDeleted: false);
-      // for each entry, decrypt the payload and get
-      // the Totp.
-      final totps = await decryptEntries(entries);
-      sortEntries(totps);
-      emit(state.copyWith(totps: totps));
-    } catch (e) {
-      logger.e(e);
-    } finally {
-      emit(state.copyWith(status: .ready));
-    }
-  }
-
-  void sortEntries(List<(String, Totp)> entries) {
-    entries.sort((a, b) {
-      var kA = '${a.$2.issuer}:${a.$2.account}';
-      var kB = '${b.$2.issuer}:${b.$2.account}';
-      return kA.compareTo(kB);
-    });
-  }
-
-  Future<List<(String, Totp)>> decryptEntries(
-    List<LocalStorageData> entries,
-  ) async {
-    final totps = <(String, Totp)>[];
-    for (var entry in entries) {
-      try {
-        final databox = await decryptDataBox(
-          getGlobalKek()!,
-          entry.encryptedDek,
-          entry.encryptedPayload,
-        );
-        totps.add((entry.id, databox.totp));
-      } catch (e) {
-        logger.e(e);
-      }
-    }
-    return totps;
-  }
-}
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -87,7 +18,7 @@ class HomePage extends StatelessWidget {
           final cubit = context.read<HomeCubit>();
           return Scaffold(
             appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.appName),
+              title: Logo(size: 40),
               actions: [
                 IconButton(
                   onPressed: () => router.push('/settings'),
@@ -97,73 +28,22 @@ class HomePage extends StatelessWidget {
             ),
             body: RefreshIndicator(
               onRefresh: () => cubit.sync(),
-              child: ListView.separated(
-                itemCount: state.totps.length,
-                itemBuilder: (context, index) {
-                  return Slidable(
-                    direction: .horizontal,
-                    enabled: true,
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (_) async {
-                            // remove record
-                            await gloablDB.deleteLocalStorage(
-                              state.totps[index].$1,
-                            );
-                            // reload the entries
-                            await cubit.load();
-                          },
-                          backgroundColor: Color(0xFFFE4A49),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
-                        ),
-                        SlidableAction(
-                          onPressed: (_) async {
-                            await router.push('/totp/${state.totps[index].$1}');
-                            // reload the entries
-                            await cubit.load();
-                          },
-                          backgroundColor: Colors.grey.shade900,
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit,
-                          label: 'Edit',
-                        ),
-                      ],
-                    ),
-                    child: Card(
-                      elevation: 0.0,
-                      child: Padding(
-                        padding: EdgeInsets.all(DEFAULT_SPACING),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: .start,
-                                children: <Widget>[
-                                  Text(state.totps[index].$2.issuer),
-                                  Text(state.totps[index].$2.account),
-                                  OTPCode(
-                                    algorithm: state.totps[index].$2.algorithm,
-                                    secret: state.totps[index].$2.secret,
-                                    digits: state.totps[index].$2.digits,
-                                    period: state.totps[index].$2.period,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Timer(period: state.totps[index].$2.period),
-                          ],
-                        ),
+              child: SingleChildScrollView(
+                child: MainContainer(
+                  child: Column(
+                    children: [
+                      TotpEntryList(
+                        items: _fav(state.totps),
+                        title: 'favorites',
                       ),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return SpacerHomeEntries;
-                },
+                      SpacerSection,
+                      TotpEntryList(
+                        items: _nonFav(state.totps),
+                        title: 'accounts',
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             floatingActionButton: IconButton.filled(
@@ -177,5 +57,145 @@ class HomePage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  List<(String, Totp)> _fav(List<(String, Totp)> totps) {
+    return totps.takeWhile((item) => item.$2.favorite).toList();
+  }
+
+  List<(String, Totp)> _nonFav(List<(String, Totp)> totps) {
+    return totps.takeWhile((item) => !item.$2.favorite).toList();
+  }
+}
+
+class TotpEntryList extends StatelessWidget {
+  final String title;
+  final List<(String, Totp)> items;
+  const TotpEntryList({super.key, required this.items, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final children = items.map((item) => TotpEntry(totp: item.$2)).toList();
+
+    return Column(
+      spacing: 12,
+      children: [
+        Row(
+          children: [
+            Text(
+              '${items.length} ${title.toUpperCase()}',
+              style: AppTheme.labelStyle,
+            ),
+            SizedBox(width: 5),
+            Expanded(child: Divider(height: 1, thickness: 1)),
+          ],
+        ),
+        ...children,
+      ],
+    );
+  }
+}
+
+class TotpEntry extends StatelessWidget {
+  final Totp totp;
+
+  const TotpEntry({super.key, required this.totp});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.InputBackgroundColor,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.06),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(9)),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          _icon(),
+          SizedBox(width: 20),
+          Expanded(child: _otp()),
+          SizedBox(width: 20),
+          _timer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _icon() {
+    String totpIssuer = totp.issuer.isEmpty ? '*' : totp.issuer;
+    totpIssuer = totpIssuer[0].toUpperCase();
+    return SizedBox(
+      height: 44,
+      width: 44,
+      child: Stack(
+        children: [
+          Container(
+            height: 44,
+            width: 44,
+            decoration: BoxDecoration(
+              color: Color(0xFF3a3a44),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          SizedBox(
+            height: 44,
+            width: 44,
+            child: Center(
+              child: Text(
+                totpIssuer,
+                style: TextStyle(
+                  fontWeight: FontWeight(600),
+                  fontSize: 20,
+                  fontFamily: 'Roboto Mono',
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _otp() {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Row(
+          crossAxisAlignment: .end,
+          children: [
+            Text(
+              totp.issuer,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight(600)),
+            ),
+            SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                totp.account,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight(400),
+                  color: Color(0xff7c7788),
+                  overflow: .ellipsis,
+                ),
+              ),
+            ),
+          ],
+        ),
+        OTPCode(
+          secret: totp.secret,
+          algorithm: totp.algorithm,
+          digits: totp.digits,
+          period: totp.period,
+        ),
+      ],
+    );
+  }
+
+  Widget _timer() {
+    return Timer(period: totp.period);
   }
 }

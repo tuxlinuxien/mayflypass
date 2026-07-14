@@ -8,11 +8,29 @@ class Timer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double size = 40;
     return BlocProvider(
       create: (context) => EpochCubit(),
       child: BlocBuilder<EpochCubit, int>(
         builder: (context, state) {
-          return CircularProgressIndicator(value: _timeLeft(state));
+          return SizedBox(
+            height: size,
+            width: size,
+            child: Stack(
+              children: [
+                SizedBox(
+                  height: size,
+                  width: size,
+                  child: CircularProgressIndicator(value: _progressLeft(state)),
+                ),
+                SizedBox(
+                  height: size,
+                  width: size,
+                  child: Center(child: Text('${_timeLeft(state)}')),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -26,8 +44,13 @@ class Timer extends StatelessWidget {
     return _beginPeriod(state) + (period * 1000);
   }
 
-  double _timeLeft(int state) {
+  double _progressLeft(int state) {
     final progress = _endPeriod(state) - state;
     return progress / (period * 1000);
+  }
+
+  int _timeLeft(int state) {
+    final left = (_endPeriod(state) - state).floor();
+    return ((left < 0 ? 0 : left) / 1000).toInt();
   }
 }

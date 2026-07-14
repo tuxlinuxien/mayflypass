@@ -64,84 +64,74 @@ class _LoginPageState extends State<LoginPage> {
           return Scaffold(
             body: LayoutBuilder(
               builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: IntrinsicHeight(
-                      child: MainContainer(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Spacer(),
-                            Center(child: Logo()),
-                            SizedBox(height: 22),
-                            Center(
-                              child: Text(
-                                'Welcome back',
-                                style: AppTheme.mainTitleStyle,
-                              ),
-                            ),
-                            Spacer8,
-                            Center(
-                              child: Text(
-                                'Sign in to Mayfly Pass to sync your codes.',
-                                style: AppTheme.helperStyle,
-                              ),
-                            ),
-                            SizedBox(height: 44),
-                            MTextFormField(
-                              labelText: l10n.email,
-                              onChanged: cubit.emailChanged,
-                              errorText: EmailValueError.toHuman(context, [
-                                state.email.displayError,
-                                state.emailError,
-                              ]),
-                            ),
-                            SpacerFormField,
-                            PasswordField(
-                              labelText: l10n.masterPassword,
-                              errorText: MasterPasswordValueError.toHuman(
-                                context,
-                                [state.masterPassword.displayError],
-                              ),
-                              onChanged: cubit.masterPasswordChanged,
-                            ),
-                            SpacerSection,
-                            FilledButton(
-                              onPressed: state.status == FormStatus.submitting
-                                  ? null
-                                  : cubit.submit,
-                              child: state.status == FormStatus.submitting
-                                  ? const SizedBox.square(
-                                      dimension: 16,
-                                      child: CircularProgressIndicator(),
-                                    )
-                                  : Text('Sign in'),
-                            ),
-                            SpacerSection,
-                            Spacer(),
-                            Center(
-                              child: RichText(
-                                text: TextSpan(
-                                  text: 'New here? ',
-                                  style: AppTheme.helperStyle,
-                                  children: [
-                                    TextSpan(
-                                      text: 'Create an account',
-                                      style: AppTheme.helperStyleLink,
-                                      recognizer: _signUpTap,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                return MainCenterScrollable(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Spacer(),
+                      Center(child: Logo()),
+                      SizedBox(height: 22),
+                      Center(
+                        child: Text(
+                          'Welcome back',
+                          style: AppTheme.mainTitleStyle,
                         ),
                       ),
-                    ),
+                      Spacer8,
+                      Center(
+                        child: Text(
+                          'Sign in to Mayfly Pass to sync your codes.',
+                          style: AppTheme.helperStyle,
+                        ),
+                      ),
+                      SizedBox(height: 44),
+                      MTextFormField(
+                        labelText: l10n.email,
+                        onChanged: cubit.emailChanged,
+                        errorText: EmailValueError.toHuman(context, [
+                          state.email.displayError,
+                          state.emailError,
+                        ]),
+                      ),
+                      SpacerFormField,
+                      PasswordField(
+                        labelText: l10n.masterPassword,
+                        errorText: MasterPasswordValueError.toHuman(context, [
+                          state.masterPassword.displayError,
+                        ]),
+                        onChanged: cubit.masterPasswordChanged,
+                      ),
+                      SpacerSection,
+                      FilledButton(
+                        onPressed: state.status == FormStatus.submitting
+                            ? null
+                            : cubit.submit,
+                        child: state.status == FormStatus.submitting
+                            ? const SizedBox.square(
+                                dimension: 16,
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text('Sign in'),
+                      ),
+                      SpacerSection,
+                      Spacer(),
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'New here? ',
+                            style: AppTheme.helperStyle,
+                            children: [
+                              TextSpan(
+                                text: 'Create an account',
+                                style: AppTheme.helperStyleLink,
+                                recognizer: _signUpTap,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
