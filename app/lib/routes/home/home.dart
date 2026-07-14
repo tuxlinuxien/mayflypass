@@ -1,3 +1,4 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/databox/databox.dart';
@@ -75,7 +76,9 @@ class TotpEntryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = items.map((item) => TotpEntry(totp: item.$2)).toList();
+    final children =
+        items.map((item) => TotpEntryItem(id: item.$1, totp: item.$2)).toList()
+            as List<Widget>;
 
     return Column(
       spacing: 12,
@@ -96,10 +99,11 @@ class TotpEntryList extends StatelessWidget {
   }
 }
 
-class TotpEntry extends StatelessWidget {
+class TotpEntryItem extends StatelessWidget {
+  final String id;
   final Totp totp;
 
-  const TotpEntry({super.key, required this.totp});
+  const TotpEntryItem({super.key, required this.id, required this.totp});
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +130,11 @@ class TotpEntry extends StatelessWidget {
   }
 
   Widget _icon() {
+    final iconPath = BrandIcons.resolve(totp.issuer);
+
     String totpIssuer = totp.issuer.isEmpty ? '*' : totp.issuer;
     totpIssuer = totpIssuer[0].toUpperCase();
+
     return SizedBox(
       height: 44,
       width: 44,
@@ -145,14 +152,16 @@ class TotpEntry extends StatelessWidget {
             height: 44,
             width: 44,
             child: Center(
-              child: Text(
-                totpIssuer,
-                style: TextStyle(
-                  fontWeight: FontWeight(600),
-                  fontSize: 20,
-                  fontFamily: 'Roboto Mono',
-                ),
-              ),
+              child: iconPath != null
+                  ? SvgPicture.asset(iconPath, height: 28, width: 28)
+                  : Text(
+                      totpIssuer,
+                      style: TextStyle(
+                        fontWeight: FontWeight(600),
+                        fontSize: 20,
+                        fontFamily: 'Roboto Mono',
+                      ),
+                    ),
             ),
           ),
         ],

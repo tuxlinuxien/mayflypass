@@ -20,6 +20,7 @@ Future<void> main() async {
   }
 
   logger.i('[API_URL] $API_URL');
+  await BrandIcons.init();
   initRouter(globalAuth);
   runApp(const MyApp());
 }
