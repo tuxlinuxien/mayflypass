@@ -37,6 +37,12 @@ abstract final class AppTheme {
     fontWeight: FontWeight(600),
   );
 
+  static TextStyle subTitleStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: FontWeight(600),
+  );
+
   static TextStyle helperStyleLink = helperStyle.copyWith(color: BrightColor);
 
   // The FlexColorScheme defined dark mode ThemeData.

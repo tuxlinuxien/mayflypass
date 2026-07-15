@@ -27,23 +27,32 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-            body: RefreshIndicator(
-              onRefresh: () => cubit.sync(),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 66),
-                child: MainContainer(
-                  child: Column(
-                    children: [
-                      TotpEntryList(
-                        items: _fav(_filter(state.totps, state.query)),
-                        title: 'favorites',
-                      ),
-                      SpacerSection,
-                      TotpEntryList(
-                        items: _nonFav(_filter(state.totps, state.query)),
-                        title: 'accounts',
-                      ),
-                    ],
+            body: Listener(
+              // dismiss the search bar focus
+              onPointerDown: (event) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              onPointerMove: (event) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: RefreshIndicator(
+                onRefresh: () => cubit.sync(),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 66),
+                  child: MainContainer(
+                    child: Column(
+                      children: [
+                        TotpEntryList(
+                          items: _fav(_filter(state.totps, state.query)),
+                          title: 'favorites',
+                        ),
+                        SpacerSection,
+                        TotpEntryList(
+                          items: _nonFav(_filter(state.totps, state.query)),
+                          title: 'accounts',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
@@ -55,6 +56,9 @@ GoRouter createRouter(AuthCubit authCubit) {
       GoRoute(
         path: '/totp',
         builder: (ctx, state) {
+          if (Platform.isAndroid || Platform.isIOS) {
+            return const ScannerPage();
+          }
           return const TotpPage(id: null);
         },
       ),
