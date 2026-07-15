@@ -72,6 +72,10 @@ GoRouter createRouter(AuthCubit authCubit) {
         path: '/totp-scanner',
         builder: (ctx, state) => const ScannerPage(),
       ),
+      GoRoute(
+        path: '/totp-manual',
+        builder: (ctx, state) => const TotpPage(id: null),
+      ),
     ],
   );
 }

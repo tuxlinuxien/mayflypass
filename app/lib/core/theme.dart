@@ -20,7 +20,7 @@ abstract final class AppTheme {
 
   // styles
   static TextStyle labelStyle = TextStyle(
-    color: Color(0xFF7c7788),
+    color: Color(0xFF948F9E),
     fontFamily: 'Roboto Mono',
     fontSize: 11,
     letterSpacing: 1.2,

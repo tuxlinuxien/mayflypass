@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/forms/totp_issuer.dart';
 import 'package:mayflypass/forms/totp_secret.dart';
-import 'package:mayflypass/helpers/otpauth.dart';
 import 'package:mayflypass/routes/totp/cubit.dart';
 
 class TotpPage extends StatelessWidget {
@@ -168,31 +165,6 @@ class __TotpPageState extends State<_TotpPage> {
                 ),
               ),
             ),
-            floatingActionButton: (Platform.isAndroid || Platform.isIOS)
-                ? IconButton.filled(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Colors.amber),
-                      foregroundColor: WidgetStatePropertyAll(Colors.black),
-                    ),
-                    onPressed: () async {
-                      final code = await context.push<String?>('/totp-scanner');
-                      final otpA = OtpAuthResult.parse(code);
-                      if (otpA == null) {
-                        return;
-                      }
-                      cubit.changeIssuer(otpA.issuer);
-                      cubit.changeAccount(otpA.account);
-                      cubit.changeSecret(otpA.secret);
-                      cubit.changeAlgorithm(otpA.algorithm);
-                      cubit.changeDigits(otpA.digits);
-                      cubit.changePeriod(otpA.period);
-                      _issuerController.text = otpA.issuer;
-                      _accountController.text = otpA.account;
-                      _secretController.text = otpA.secret;
-                    },
-                    icon: Icon(Icons.qr_code_scanner),
-                  )
-                : null,
           );
         },
       ),

@@ -17,37 +17,39 @@ class SettingsPage extends StatelessWidget {
           final l10i = AppLocalizations.of(context)!;
           final cubit = context.read<SettingsCubit>();
           return Scaffold(
-            appBar: AppBar(title: Text(l10i.settings)),
+            appBar: AppBar(title: Text('Settings')),
             body: SingleChildScrollView(
               child: MainContainer(
                 child: Column(
                   crossAxisAlignment: .stretch,
                   children: [
-                    Text(
-                      'Account',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    Text('Account', style: AppTheme.helperStyle),
+                    SizedBox(height: 9),
+                    Surface(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 16, bottom: 16),
+                        child: Column(
+                          children: [
+                            Text('account'),
+                            Spacer8,
+                            Divider(
+                              height: 1,
+                              color: Colors.white.withValues(alpha: 0.06),
+                            ),
+                            Spacer8,
+                            Text('account'),
+                          ],
+                        ),
+                      ),
                     ),
-                    Spacer8,
-                    AccountBlock(email: state.email ?? ''),
-                    SpacerFormField,
-                    Text(
-                      'Security',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Spacer8,
-                    SecurityBlock(
-                      biometricUnlockValue: state.biometricUnlock ?? false,
-                      onBiometricUnlockChanged: cubit.updateBiometricUnlock,
-                      lockoutAfterValue:
-                          state.lockoutAfter ?? Duration(seconds: 30),
-                      onLockoutAfterValueChanges: cubit.updateLockoutAfter,
-                    ),
-                    SpacerFormField,
-                    Divider(),
-                    SpacerFormField,
-                    FilledButton(
-                      onPressed: () => globalAuth.logout(),
-                      child: Text(l10i.logout),
+                    SpacerSection,
+                    Text('Security', style: AppTheme.helperStyle),
+                    SizedBox(height: 9),
+                    Surface(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text('toto'),
+                      ),
                     ),
                   ],
                 ),

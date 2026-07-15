@@ -9,10 +9,13 @@ class Surface extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(DEFAULT_RADIUS)),
-        color: Colors.black,
+        color: AppTheme.InputBackgroundColor,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.06),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(9)),
       ),
-
       child: child,
     );
   }

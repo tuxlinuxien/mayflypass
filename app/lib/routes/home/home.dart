@@ -1,6 +1,5 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/home/cubit.dart';
@@ -19,7 +18,19 @@ class HomePage extends StatelessWidget {
           final cubit = context.read<HomeCubit>();
           return Scaffold(
             appBar: AppBar(
-              title: Logo(size: 40),
+              title: Row(
+                children: [
+                  SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Image.asset('assets/logo-1024-1024.png'),
+                  ),
+                  Text(
+                    'MAYFLY PASS',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight(600)),
+                  ),
+                ],
+              ),
               actions: [
                 IconButton(
                   onPressed: () => router.push('/settings'),
@@ -66,6 +77,7 @@ class HomePage extends StatelessWidget {
                 end: 20,
               ),
               child: Row(
+                crossAxisAlignment: .center,
                 children: [
                   Expanded(
                     child: TextField(
@@ -79,7 +91,7 @@ class HomePage extends StatelessWidget {
                   SizedBox(width: 10),
                   IconButton.filled(
                     onPressed: () async {
-                      await router.push<bool?>('/totp');
+                      await router.push('/totp');
                       await cubit.load();
                     },
                     icon: Icon(Icons.add),
@@ -225,24 +237,18 @@ class TotpEntryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.InputBackgroundColor,
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.06),
-          width: 1,
+    return Surface(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Row(
+          children: [
+            _icon(),
+            SizedBox(width: 20),
+            Expanded(child: _otp()),
+            SizedBox(width: 20),
+            _timer(),
+          ],
         ),
-        borderRadius: BorderRadius.all(Radius.circular(9)),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: [
-          _icon(),
-          SizedBox(width: 20),
-          Expanded(child: _otp()),
-          SizedBox(width: 20),
-          _timer(),
-        ],
       ),
     );
   }
@@ -266,20 +272,24 @@ class TotpEntryItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          SizedBox(
-            height: 44,
-            width: 44,
-            child: Center(
-              child: iconPath != null
-                  ? SvgPicture.asset(iconPath, height: 28, width: 28)
-                  : Text(
-                      totpIssuer,
-                      style: TextStyle(
-                        fontWeight: FontWeight(600),
-                        fontSize: 20,
-                        fontFamily: 'Roboto Mono',
+          Positioned(
+            top: 2,
+            left: 2,
+            child: SizedBox(
+              height: 40,
+              width: 40,
+              child: Center(
+                child: iconPath != null
+                    ? SvgPicture.asset(iconPath, height: 28, width: 28)
+                    : Text(
+                        totpIssuer,
+                        style: TextStyle(
+                          fontWeight: FontWeight(600),
+                          fontSize: 20,
+                          fontFamily: 'Roboto Mono',
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
         ],
