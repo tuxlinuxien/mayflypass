@@ -7,21 +7,21 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // initialize all routes
+  initRouter();
   if (DEV_MODE) {
     setGlobalTestKek();
     initStore(MemoryStore());
     initDB(NativeDatabase.memory(logStatements: true));
     initDBTestFixtures(getGlobalKek()!);
     await globalStore.setEmail('yoann@mail.com');
-    globalAuth.unlock();
+    globalAuth.unlocked();
   } else {
     initStore(FSStore());
     initDB();
   }
-
   logger.i('[API_URL] $API_URL');
   await BrandIcons.init();
-  initRouter(globalAuth);
   runApp(const MyApp());
 }
 
@@ -51,19 +51,33 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: globalAuth,
-      child: MaterialApp.router(
-        title: 'Mayfly Pass',
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: [Locale('en')],
-        theme: AppTheme.dark,
-        darkTheme: AppTheme.dark,
-        themeMode: .dark,
-        routerConfig: router,
+      child: BlocListener<AuthCubit, AuthStatus>(
+        listener: (context, state) {
+          switch (state) {
+            case .loading:
+              router.go('/splash');
+            case .locked:
+              router.go('/unlock');
+            case .unlocked:
+              router.go('/home');
+            case .unauthenticated:
+              router.go('/login');
+          }
+        },
+        child: MaterialApp.router(
+          title: 'Mayfly Pass',
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
+          theme: AppTheme.dark,
+          darkTheme: AppTheme.dark,
+          themeMode: .dark,
+          routerConfig: router,
+        ),
       ),
     );
   }

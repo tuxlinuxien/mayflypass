@@ -14,12 +14,12 @@ class LockoutAfterDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButton<Duration>(
       value: value,
-      items: [
-        DropdownMenuItem(value: Duration(minutes: 1), child: Text('1m')),
-        DropdownMenuItem(value: Duration(minutes: 5), child: Text('5m')),
-        DropdownMenuItem(value: Duration(minutes: 15), child: Text('15m')),
-      ],
-      onChanged: (v) => onChanged(v ?? Duration(minutes: 1)),
+      items: LOCK_AFTER_CHOICES
+          .map(
+            (e) => DropdownMenuItem(value: e, child: Text('${e.inMinutes}m')),
+          )
+          .toList(),
+      onChanged: (v) => onChanged(v ?? LOCK_AFTER_CHOICES[0]),
     );
   }
 }

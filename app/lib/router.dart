@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
@@ -16,36 +14,57 @@ import 'package:mayflypass/routes/unlock/unlock.dart';
 
 late final GoRouter router;
 
-void initRouter(AuthCubit authCubit) {
-  router = createRouter(authCubit);
+class RouterObserver extends NavigatorObserver {
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    globalAuth.refreshLockAfter();
+    super.didPush(route, previousRoute);
+  }
+
+  @override
+  void didChangeTop(Route<dynamic> topRoute, Route<dynamic>? previousTopRoute) {
+    globalAuth.refreshLockAfter();
+    super.didChangeTop(topRoute, previousTopRoute);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    globalAuth.refreshLockAfter();
+    super.didPop(route, previousRoute);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    globalAuth.refreshLockAfter();
+    super.didRemove(route, previousRoute);
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    globalAuth.refreshLockAfter();
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+  }
+
+  @override
+  void didStartUserGesture(
+    Route<dynamic> route,
+    Route<dynamic>? previousRoute,
+  ) {
+    globalAuth.refreshLockAfter();
+    super.didStartUserGesture(route, previousRoute);
+  }
+
+  @override
+  void didStopUserGesture() {
+    globalAuth.refreshLockAfter();
+    super.didStopUserGesture();
+  }
 }
 
-GoRouter createRouter(AuthCubit authCubit) {
-  return GoRouter(
+void initRouter() {
+  router = GoRouter(
     initialLocation: '/splash',
-    refreshListenable: _GoRouterRefreshStream(authCubit.stream),
-    redirect: (context, state) {
-      final loc = state.matchedLocation;
-      switch (authCubit.state) {
-        case AuthStatus.loading:
-          return loc == '/splash' ? null : '/splash';
-        case AuthStatus.unauthenticated:
-          return ['/login', '/register'].contains(loc) ? null : '/login';
-        case AuthStatus.locked:
-          return ['/unlock', '/login', '/register'].contains(loc)
-              ? null
-              : '/unlock';
-        case AuthStatus.unlocked:
-          if (loc == '/home') {
-            return '/home';
-          } else if (loc == '/settings') {
-            return '/settings';
-          } else if (loc.startsWith('/totp')) {
-            return loc;
-          }
-          return '/home';
-      }
-    },
+    observers: [RouterObserver()],
     routes: [
       GoRoute(path: '/splash', builder: (ctx, state) => const SplashPage()),
       GoRoute(path: '/login', builder: (ctx, state) => const LoginPage()),
@@ -78,19 +97,4 @@ GoRouter createRouter(AuthCubit authCubit) {
       ),
     ],
   );
-}
-
-class _GoRouterRefreshStream extends ChangeNotifier {
-  _GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _sub = stream.asBroadcastStream().listen((_) => notifyListeners());
-  }
-
-  late final StreamSubscription<dynamic> _sub;
-
-  @override
-  void dispose() {
-    _sub.cancel();
-    super.dispose();
-  }
 }

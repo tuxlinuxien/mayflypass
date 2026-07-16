@@ -95,7 +95,7 @@ class FormCubit extends Cubit<UnlockFormState> {
 
   Future<void> biometricUnlock() async {
     if (await globalAuth.tryBiometricUnlock() == true) {
-      globalAuth.unlock();
+      globalAuth.unlocked();
     }
   }
 }

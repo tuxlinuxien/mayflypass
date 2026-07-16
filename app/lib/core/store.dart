@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hex/hex.dart';
+import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/logger.dart';
 import 'package:mayflypass/secure/secure.dart';
 import 'package:uuid/uuid.dart';
@@ -150,7 +149,7 @@ class MemoryStore extends Store {
   @override
   Future<Duration> getSettingsLockAfterDuration() async {
     final value = values['settings_lock_after_duration'] as int?;
-    return Duration(minutes: value ?? 1);
+    return value == null ? LOCK_AFTER_CHOICES[0] : Duration(minutes: value);
   }
 
   @override

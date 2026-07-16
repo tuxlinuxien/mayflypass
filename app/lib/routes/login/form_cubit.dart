@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:formz/formz.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/database/database.dart';
 import 'package:mayflypass/forms/email.dart';
@@ -81,6 +82,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       await globalDB.deleteAllLocalStorage();
       // sync data for the first time
       await syncLocalAndRemote();
+      await globalAuth.unlocked();
     } on ApiErrorBadRequestWithFields catch (e) {
       for (var error in e.errors) {
         if (error.field == 'email') {

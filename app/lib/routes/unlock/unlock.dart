@@ -37,7 +37,7 @@ class _UnlockPageState extends State<UnlockPage> {
           final l10n = AppLocalizations.of(context)!;
           switch (state.status) {
             case FormStatus.success:
-              globalAuth.unlock(); // send the user to the homepage.
+              globalAuth.unlocked(); // send the user to the homepage.
             case FormStatus.failure:
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

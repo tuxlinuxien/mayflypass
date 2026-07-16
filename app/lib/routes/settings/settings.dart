@@ -131,7 +131,7 @@ class SettingsPage extends StatelessWidget {
                                 LockoutAfterDropdown(
                                   value:
                                       state.lockoutAfter ??
-                                      Duration(minutes: 1),
+                                      LOCK_AFTER_CHOICES[0],
                                   onChanged: cubit.updateLockoutAfter,
                                 ),
                               ],

@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/forms/email.dart';
@@ -45,7 +44,6 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: Colors.green,
                 ),
               );
-              globalAuth.unlock(); // send the user to the homepage.
             case FormStatus.failure:
               if (state.apiError == null) return;
               ScaffoldMessenger.of(context).showSnackBar(
