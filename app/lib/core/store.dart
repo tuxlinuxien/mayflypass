@@ -137,12 +137,12 @@ class MemoryStore extends Store {
   @override
   Future<Duration> getSettingsLockAfterDuration() async {
     final value = values['settings_lock_after_duration'] as int?;
-    return Duration(seconds: value ?? 30);
+    return Duration(minutes: value ?? 1);
   }
 
   @override
   Future<void> setSettingsLockAfterDuration(Duration value) async {
-    values['settings_lock_after_duration'] = value.inSeconds;
+    values['settings_lock_after_duration'] = value.inMinutes;
   }
 
   @override
@@ -280,7 +280,7 @@ class FSStore extends Store {
     final value = await _getSafeStorage().read(
       key: 'settings::lock_after_duration',
     );
-    return Duration(seconds: int.tryParse(value ?? '') ?? 30);
+    return Duration(minutes: int.tryParse(value ?? '') ?? 1);
   }
 
   @override
@@ -288,7 +288,7 @@ class FSStore extends Store {
     logger.d('setSettingsLockAfterDuration');
     await _getSafeStorage().write(
       key: 'settings::lock_after_duration',
-      value: value.inSeconds.toString(),
+      value: value.inMinutes.toString(),
     );
   }
 

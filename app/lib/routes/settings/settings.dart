@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
+import 'package:mayflypass/routes/settings/widgets/lockout_dropdown.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -41,17 +42,33 @@ class SettingsPage extends StatelessWidget {
                           Divider(height: 1),
                           IconRow(
                             icon: Icons.cloud_sync_outlined,
-                            child: Column(
-                              crossAxisAlignment: .start,
+                            child: Row(
                               children: [
-                                Text('Last synchronization'),
-                                Text(
-                                  state.lastSync == null
-                                      ? '--'
-                                      : DateFormat(
-                                          'yyyy-MM-dd HH:mm',
-                                        ).format(state.lastSync!),
-                                  style: AppTheme.helperStyle,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text('Last synchronization'),
+                                      Text(
+                                        state.lastSync == null
+                                            ? '--'
+                                            : DateFormat(
+                                                'yyyy-MM-dd HH:mm',
+                                              ).format(state.lastSync!),
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 44,
+                                  width: 44,
+                                  child: state.status == .sync
+                                      ? CircularProgressIndicator()
+                                      : IconButton.filled(
+                                          onPressed: cubit.sync,
+                                          icon: Icon(Icons.sync),
+                                        ),
                                 ),
                               ],
                             ),
@@ -67,27 +84,46 @@ class SettingsPage extends StatelessWidget {
                         children: [
                           IconRow(
                             icon: Icons.fingerprint,
-                            child: Column(
-                              crossAxisAlignment: .start,
+                            child: Row(
                               children: [
-                                Text('Biometric unlock'),
-                                Text(
-                                  'Use your fingerprint to unlock the application',
-                                  style: AppTheme.helperStyle,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text('Biometric unlock'),
+                                      Text(
+                                        'Use your fingerprint to unlock the application',
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                                Switch(value: false, onChanged: (_) {}),
                               ],
                             ),
                           ),
                           Divider(height: 1),
                           IconRow(
                             icon: Icons.lock,
-                            child: Column(
-                              crossAxisAlignment: .start,
+                            child: Row(
                               children: [
-                                Text('Auto-lock'),
-                                Text(
-                                  'Automatically lock after',
-                                  style: AppTheme.helperStyle,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text('Auto-lock'),
+                                      Text(
+                                        'Automatically lock after',
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                LockoutAfterDropdown(
+                                  value:
+                                      state.lockoutAfter ??
+                                      Duration(minutes: 1),
+                                  onChanged: cubit.updateLockoutAfter,
                                 ),
                               ],
                             ),
@@ -152,6 +188,7 @@ class IconRow extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16),
       child: Row(
+        mainAxisAlignment: .start,
         spacing: 16,
         children: [
           _icon(),

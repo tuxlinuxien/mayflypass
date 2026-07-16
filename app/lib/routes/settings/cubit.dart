@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/helpers/sync.dart';
 
 part 'cubit.freezed.dart';
 
-enum SettingsStatus { loading, ready }
+enum SettingsStatus { loading, ready, sync }
 
 @freezed
 abstract class SettingsState with _$SettingsState {
@@ -56,5 +57,18 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(status: .loading));
     await globalStore.setSettingsLockAfterDuration(value);
     emit(state.copyWith(status: .ready, lockoutAfter: value));
+  }
+
+  Future<void> sync() async {
+    emit(state.copyWith(status: .sync));
+
+    try {
+      await syncLocalAndRemote();
+      emit(state.copyWith(lastSync: await globalStore.getLastSync()));
+    } catch (e) {
+      logger.e(e);
+    } finally {
+      emit(state.copyWith(status: .ready));
+    }
   }
 }
