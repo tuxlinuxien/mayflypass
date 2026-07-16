@@ -1,10 +1,6 @@
 import 'package:intl/intl.dart';
-import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
-import 'package:mayflypass/routes/settings/widgets/account.dart';
-import 'package:mayflypass/routes/settings/widgets/biometric_unlock.dart';
-import 'package:mayflypass/routes/settings/widgets/lockout_after.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
