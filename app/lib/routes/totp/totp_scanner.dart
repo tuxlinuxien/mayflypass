@@ -9,26 +9,26 @@ import 'package:mayflypass/secure/encryption.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:uuid/v7.dart';
 
-class ScannerPage extends StatelessWidget {
+class TotpScannerPage extends StatelessWidget {
   final bool saveOnResult;
-  const ScannerPage({super.key, this.saveOnResult = true});
+  const TotpScannerPage({super.key, this.saveOnResult = true});
 
   @override
   Widget build(BuildContext context) {
-    return _Scanner(saveOnResult: saveOnResult);
+    return _TotpScanner(saveOnResult: saveOnResult);
   }
 }
 
-class _Scanner extends StatefulWidget {
+class _TotpScanner extends StatefulWidget {
   final bool saveOnResult;
 
-  const _Scanner({required this.saveOnResult});
+  const _TotpScanner({required this.saveOnResult});
 
   @override
-  State<_Scanner> createState() => __ScannerState();
+  State<_TotpScanner> createState() => __TotpScannerState();
 }
 
-class __ScannerState extends State<_Scanner> {
+class __TotpScannerState extends State<_TotpScanner> {
   final _controller = MobileScannerController();
   var _isRunning = false;
 
@@ -117,7 +117,7 @@ class __ScannerState extends State<_Scanner> {
           ),
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(painter: _ScannerOverlayPainter(square)),
+              child: CustomPaint(painter: _TotpScannerOverlayPainter(square)),
             ),
           ),
           Positioned(
@@ -156,8 +156,9 @@ class __ScannerState extends State<_Scanner> {
                 Or(),
                 SpacerSection,
                 OutlinedButton(
-                  onPressed: () {
-                    router.replace('/totp-manual');
+                  onPressed: () async {
+                    await router.push('/totp-manual');
+                    router.pop<bool?>(true);
                   },
                   child: Row(
                     crossAxisAlignment: .center,
@@ -182,8 +183,8 @@ class __ScannerState extends State<_Scanner> {
   }
 }
 
-class _ScannerOverlayPainter extends CustomPainter {
-  const _ScannerOverlayPainter(this.square);
+class _TotpScannerOverlayPainter extends CustomPainter {
+  const _TotpScannerOverlayPainter(this.square);
 
   final Rect square;
 
@@ -204,6 +205,6 @@ class _ScannerOverlayPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ScannerOverlayPainter old) =>
+  bool shouldRepaint(covariant _TotpScannerOverlayPainter old) =>
       old.square != square;
 }

@@ -8,10 +8,10 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/routes/home/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
-import 'package:mayflypass/routes/totp/widgets/scanner.dart';
+import 'package:mayflypass/routes/totp/totp_scanner.dart';
 import 'package:mayflypass/routes/settings/settings.dart';
 import 'package:mayflypass/routes/splash.dart';
-import 'package:mayflypass/routes/totp/totp.dart';
+import 'package:mayflypass/routes/totp/totp_manual.dart';
 import 'package:mayflypass/routes/unlock/unlock.dart';
 
 late final GoRouter router;
@@ -57,24 +57,24 @@ GoRouter createRouter(AuthCubit authCubit) {
         path: '/totp',
         builder: (ctx, state) {
           if (Platform.isAndroid || Platform.isIOS) {
-            return const ScannerPage();
+            return const TotpScannerPage();
           }
-          return const TotpPage(id: null);
+          return const TotpManualPage(id: null);
         },
       ),
       GoRoute(
         path: '/totp/:id',
         builder: (ctx, state) {
-          return TotpPage(id: state.pathParameters['id']);
+          return TotpManualPage(id: state.pathParameters['id']);
         },
       ),
       GoRoute(
         path: '/totp-scanner',
-        builder: (ctx, state) => const ScannerPage(),
+        builder: (ctx, state) => const TotpScannerPage(),
       ),
       GoRoute(
         path: '/totp-manual',
-        builder: (ctx, state) => const TotpPage(id: null),
+        builder: (ctx, state) => const TotpManualPage(id: null),
       ),
     ],
   );

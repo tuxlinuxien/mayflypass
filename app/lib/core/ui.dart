@@ -7,6 +7,6 @@ final Spacer8 = const SizedBox(height: DEFAULT_SPACING / 2);
 
 final Spacer32 = const SizedBox(height: DEFAULT_SPACING * 2);
 
-final SpacerFormField = const SizedBox(height: 18);
+final SpacerFormField = const SizedBox(height: 8);
 final SpacerHomeEntries = const SizedBox(height: 12);
 final SpacerSection = const SizedBox(height: 28);

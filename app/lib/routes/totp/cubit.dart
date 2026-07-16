@@ -133,6 +133,15 @@ class TotpCubit extends Cubit<TotpState> {
   }
 
   Future<bool> submit() async {
+    // force values to be checked
+    emit(
+      state.copyWith(
+        issuer: TotpIssuerValue.dirty(state.issuer.value),
+        account: TotpAccountValue.dirty(state.account.value),
+        secret: TotpSecretValue.dirty(state.secret.value),
+      ),
+    );
+
     final isValid = Formz.validate([state.issuer, state.account, state.secret]);
     if (!isValid) {
       return false;
@@ -173,7 +182,7 @@ class TotpCubit extends Cubit<TotpState> {
 
     logger.i('upsert into database...');
     await globalDB.upsertLocalStorage(entry);
-    logger.i('upsered [OK]');
+    logger.i('upserted [OK]');
 
     emit(state.copyWith(status: .success));
     return true;

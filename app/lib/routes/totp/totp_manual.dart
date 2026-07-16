@@ -5,27 +5,27 @@ import 'package:mayflypass/forms/totp_issuer.dart';
 import 'package:mayflypass/forms/totp_secret.dart';
 import 'package:mayflypass/routes/totp/cubit.dart';
 
-class TotpPage extends StatelessWidget {
+class TotpManualPage extends StatelessWidget {
   final String? id;
 
-  const TotpPage({super.key, this.id});
+  const TotpManualPage({super.key, this.id});
 
   @override
   Widget build(BuildContext context) {
-    return _TotpPage(id: id);
+    return _TotpManualPage(id: id);
   }
 }
 
-class _TotpPage extends StatefulWidget {
+class _TotpManualPage extends StatefulWidget {
   final String? id;
 
-  const _TotpPage({this.id});
+  const _TotpManualPage({this.id});
 
   @override
-  State<_TotpPage> createState() => __TotpPageState();
+  State<_TotpManualPage> createState() => __TotpManualPageState();
 }
 
-class __TotpPageState extends State<_TotpPage> {
+class __TotpManualPageState extends State<_TotpManualPage> {
   final _issuerController = TextEditingController();
   final _accountController = TextEditingController();
   final _secretController = TextEditingController();
@@ -63,103 +63,55 @@ class __TotpPageState extends State<_TotpPage> {
           final cubit = context.read<TotpCubit>();
           return Scaffold(
             appBar: AppBar(
-              title: Text(widget.id == null ? l10i.newTotp : 'Update TOTP'),
+              title: Text(widget.id == null ? 'Add account' : 'Update account'),
             ),
             body: SingleChildScrollView(
               child: MainContainer(
                 child: Column(
                   crossAxisAlignment: .stretch,
                   children: <Widget>[
-                    Text(
-                      'Configuration',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Spacer8,
-                    Surface(
-                      child: Padding(
-                        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
-                        child: Column(
-                          children: [
-                            IssuerInput(
-                              controller: _issuerController,
-                              onChanged: cubit.changeIssuer,
-                              errorText: TotpIssuerValueError.toHuman(context, [
-                                state.issuer.displayError,
-                              ]),
-                            ),
-                            SpacerFormField,
-                            AccountInput(
-                              controller: _accountController,
-                              onChanged: cubit.changeAccount,
-                            ),
-                            SpacerFormField,
-                            SecretInput(
-                              controller: _secretController,
-                              onChanged: cubit.changeSecret,
-                              errorText: TotpSecretValueError.toHuman(context, [
-                                state.secret.displayError,
-                              ]),
-                            ),
-                          ],
-                        ),
-                      ),
+                    IssuerInput(
+                      controller: _issuerController,
+                      onChanged: cubit.changeIssuer,
+                      errorText: TotpIssuerValueError.toHuman(context, [
+                        state.issuer.displayError,
+                      ]),
                     ),
                     SpacerFormField,
-                    Text(
-                      'Advanced',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Spacer8,
-                    Surface(
-                      child: Padding(
-                        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
-                        child: Column(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            AlgorithmSelector(
-                              value: state.algorithm,
-                              onChanged: cubit.changeAlgorithm,
-                            ),
-                            SpacerFormField,
-                            DigitsSelector(
-                              value: state.digits,
-                              onChanged: cubit.changeDigits,
-                            ),
-                            SpacerFormField,
-                            PeriodSelector(
-                              value: state.period,
-                              onChanged: cubit.changePeriod,
-                            ),
-                          ],
-                        ),
-                      ),
+                    AccountInput(
+                      controller: _accountController,
+                      onChanged: cubit.changeAccount,
                     ),
                     SpacerFormField,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: .start,
-                            children: [
-                              MLabel(text: 'Favorite'),
-                              Spacer4,
-                              Text('Add this item to the "Favorites" list'),
-                            ],
-                          ),
-                        ),
-                        Switch(
-                          value: state.favorite,
-                          onChanged: cubit.changeFavorite,
-                        ),
-                      ],
+                    SecretInput(
+                      controller: _secretController,
+                      onChanged: cubit.changeSecret,
+                      errorText: TotpSecretValueError.toHuman(context, [
+                        state.secret.displayError,
+                      ]),
+                    ),
+                    SpacerSection,
+                    AlgorithmSelector(
+                      value: state.algorithm,
+                      onChanged: cubit.changeAlgorithm,
                     ),
                     SpacerFormField,
+                    DigitsSelector(
+                      value: state.digits,
+                      onChanged: cubit.changeDigits,
+                    ),
+                    SpacerFormField,
+                    PeriodSelector(
+                      value: state.period,
+                      onChanged: cubit.changePeriod,
+                    ),
+                    SpacerSection,
                     MTextFormField(
                       labelText: 'Tags',
                       controller: _tagsController,
                       onChanged: cubit.changeTags,
                     ),
-                    SpacerFormField,
+                    SpacerSection,
                     FilledButton(onPressed: cubit.submit, child: Text('Save')),
                   ],
                 ),

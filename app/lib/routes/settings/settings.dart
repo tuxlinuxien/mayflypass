@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
 import 'package:mayflypass/routes/settings/widgets/lockout_dropdown.dart';
@@ -22,7 +23,7 @@ class SettingsPage extends StatelessWidget {
                   crossAxisAlignment: .stretch,
                   children: [
                     Text('Account', style: AppTheme.helperStyle),
-                    SizedBox(height: 9),
+                    Spacer8,
                     Surface(
                       child: Column(
                         children: [
@@ -78,7 +79,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                     SpacerSection,
                     Text('Security', style: AppTheme.helperStyle),
-                    SizedBox(height: 9),
+                    Spacer8,
                     Surface(
                       child: Column(
                         children: [
@@ -174,6 +175,23 @@ class SettingsPage extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
+                    SpacerSection,
+                    Divider(height: 1),
+                    SpacerSection,
+                    OutlinedButton.icon(
+                      style: ButtonStyle(
+                        iconColor: WidgetStatePropertyAll(AppTheme.DangerColor),
+                        side: WidgetStatePropertyAll(
+                          BorderSide(color: AppTheme.DangerColor),
+                        ),
+                      ),
+                      onPressed: globalAuth.logout,
+                      label: Text(
+                        'Logout',
+                        style: TextStyle(color: AppTheme.DangerColor),
+                      ),
+                      icon: Icon(Icons.logout),
                     ),
                   ],
                 ),
