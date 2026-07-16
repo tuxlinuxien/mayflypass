@@ -3,6 +3,29 @@ import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/routes/home/widgets/epoch_cubit.dart';
 import 'package:otp/otp.dart';
 
+String getCode({
+  required String secret,
+  required TotpAlgorithm algorithm,
+  required int period,
+  required int digits,
+  required int ms,
+}) {
+  final algo = switch (algorithm) {
+    .SHA1 => Algorithm.SHA1,
+    .SHA256 => Algorithm.SHA256,
+    .SHA512 => Algorithm.SHA512,
+    _ => throw UnimplementedError(),
+  };
+  return OTP.generateTOTPCodeString(
+    secret,
+    ms,
+    algorithm: algo,
+    interval: period,
+    length: digits,
+    isGoogle: true,
+  );
+}
+
 class OTPCode extends StatelessWidget {
   final String secret;
   final TotpAlgorithm algorithm;
@@ -44,20 +67,12 @@ class OTPCode extends StatelessWidget {
   }
 
   String _genCode(int state) {
-    final algo = switch (algorithm) {
-      .SHA1 => Algorithm.SHA1,
-      .SHA256 => Algorithm.SHA256,
-      .SHA512 => Algorithm.SHA512,
-      _ => throw UnimplementedError(),
-    };
-
-    return OTP.generateTOTPCodeString(
-      secret,
-      state,
-      algorithm: algo,
-      interval: period,
-      length: digits,
-      isGoogle: true,
+    return getCode(
+      secret: secret,
+      ms: state,
+      algorithm: algorithm,
+      period: period,
+      digits: digits,
     );
   }
 }

@@ -37,6 +37,7 @@ class AuthCubit extends Cubit<AuthStatus> {
       default:
       // do nothing
     }
+    logger.w('check auth ${_lockAfter.difference(now)}');
     if (now.isAfter(_lockAfter)) {
       lock();
     }

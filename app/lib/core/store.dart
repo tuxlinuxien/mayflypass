@@ -270,7 +270,11 @@ class FSStore extends Store {
     final value = await _getSafeStorage().read(
       key: 'settings::lock_after_duration',
     );
-    return Duration(minutes: int.tryParse(value ?? '') ?? 1);
+    try {
+      return Duration(minutes: int.parse(value ?? ''));
+    } catch (e) {
+      return LOCK_AFTER_CHOICES[0];
+    }
   }
 
   @override

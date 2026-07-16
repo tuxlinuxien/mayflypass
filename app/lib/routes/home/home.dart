@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
@@ -134,7 +135,32 @@ class TotpEntryList extends StatelessWidget {
     final cubit = context.read<HomeCubit>();
     final children =
         items.map((item) {
-              return GestureDetector(
+              return InkWell(
+                onTap: () async {
+                  final code = getCode(
+                    secret: item.$2.secret,
+                    algorithm: item.$2.algorithm,
+                    digits: item.$2.digits,
+                    period: item.$2.period,
+                    ms: DateTime.now().millisecondsSinceEpoch,
+                  );
+                  await Clipboard.setData(ClipboardData(text: code));
+                  if (!context.mounted) {
+                    return;
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(milliseconds: 1500),
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(16),
+                      backgroundColor: Colors.black87,
+                      content: Text(
+                        'Copied to clipboard',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  );
+                },
                 onLongPress: () =>
                     _showEntryMenu(context, cubit, item.$1, item.$2),
                 child: TotpEntryItem(id: item.$1, totp: item.$2),
