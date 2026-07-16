@@ -132,39 +132,9 @@ class TotpEntryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<HomeCubit>();
     final children =
         items.map((item) {
-              return InkWell(
-                onTap: () async {
-                  final code = getCode(
-                    secret: item.$2.secret,
-                    algorithm: item.$2.algorithm,
-                    digits: item.$2.digits,
-                    period: item.$2.period,
-                    ms: DateTime.now().millisecondsSinceEpoch,
-                  );
-                  await Clipboard.setData(ClipboardData(text: code));
-                  if (!context.mounted) {
-                    return;
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(milliseconds: 1500),
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      backgroundColor: Colors.black87,
-                      content: Text(
-                        'Copied to clipboard',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  );
-                },
-                onLongPress: () =>
-                    _showEntryMenu(context, cubit, item.$1, item.$2),
-                child: TotpEntryItem(id: item.$1, totp: item.$2),
-              );
+              return TotpEntryItem(id: item.$1, totp: item.$2);
             }).toList()
             as List<Widget>;
 
@@ -255,34 +225,86 @@ Future<bool> _confirmDelete(BuildContext context) async {
   return result ?? false;
 }
 
-class TotpEntryItem extends StatelessWidget {
+class TotpEntryItem extends StatefulWidget {
   final String id;
   final Totp totp;
 
   const TotpEntryItem({super.key, required this.id, required this.totp});
 
   @override
+  State<TotpEntryItem> createState() => _TotpEntryItemState();
+}
+
+class _TotpEntryItemState extends State<TotpEntryItem> {
+  bool _clicked = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Surface(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Row(
-          children: [
-            _icon(),
-            SizedBox(width: 20),
-            Expanded(child: _otp()),
-            SizedBox(width: 20),
-            _timer(),
-          ],
+    final cubit = context.read<HomeCubit>();
+    return GestureDetector(
+      onTap: () async {
+        final code = getCode(
+          secret: widget.totp.secret,
+          algorithm: widget.totp.algorithm,
+          digits: widget.totp.digits,
+          period: widget.totp.period,
+          ms: DateTime.now().millisecondsSinceEpoch,
+        );
+        await Clipboard.setData(ClipboardData(text: code));
+        if (!context.mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            backgroundColor: Colors.black87,
+            content: Text(
+              'Copied to clipboard',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        );
+      },
+      onLongPress: () => _showEntryMenu(context, cubit, widget.id, widget.totp),
+      onTapDown: (_) {
+        setState(() {
+          _clicked = true;
+        });
+      },
+      child: AnimatedOpacity(
+        duration: Duration(milliseconds: 100),
+        opacity: _clicked ? 0.5 : 1,
+        onEnd: () {
+          if (_clicked) {
+            setState(() {
+              _clicked = false;
+            });
+          }
+        },
+        child: Surface(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Row(
+              children: [
+                _icon(),
+                SizedBox(width: 20),
+                Expanded(child: _otp()),
+                SizedBox(width: 20),
+                _timer(),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _icon() {
-    final iconPath = BrandIcons.resolve(totp.issuer);
+    final iconPath = BrandIcons.resolve(widget.totp.issuer);
 
-    String totpIssuer = totp.issuer.isEmpty ? '*' : totp.issuer;
+    String totpIssuer = widget.totp.issuer.isEmpty ? '*' : widget.totp.issuer;
     totpIssuer = totpIssuer[0].toUpperCase();
 
     return SizedBox(
@@ -331,13 +353,13 @@ class TotpEntryItem extends StatelessWidget {
           crossAxisAlignment: .end,
           children: [
             Text(
-              totp.issuer,
+              widget.totp.issuer,
               style: TextStyle(fontSize: 13.5, fontWeight: FontWeight(600)),
             ),
             SizedBox(width: 5),
             Expanded(
               child: Text(
-                totp.account,
+                widget.totp.account,
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight(400),
@@ -349,16 +371,16 @@ class TotpEntryItem extends StatelessWidget {
           ],
         ),
         OTPCode(
-          secret: totp.secret,
-          algorithm: totp.algorithm,
-          digits: totp.digits,
-          period: totp.period,
+          secret: widget.totp.secret,
+          algorithm: widget.totp.algorithm,
+          digits: widget.totp.digits,
+          period: widget.totp.period,
         ),
       ],
     );
   }
 
   Widget _timer() {
-    return Timer(period: totp.period);
+    return Timer(period: widget.totp.period);
   }
 }
