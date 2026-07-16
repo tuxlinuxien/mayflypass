@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:local_auth/local_auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/helpers/sync.dart';
 
@@ -23,19 +24,30 @@ class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(SettingsState());
 
   Future<void> load() async {
+    var biometricUnlockAvailable = false;
+    if (Platform.isAndroid || Platform.isIOS) {
+      try {
+        final LocalAuthentication auth = LocalAuthentication();
+        biometricUnlockAvailable = await auth.isDeviceSupported();
+      } catch (e) {
+        logger.e(e);
+        biometricUnlockAvailable = false;
+      }
+    }
+
     emit(
       state.copyWith(
         email: await globalStore.getEmail(),
         lockoutAfter: await globalStore.getSettingsLockAfterDuration(),
         biometricUnlock: await globalStore.hasKek(),
-        biometricUnlockAvailable: (Platform.isAndroid || Platform.isIOS),
+        biometricUnlockAvailable: biometricUnlockAvailable,
         lastSync: await globalStore.getLastSync(),
         status: SettingsStatus.ready,
       ),
     );
   }
 
-  Future<void> updateBiometricUnlock(bool value) async {
+  Future<void> updateBiometricUnlock() async {
     emit(state.copyWith(status: .loading));
     final kek = getGlobalKek();
     if (kek == null) {
@@ -46,7 +58,17 @@ class SettingsCubit extends Cubit<SettingsState> {
     if (hasKek) {
       await globalStore.deleteKek();
     } else {
-      await globalStore.setKek(kek);
+      try {
+        final LocalAuthentication auth = LocalAuthentication();
+        final isAuthenticated = await auth.authenticate(
+          localizedReason: 'Unlock',
+        );
+        if (isAuthenticated) {
+          await globalStore.setKek(kek);
+        }
+      } catch (e) {
+        logger.e(e);
+      }
     }
 
     hasKek = await globalStore.hasKek();

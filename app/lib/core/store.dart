@@ -108,20 +108,33 @@ class MemoryStore extends Store {
   }
 
   @override
-  Future<void> setKek(SecretKey value) async {}
+  Future<void> setKek(SecretKey value) async {
+    final data = await value.extractBytes();
+    values['account::kek'] = HEX.encode(data);
+  }
 
   @override
   Future<SecretKey?> getKek() async {
-    return null;
+    final value = values['account::kek'] as String?;
+    if (value == null) {
+      return null;
+    }
+    return SecretKeyData(HEX.decode(value));
   }
 
   @override
   Future<bool> hasKek() async {
-    return false;
+    final value = values['account::kek'] as String?;
+    if (value == null) {
+      return false;
+    }
+    return true;
   }
 
   @override
-  Future<void> deleteKek() async {}
+  Future<void> deleteKek() async {
+    values['account::kek'] = null;
+  }
 
   @override
   Future<bool> getSettingsBiometricEnabled() async {
@@ -166,28 +179,6 @@ class FSStore extends Store {
     return FlutterSecureStorage(
       aOptions: AndroidOptions(storageNamespace: 'safe'),
       iOptions: IOSOptions(accountName: 'safe'),
-    );
-  }
-
-  FlutterSecureStorage? _getCriticalStorage({required bool enforceBiometrics}) {
-    if (!(Platform.isAndroid || Platform.isIOS)) {
-      return null;
-    }
-    return FlutterSecureStorage(
-      aOptions: AndroidOptions.biometric(
-        storageNamespace: 'critical',
-        enforceBiometrics: enforceBiometrics,
-        biometricType: enforceBiometrics
-            ? AndroidBiometricType.strongBiometricOnly
-            : AndroidBiometricType.biometricOrDeviceCredential,
-      ),
-      iOptions: IOSOptions(
-        accountName: 'critical',
-        useSecureEnclave: enforceBiometrics,
-        accessControlFlags: enforceBiometrics
-            ? [AccessControlFlag.userPresence]
-            : const [],
-      ),
     );
   }
 
@@ -317,12 +308,9 @@ class FSStore extends Store {
     logger.d('setKek');
     try {
       final keyBytes = await value.extractBytes();
-      await _getCriticalStorage(
-        enforceBiometrics: true,
-      )?.write(key: 'account::kek', value: HEX.encode(keyBytes));
       await _getSafeStorage().write(
-        key: 'settings::biometric_enabled',
-        value: 'true',
+        key: 'account::kek',
+        value: HEX.encode(keyBytes),
       );
     } catch (e) {
       logger.e(e);
@@ -333,9 +321,7 @@ class FSStore extends Store {
   Future<SecretKey?> getKek() async {
     logger.d('getKek');
     try {
-      final kekHex = await _getCriticalStorage(
-        enforceBiometrics: true,
-      )?.read(key: 'account::kek');
+      final kekHex = await _getSafeStorage().read(key: 'account::kek');
       if (kekHex == null) {
         return null;
       }
@@ -351,10 +337,8 @@ class FSStore extends Store {
   Future<bool> hasKek() async {
     logger.d('hasKek');
     try {
-      final value = await _getSafeStorage().read(
-        key: 'settings::biometric_enabled',
-      );
-      return (value ?? 'false') == 'true';
+      final value = await _getSafeStorage().containsKey(key: 'account::kek');
+      return value;
     } catch (e) {
       logger.e(e);
     }
@@ -365,10 +349,7 @@ class FSStore extends Store {
   Future<void> deleteKek() async {
     logger.d('deleteKek');
     try {
-      await _getCriticalStorage(
-        enforceBiometrics: false,
-      )?.delete(key: 'account::kek');
-      await _getSafeStorage().delete(key: 'settings::biometric_enabled');
+      await _getSafeStorage().delete(key: 'account::kek');
     } catch (e) {
       logger.e(e);
     }
@@ -377,7 +358,6 @@ class FSStore extends Store {
   @override
   Future<void> flushAll() async {
     await _getSafeStorage().deleteAll();
-    await _getCriticalStorage(enforceBiometrics: false)?.deleteAll();
   }
 }
 

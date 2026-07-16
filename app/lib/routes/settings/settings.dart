@@ -98,7 +98,15 @@ class SettingsPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                Switch(value: false, onChanged: (_) {}),
+                                Switch(
+                                  value: state.biometricUnlock ?? false,
+                                  onChanged:
+                                      ((state.biometricUnlockAvailable ??
+                                              false) ==
+                                          false)
+                                      ? null
+                                      : (_) => cubit.updateBiometricUnlock(),
+                                ),
                               ],
                             ),
                           ),

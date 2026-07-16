@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:local_auth/local_auth.dart';
 import 'package:mayflypass/core/core.dart';
 
 enum AuthStatus { loading, unauthenticated, unlocked, locked }
@@ -15,18 +18,9 @@ class AuthCubit extends Cubit<AuthStatus> {
     }
 
     // try to get the kek from storage but continue if it's not present
-    final hasKek = await globalStore.hasKek();
-    if (hasKek) {
-      logger.i('has kek biometric store: true');
-      final kek = await globalStore.getKek();
-      if (kek != null) {
-        logger.i('kek biometric store returned');
-        setGlobalKek(kek);
-        emit(AuthStatus.unlocked);
-      } else {
-        logger.i('kek biometric store missing');
-        emit(AuthStatus.locked);
-      }
+
+    if (await tryBiometricUnlock()) {
+      emit(AuthStatus.unlocked);
       return;
     }
 
@@ -50,6 +44,34 @@ class AuthCubit extends Cubit<AuthStatus> {
     await globalStore.flushAll();
     deleteGlobalKek(); // clean the kek from memory
     emit(AuthStatus.unauthenticated);
+  }
+
+  Future<bool> tryBiometricUnlock() async {
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      return false;
+    }
+    final hasKek = await globalStore.hasKek();
+    if (hasKek == false) {
+      return false;
+    }
+    try {
+      final LocalAuthentication auth = LocalAuthentication();
+      if (await auth.isDeviceSupported() == false) {
+        return false;
+      }
+      if (await auth.authenticate(localizedReason: 'Unlock') == false) {
+        return false;
+      }
+      final kek = await globalStore.getKek();
+      if (kek == null) {
+        return false;
+      }
+      setGlobalKek(kek);
+      return true;
+    } catch (e) {
+      logger.e(e);
+    }
+    return false;
   }
 }
 

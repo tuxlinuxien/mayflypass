@@ -95,25 +95,27 @@ class _UnlockPageState extends State<UnlockPage> {
                           )
                         : Text(l10n.unlock),
                   ),
-                  SpacerFormField,
-                  OutlinedButton(
-                    onPressed: state.status == FormStatus.submitting
-                        ? null
-                        : cubit.unlock,
-                    child: Row(
-                      crossAxisAlignment: .center,
-                      mainAxisAlignment: .center,
-                      children: [
-                        Icon(
-                          Icons.fingerprint,
-                          color: AppTheme.BrightColor,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text('Unlock with fingerprint'),
-                      ],
-                    ),
-                  ),
+                  state.biometricUnlock ? SpacerFormField : null,
+                  state.biometricUnlock
+                      ? OutlinedButton(
+                          onPressed: state.status == FormStatus.submitting
+                              ? null
+                              : cubit.biometricUnlock,
+                          child: Row(
+                            crossAxisAlignment: .center,
+                            mainAxisAlignment: .center,
+                            children: [
+                              Icon(
+                                Icons.fingerprint,
+                                color: AppTheme.BrightColor,
+                                size: 30,
+                              ),
+                              SizedBox(width: 10),
+                              Text('Unlock with fingerprint'),
+                            ],
+                          ),
+                        )
+                      : null,
                   SpacerSection,
                   Spacer(),
                   Center(
@@ -131,7 +133,7 @@ class _UnlockPageState extends State<UnlockPage> {
                       ),
                     ),
                   ),
-                ],
+                ].nonNulls.toList(),
               ),
             ),
           );

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:formz/formz.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/forms/master_password.dart';
@@ -13,7 +16,7 @@ enum FormStatus { initial, submitting, success, failure }
 abstract class UnlockFormState with _$UnlockFormState {
   const factory UnlockFormState({
     @Default('') String email,
-    @Default(false) bool withBiometricUnlock,
+    @Default(false) bool biometricUnlock,
     @Default(MasterPasswordValue.pure()) MasterPasswordValue masterPassword,
     @Default(FormStatus.initial) FormStatus status,
   }) = _UnlockFormState;
@@ -36,7 +39,24 @@ class FormCubit extends Cubit<UnlockFormState> {
     if (email == null) {
       return;
     }
-    emit(state.copyWith(status: .initial, email: email));
+    var biometricUnlockAvailable = false;
+    if (Platform.isAndroid || Platform.isIOS) {
+      try {
+        final LocalAuthentication auth = LocalAuthentication();
+        biometricUnlockAvailable = await auth.isDeviceSupported();
+      } catch (e) {
+        logger.e(e);
+        biometricUnlockAvailable = false;
+      }
+    }
+    var hasKek = await globalStore.hasKek();
+    emit(
+      state.copyWith(
+        status: .initial,
+        email: email,
+        biometricUnlock: biometricUnlockAvailable && hasKek,
+      ),
+    );
   }
 
   void unlock() async {
@@ -70,6 +90,12 @@ class FormCubit extends Cubit<UnlockFormState> {
         emit(state.copyWith(status: .failure));
       case null:
         globalAuth.logout();
+    }
+  }
+
+  Future<void> biometricUnlock() async {
+    if (await globalAuth.tryBiometricUnlock() == true) {
+      globalAuth.unlock();
     }
   }
 }

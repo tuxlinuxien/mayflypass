@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UnlockFormState {
 
- String get email; bool get withBiometricUnlock; MasterPasswordValue get masterPassword; FormStatus get status;
+ String get email; bool get biometricUnlock; MasterPasswordValue get masterPassword; FormStatus get status;
 /// Create a copy of UnlockFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $UnlockFormStateCopyWith<UnlockFormState> get copyWith => _$UnlockFormStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UnlockFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.withBiometricUnlock, withBiometricUnlock) || other.withBiometricUnlock == withBiometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UnlockFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,withBiometricUnlock,masterPassword,status);
+int get hashCode => Object.hash(runtimeType,email,biometricUnlock,masterPassword,status);
 
 @override
 String toString() {
-  return 'UnlockFormState(email: $email, withBiometricUnlock: $withBiometricUnlock, masterPassword: $masterPassword, status: $status)';
+  return 'UnlockFormState(email: $email, biometricUnlock: $biometricUnlock, masterPassword: $masterPassword, status: $status)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $UnlockFormStateCopyWith<$Res>  {
   factory $UnlockFormStateCopyWith(UnlockFormState value, $Res Function(UnlockFormState) _then) = _$UnlockFormStateCopyWithImpl;
 @useResult
 $Res call({
- String email, bool withBiometricUnlock, MasterPasswordValue masterPassword, FormStatus status
+ String email, bool biometricUnlock, MasterPasswordValue masterPassword, FormStatus status
 });
 
 
@@ -63,10 +63,10 @@ class _$UnlockFormStateCopyWithImpl<$Res>
 
 /// Create a copy of UnlockFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? withBiometricUnlock = null,Object? masterPassword = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? biometricUnlock = null,Object? masterPassword = null,Object? status = null,}) {
   return _then(UnlockFormState(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,withBiometricUnlock: null == withBiometricUnlock ? _self.withBiometricUnlock : withBiometricUnlock // ignore: cast_nullable_to_non_nullable
+as String,biometricUnlock: null == biometricUnlock ? _self.biometricUnlock : biometricUnlock // ignore: cast_nullable_to_non_nullable
 as bool,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
 as MasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FormStatus,
@@ -154,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  bool withBiometricUnlock,  MasterPasswordValue masterPassword,  FormStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  bool biometricUnlock,  MasterPasswordValue masterPassword,  FormStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UnlockFormState() when $default != null:
-return $default(_that.email,_that.withBiometricUnlock,_that.masterPassword,_that.status);case _:
+return $default(_that.email,_that.biometricUnlock,_that.masterPassword,_that.status);case _:
   return orElse();
 
 }
@@ -175,10 +175,10 @@ return $default(_that.email,_that.withBiometricUnlock,_that.masterPassword,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  bool withBiometricUnlock,  MasterPasswordValue masterPassword,  FormStatus status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  bool biometricUnlock,  MasterPasswordValue masterPassword,  FormStatus status)  $default,) {final _that = this;
 switch (_that) {
 case _UnlockFormState():
-return $default(_that.email,_that.withBiometricUnlock,_that.masterPassword,_that.status);case _:
+return $default(_that.email,_that.biometricUnlock,_that.masterPassword,_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +195,10 @@ return $default(_that.email,_that.withBiometricUnlock,_that.masterPassword,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  bool withBiometricUnlock,  MasterPasswordValue masterPassword,  FormStatus status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  bool biometricUnlock,  MasterPasswordValue masterPassword,  FormStatus status)?  $default,) {final _that = this;
 switch (_that) {
 case _UnlockFormState() when $default != null:
-return $default(_that.email,_that.withBiometricUnlock,_that.masterPassword,_that.status);case _:
+return $default(_that.email,_that.biometricUnlock,_that.masterPassword,_that.status);case _:
   return null;
 
 }
@@ -210,11 +210,11 @@ return $default(_that.email,_that.withBiometricUnlock,_that.masterPassword,_that
 
 
 class _UnlockFormState implements UnlockFormState {
-  const _UnlockFormState({this.email = '', this.withBiometricUnlock = false, this.masterPassword = const MasterPasswordValue.pure(), this.status = FormStatus.initial});
+  const _UnlockFormState({this.email = '', this.biometricUnlock = false, this.masterPassword = const MasterPasswordValue.pure(), this.status = FormStatus.initial});
   
 
 @override@JsonKey() final  String email;
-@override@JsonKey() final  bool withBiometricUnlock;
+@override@JsonKey() final  bool biometricUnlock;
 @override@JsonKey() final  MasterPasswordValue masterPassword;
 @override@JsonKey() final  FormStatus status;
 
@@ -228,16 +228,16 @@ _$UnlockFormStateCopyWith<_UnlockFormState> get copyWith => __$UnlockFormStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UnlockFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.withBiometricUnlock, withBiometricUnlock) || other.withBiometricUnlock == withBiometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UnlockFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,withBiometricUnlock,masterPassword,status);
+int get hashCode => Object.hash(runtimeType,email,biometricUnlock,masterPassword,status);
 
 @override
 String toString() {
-  return 'UnlockFormState(email: $email, withBiometricUnlock: $withBiometricUnlock, masterPassword: $masterPassword, status: $status)';
+  return 'UnlockFormState(email: $email, biometricUnlock: $biometricUnlock, masterPassword: $masterPassword, status: $status)';
 }
 
 
@@ -248,7 +248,7 @@ abstract mixin class _$UnlockFormStateCopyWith<$Res> implements $UnlockFormState
   factory _$UnlockFormStateCopyWith(_UnlockFormState value, $Res Function(_UnlockFormState) _then) = __$UnlockFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- String email, bool withBiometricUnlock, MasterPasswordValue masterPassword, FormStatus status
+ String email, bool biometricUnlock, MasterPasswordValue masterPassword, FormStatus status
 });
 
 
@@ -265,10 +265,10 @@ class __$UnlockFormStateCopyWithImpl<$Res>
 
 /// Create a copy of UnlockFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? withBiometricUnlock = null,Object? masterPassword = null,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? biometricUnlock = null,Object? masterPassword = null,Object? status = null,}) {
   return _then(_UnlockFormState(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,withBiometricUnlock: null == withBiometricUnlock ? _self.withBiometricUnlock : withBiometricUnlock // ignore: cast_nullable_to_non_nullable
+as String,biometricUnlock: null == biometricUnlock ? _self.biometricUnlock : biometricUnlock // ignore: cast_nullable_to_non_nullable
 as bool,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
 as MasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FormStatus,
