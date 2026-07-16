@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SettingsState {
 
- SettingsStatus get status; String? get email; Duration? get lockoutAfter; bool? get biometricUnlock; bool? get biometricUnlockAvailable;
+ SettingsStatus get status; String? get email; DateTime? get lastSync; Duration? get lockoutAfter; bool? get biometricUnlock; bool? get biometricUnlockAvailable;
 /// Create a copy of SettingsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $SettingsStateCopyWith<SettingsState> get copyWith => _$SettingsStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.email, email) || other.email == email)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.email, email) || other.email == email)&&(identical(other.lastSync, lastSync) || other.lastSync == lastSync)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,email,lockoutAfter,biometricUnlock,biometricUnlockAvailable);
+int get hashCode => Object.hash(runtimeType,status,email,lastSync,lockoutAfter,biometricUnlock,biometricUnlockAvailable);
 
 @override
 String toString() {
-  return 'SettingsState(status: $status, email: $email, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable)';
+  return 'SettingsState(status: $status, email: $email, lastSync: $lastSync, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $SettingsStateCopyWith<$Res>  {
   factory $SettingsStateCopyWith(SettingsState value, $Res Function(SettingsState) _then) = _$SettingsStateCopyWithImpl;
 @useResult
 $Res call({
- SettingsStatus status, String? email, Duration? lockoutAfter, bool? biometricUnlock, bool? biometricUnlockAvailable
+ SettingsStatus status, String? email, DateTime? lastSync, Duration? lockoutAfter, bool? biometricUnlock, bool? biometricUnlockAvailable
 });
 
 
@@ -63,11 +63,12 @@ class _$SettingsStateCopyWithImpl<$Res>
 
 /// Create a copy of SettingsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? email = freezed,Object? lockoutAfter = freezed,Object? biometricUnlock = freezed,Object? biometricUnlockAvailable = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? email = freezed,Object? lastSync = freezed,Object? lockoutAfter = freezed,Object? biometricUnlock = freezed,Object? biometricUnlockAvailable = freezed,}) {
   return _then(SettingsState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as SettingsStatus,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,lockoutAfter: freezed == lockoutAfter ? _self.lockoutAfter : lockoutAfter // ignore: cast_nullable_to_non_nullable
+as String?,lastSync: freezed == lastSync ? _self.lastSync : lastSync // ignore: cast_nullable_to_non_nullable
+as DateTime?,lockoutAfter: freezed == lockoutAfter ? _self.lockoutAfter : lockoutAfter // ignore: cast_nullable_to_non_nullable
 as Duration?,biometricUnlock: freezed == biometricUnlock ? _self.biometricUnlock : biometricUnlock // ignore: cast_nullable_to_non_nullable
 as bool?,biometricUnlockAvailable: freezed == biometricUnlockAvailable ? _self.biometricUnlockAvailable : biometricUnlockAvailable // ignore: cast_nullable_to_non_nullable
 as bool?,
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SettingsStatus status,  String? email,  Duration? lockoutAfter,  bool? biometricUnlock,  bool? biometricUnlockAvailable)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SettingsStatus status,  String? email,  DateTime? lastSync,  Duration? lockoutAfter,  bool? biometricUnlock,  bool? biometricUnlockAvailable)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SettingsState() when $default != null:
-return $default(_that.status,_that.email,_that.lockoutAfter,_that.biometricUnlock,_that.biometricUnlockAvailable);case _:
+return $default(_that.status,_that.email,_that.lastSync,_that.lockoutAfter,_that.biometricUnlock,_that.biometricUnlockAvailable);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.status,_that.email,_that.lockoutAfter,_that.biometricUnloc
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SettingsStatus status,  String? email,  Duration? lockoutAfter,  bool? biometricUnlock,  bool? biometricUnlockAvailable)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SettingsStatus status,  String? email,  DateTime? lastSync,  Duration? lockoutAfter,  bool? biometricUnlock,  bool? biometricUnlockAvailable)  $default,) {final _that = this;
 switch (_that) {
 case _SettingsState():
-return $default(_that.status,_that.email,_that.lockoutAfter,_that.biometricUnlock,_that.biometricUnlockAvailable);case _:
+return $default(_that.status,_that.email,_that.lastSync,_that.lockoutAfter,_that.biometricUnlock,_that.biometricUnlockAvailable);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.status,_that.email,_that.lockoutAfter,_that.biometricUnloc
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SettingsStatus status,  String? email,  Duration? lockoutAfter,  bool? biometricUnlock,  bool? biometricUnlockAvailable)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SettingsStatus status,  String? email,  DateTime? lastSync,  Duration? lockoutAfter,  bool? biometricUnlock,  bool? biometricUnlockAvailable)?  $default,) {final _that = this;
 switch (_that) {
 case _SettingsState() when $default != null:
-return $default(_that.status,_that.email,_that.lockoutAfter,_that.biometricUnlock,_that.biometricUnlockAvailable);case _:
+return $default(_that.status,_that.email,_that.lastSync,_that.lockoutAfter,_that.biometricUnlock,_that.biometricUnlockAvailable);case _:
   return null;
 
 }
@@ -211,11 +212,12 @@ return $default(_that.status,_that.email,_that.lockoutAfter,_that.biometricUnloc
 
 
 class _SettingsState implements SettingsState {
-  const _SettingsState({this.status = SettingsStatus.loading, this.email = null, this.lockoutAfter = null, this.biometricUnlock = null, this.biometricUnlockAvailable = null});
+  const _SettingsState({this.status = SettingsStatus.loading, this.email = null, this.lastSync = null, this.lockoutAfter = null, this.biometricUnlock = null, this.biometricUnlockAvailable = null});
   
 
 @override@JsonKey() final  SettingsStatus status;
 @override@JsonKey() final  String? email;
+@override@JsonKey() final  DateTime? lastSync;
 @override@JsonKey() final  Duration? lockoutAfter;
 @override@JsonKey() final  bool? biometricUnlock;
 @override@JsonKey() final  bool? biometricUnlockAvailable;
@@ -230,16 +232,16 @@ _$SettingsStateCopyWith<_SettingsState> get copyWith => __$SettingsStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.email, email) || other.email == email)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.email, email) || other.email == email)&&(identical(other.lastSync, lastSync) || other.lastSync == lastSync)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,email,lockoutAfter,biometricUnlock,biometricUnlockAvailable);
+int get hashCode => Object.hash(runtimeType,status,email,lastSync,lockoutAfter,biometricUnlock,biometricUnlockAvailable);
 
 @override
 String toString() {
-  return 'SettingsState(status: $status, email: $email, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable)';
+  return 'SettingsState(status: $status, email: $email, lastSync: $lastSync, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable)';
 }
 
 
@@ -250,7 +252,7 @@ abstract mixin class _$SettingsStateCopyWith<$Res> implements $SettingsStateCopy
   factory _$SettingsStateCopyWith(_SettingsState value, $Res Function(_SettingsState) _then) = __$SettingsStateCopyWithImpl;
 @override @useResult
 $Res call({
- SettingsStatus status, String? email, Duration? lockoutAfter, bool? biometricUnlock, bool? biometricUnlockAvailable
+ SettingsStatus status, String? email, DateTime? lastSync, Duration? lockoutAfter, bool? biometricUnlock, bool? biometricUnlockAvailable
 });
 
 
@@ -267,11 +269,12 @@ class __$SettingsStateCopyWithImpl<$Res>
 
 /// Create a copy of SettingsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? email = freezed,Object? lockoutAfter = freezed,Object? biometricUnlock = freezed,Object? biometricUnlockAvailable = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? email = freezed,Object? lastSync = freezed,Object? lockoutAfter = freezed,Object? biometricUnlock = freezed,Object? biometricUnlockAvailable = freezed,}) {
   return _then(_SettingsState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as SettingsStatus,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,lockoutAfter: freezed == lockoutAfter ? _self.lockoutAfter : lockoutAfter // ignore: cast_nullable_to_non_nullable
+as String?,lastSync: freezed == lastSync ? _self.lastSync : lastSync // ignore: cast_nullable_to_non_nullable
+as DateTime?,lockoutAfter: freezed == lockoutAfter ? _self.lockoutAfter : lockoutAfter // ignore: cast_nullable_to_non_nullable
 as Duration?,biometricUnlock: freezed == biometricUnlock ? _self.biometricUnlock : biometricUnlock // ignore: cast_nullable_to_non_nullable
 as bool?,biometricUnlockAvailable: freezed == biometricUnlockAvailable ? _self.biometricUnlockAvailable : biometricUnlockAvailable // ignore: cast_nullable_to_non_nullable
 as bool?,

@@ -1,6 +1,7 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/database/database.dart';
+import 'package:mayflypass/database/helpers.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/helpers/otpauth.dart';
 import 'package:mayflypass/router.dart';
@@ -69,7 +70,7 @@ class __ScannerState extends State<_Scanner> {
     if (kek == null) {
       return;
     }
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final nowMs = generateVersion();
     final dbox = DataBox(
       totp: Totp(
         issuer: otpResult.issuer,
@@ -84,7 +85,7 @@ class __ScannerState extends State<_Scanner> {
       ),
     );
     final (encryptedDek, encryptedPayload) = await encryptDataBox(kek, dbox);
-    await gloablDB.upsertLocalStorage(
+    await globalDB.upsertLocalStorage(
       LocalStorageData(
         id: UuidV7().generate(),
         updatedAtMs: nowMs,

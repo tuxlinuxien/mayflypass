@@ -28,6 +28,10 @@ abstract class Store {
   Future<bool> hasKek();
   Future<void> deleteKek();
 
+  // db stats
+  Future<DateTime?> getLastSync();
+  Future<void> setLastSync();
+
   // settings
   Future<bool> getSettingsBiometricEnabled();
   Future<void> setSettingsBiometricEnabled(bool value);
@@ -139,6 +143,16 @@ class MemoryStore extends Store {
   @override
   Future<void> setSettingsLockAfterDuration(Duration value) async {
     values['settings_lock_after_duration'] = value.inSeconds;
+  }
+
+  @override
+  Future<DateTime?> getLastSync() async {
+    return DateTime.now();
+  }
+
+  @override
+  Future<void> setLastSync() async {
+    values['database_last_sync'] = DateTime.now().millisecondsSinceEpoch;
   }
 
   @override
@@ -275,6 +289,26 @@ class FSStore extends Store {
     await _getSafeStorage().write(
       key: 'settings::lock_after_duration',
       value: value.inSeconds.toString(),
+    );
+  }
+
+  @override
+  Future<DateTime?> getLastSync() async {
+    logger.d('getLastSync');
+    final value = await _getSafeStorage().read(key: 'database::last_sync');
+    final ms = int.tryParse(value ?? '');
+    if (ms == null) {
+      return null;
+    }
+    return DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  @override
+  Future<void> setLastSync() async {
+    logger.d('setLastSync');
+    await _getSafeStorage().write(
+      key: 'database::last_sync',
+      value: DateTime.now().millisecondsSinceEpoch.toString(),
     );
   }
 

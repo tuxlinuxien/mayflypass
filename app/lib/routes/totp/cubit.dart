@@ -47,7 +47,7 @@ class TotpCubit extends Cubit<TotpState> {
       emit(state.copyWith(status: .ready));
       return;
     }
-    final entry = await gloablDB.getLocalStorage(id);
+    final entry = await globalDB.getLocalStorage(id);
     if (entry == null) {
       emit(state.copyWith(status: .ready));
       return;
@@ -172,7 +172,7 @@ class TotpCubit extends Cubit<TotpState> {
     );
 
     logger.i('upsert into database...');
-    await gloablDB.upsertLocalStorage(entry);
+    await globalDB.upsertLocalStorage(entry);
     logger.i('upsered [OK]');
 
     emit(state.copyWith(status: .success));

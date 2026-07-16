@@ -78,7 +78,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       final kek = await deriveKek(masterKey);
       setGlobalKek(kek);
       // clean up previous entried
-      await gloablDB.deleteAllLocalStorage();
+      await globalDB.deleteAllLocalStorage();
       // sync data for the first time
       await syncLocalAndRemote();
     } on ApiErrorBadRequestWithFields catch (e) {

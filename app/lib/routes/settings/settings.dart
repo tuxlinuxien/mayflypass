@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
@@ -26,29 +27,112 @@ class SettingsPage extends StatelessWidget {
                     Text('Account', style: AppTheme.helperStyle),
                     SizedBox(height: 9),
                     Surface(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 16, bottom: 16),
-                        child: Column(
-                          children: [
-                            Text('account'),
-                            Spacer8,
-                            Divider(
-                              height: 1,
-                              color: Colors.white.withValues(alpha: 0.06),
+                      child: Column(
+                        children: [
+                          IconRow(
+                            icon: Icons.account_circle,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text('E-mail'),
+                                Text(
+                                  state.email ?? '',
+                                  style: AppTheme.helperStyle,
+                                ),
+                              ],
                             ),
-                            Spacer8,
-                            Text('account'),
-                          ],
-                        ),
+                          ),
+                          Divider(height: 1),
+                          IconRow(
+                            icon: Icons.cloud_sync_outlined,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text('Last synchronization'),
+                                Text(
+                                  state.lastSync == null
+                                      ? '--'
+                                      : DateFormat(
+                                          'yyyy-MM-dd HH:mm',
+                                        ).format(state.lastSync!),
+                                  style: AppTheme.helperStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     SpacerSection,
                     Text('Security', style: AppTheme.helperStyle),
                     SizedBox(height: 9),
                     Surface(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('toto'),
+                      child: Column(
+                        children: [
+                          IconRow(
+                            icon: Icons.fingerprint,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text('Biometric unlock'),
+                                Text(
+                                  'Use your fingerprint to unlock the application',
+                                  style: AppTheme.helperStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(height: 1),
+                          IconRow(
+                            icon: Icons.lock,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text('Auto-lock'),
+                                Text(
+                                  'Automatically lock after',
+                                  style: AppTheme.helperStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SpacerSection,
+                    Text('Backup / Import', style: AppTheme.helperStyle),
+                    SizedBox(height: 9),
+                    Surface(
+                      child: Column(
+                        children: [
+                          IconRow(
+                            icon: Icons.cloud_download,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text('Backup'),
+                                Text(
+                                  'Download your secrets onto your device',
+                                  style: AppTheme.helperStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(height: 1),
+                          IconRow(
+                            icon: Icons.cloud_upload,
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text('Import'),
+                                Text(
+                                  'Import secrets into you account',
+                                  style: AppTheme.helperStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -62,53 +146,42 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class AccountBlock extends StatelessWidget {
-  final String email;
-  const AccountBlock({super.key, required this.email});
+class IconRow extends StatelessWidget {
+  final IconData icon;
+  final Widget child;
+  const IconRow({super.key, required this.icon, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return Surface(
-      child: Padding(
-        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
-        child: AccountItem(email: email),
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        spacing: 16,
+        children: [
+          _icon(),
+          Expanded(child: child),
+        ],
       ),
     );
   }
-}
 
-class SecurityBlock extends StatelessWidget {
-  final bool biometricUnlockValue;
-  final Function(bool) onBiometricUnlockChanged;
-  final Duration lockoutAfterValue;
-  final Function(Duration) onLockoutAfterValueChanges;
-
-  const SecurityBlock({
-    super.key,
-    required this.biometricUnlockValue,
-    required this.onBiometricUnlockChanged,
-    required this.lockoutAfterValue,
-    required this.onLockoutAfterValueChanges,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Surface(
-      child: Padding(
-        padding: EdgeInsetsGeometry.all(DEFAULT_SPACING),
-        child: Column(
-          crossAxisAlignment: .stretch,
-          children: [
-            BiometricUnlockItem(
-              value: biometricUnlockValue,
-              onChnaged: onBiometricUnlockChanged,
-            ),
-            SpacerFormField,
-            LockoutAfterItem(
-              value: lockoutAfterValue,
-              onChanged: onLockoutAfterValueChanges,
-            ),
-          ],
+  Widget _icon() {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: 44,
+        minWidth: 44,
+        maxHeight: 44,
+        minHeight: 44,
+      ),
+      decoration: BoxDecoration(
+        color: Color(0x248b5cf6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: SizedBox(
+          width: 44,
+          height: 44,
+          child: Icon(icon, color: AppTheme.BrightColor),
         ),
       ),
     );

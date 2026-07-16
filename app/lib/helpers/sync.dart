@@ -1,12 +1,13 @@
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
+import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/logger.dart';
 import 'package:mayflypass/database/database.dart';
 
 Future<void> syncLocalAndRemote() async {
   {
     logger.i('get all entries from the database');
-    final localEntries = await gloablDB.selectLocalStorage();
+    final localEntries = await globalDB.selectLocalStorage();
     logger.i('local -> api ${localEntries.length}');
     final remoteEntries = localEntries
         .map(
@@ -34,7 +35,7 @@ Future<void> syncLocalAndRemote() async {
       final remoteEntries = await API().storageSelect();
       logger.i('api -> local ${remoteEntries.length}');
       for (final item in remoteEntries) {
-        await gloablDB.upsertLocalStorage(
+        await globalDB.upsertLocalStorage(
           LocalStorageData(
             id: item.id,
             updatedAtMs: item.updatedAtMs,
@@ -48,4 +49,5 @@ Future<void> syncLocalAndRemote() async {
       logger.e(e);
     }
   }
+  await globalStore.setLastSync();
 }

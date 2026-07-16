@@ -10,10 +10,10 @@ import 'local_storage.dart';
 
 part 'database.g.dart';
 
-late final AppDatabase gloablDB;
+late final AppDatabase globalDB;
 
 void initDB([QueryExecutor? executor]) {
-  gloablDB = AppDatabase(executor);
+  globalDB = AppDatabase(executor);
 }
 
 Future<void> initDBTestFixtures(SecretKey kek) async {
@@ -31,7 +31,7 @@ Future<void> initDBTestFixtures(SecretKey kek) async {
   );
 
   var (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
-  await gloablDB.upsertLocalStorage(
+  await globalDB.upsertLocalStorage(
     LocalStorageData(
       id: UuidV7().generate(),
       updatedAtMs: DateTime.now().millisecondsSinceEpoch,
@@ -55,7 +55,7 @@ Future<void> initDBTestFixtures(SecretKey kek) async {
   );
 
   (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
-  await gloablDB.upsertLocalStorage(
+  await globalDB.upsertLocalStorage(
     LocalStorageData(
       id: UuidV7().generate(),
       updatedAtMs: DateTime.now().millisecondsSinceEpoch,

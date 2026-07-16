@@ -32,7 +32,7 @@ class HomeCubit extends Cubit<HomeState> {
     logger.d('loading entried from database');
     try {
       // get all entried from the database
-      final entries = await gloablDB.selectLocalStorage(withDeleted: false);
+      final entries = await globalDB.selectLocalStorage(withDeleted: false);
       // for each entry, decrypt the payload and get
       // the Totp.
       final totps = await decryptEntries(entries);
@@ -50,7 +50,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> delete(String id) async {
-    await gloablDB.deleteLocalStorage(id);
+    await globalDB.deleteLocalStorage(id);
     await load();
   }
 
@@ -66,7 +66,7 @@ class HomeCubit extends Cubit<HomeState> {
       kek,
       DataBox(totp: updated),
     );
-    await gloablDB.upsertLocalStorage(
+    await globalDB.upsertLocalStorage(
       LocalStorageData(
         id: id,
         updatedAtMs: DateTime.now().millisecondsSinceEpoch,

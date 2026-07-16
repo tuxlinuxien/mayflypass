@@ -11,6 +11,7 @@ abstract class SettingsState with _$SettingsState {
   const factory SettingsState({
     @Default(SettingsStatus.loading) SettingsStatus status,
     @Default(null) String? email,
+    @Default(null) DateTime? lastSync,
     @Default(null) Duration? lockoutAfter,
     @Default(null) bool? biometricUnlock,
     @Default(null) bool? biometricUnlockAvailable,
@@ -27,6 +28,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         lockoutAfter: await globalStore.getSettingsLockAfterDuration(),
         biometricUnlock: await globalStore.hasKek(),
         biometricUnlockAvailable: (Platform.isAndroid || Platform.isIOS),
+        lastSync: await globalStore.getLastSync(),
         status: SettingsStatus.ready,
       ),
     );

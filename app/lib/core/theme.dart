@@ -117,5 +117,10 @@ abstract final class AppTheme {
         minimumSize: Size.fromHeight(fieldHeight),
       ),
     ),
+
+    dividerTheme: DividerThemeData(
+      color: Colors.white.withValues(alpha: 0.06),
+      thickness: 1,
+    ),
   );
 }
