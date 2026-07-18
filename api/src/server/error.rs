@@ -7,11 +7,10 @@ use axum::{
 use serde::{Serialize, ser::SerializeMap};
 use serde_json::json;
 use thiserror::Error;
-use validator::ValidateEmail;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FieldError {
-    EmailInvalid(String),
+    UsernameInvalid(String),
     CredentialsInvalid(String),
     ChallengeInvalid(String),
     #[allow(unused)]
@@ -115,11 +114,14 @@ impl FieldError {
         }
     }
 
-    pub fn check_email_invalid(field: &str, value: &str) -> Option<FieldError> {
-        if !value.validate_email() {
-            Some(Self::EmailInvalid(field.to_string()))
-        } else {
+    pub fn check_username_invalid(field: &str, value: &str) -> Option<FieldError> {
+        if value
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit())
+        {
             Option::None
+        } else {
+            Some(Self::UsernameInvalid(field.to_string()))
         }
     }
 
@@ -147,10 +149,10 @@ impl Serialize for FieldError {
         S: serde::Serializer,
     {
         match self {
-            FieldError::EmailInvalid(field) => {
+            FieldError::UsernameInvalid(field) => {
                 let mut map = serializer.serialize_map(Some(2))?;
                 map.serialize_entry("field", field)?;
-                map.serialize_entry("code", "EMAIL_INVALID")?;
+                map.serialize_entry("code", "USERNAME_INVALID")?;
                 map.end()
             }
             FieldError::CredentialsInvalid(field) => {

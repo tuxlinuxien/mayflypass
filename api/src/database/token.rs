@@ -110,7 +110,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                email: "test@email.com".into(),
+                username: "test@email.com".into(),
                 password: "12345678".into(),
             },
         )
@@ -132,7 +132,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                email: "test@email.com".into(),
+                username: "test@email.com".into(),
                 password: "12345678".into(),
             },
         )
@@ -173,7 +173,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                email: "test@email.com".into(),
+                username: "test@email.com".into(),
                 password: "12345678".into(),
             },
         )
@@ -197,7 +197,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                email: "test@email.com".into(),
+                username: "test@email.com".into(),
                 password: "12345678".into(),
             },
         )

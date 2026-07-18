@@ -5,14 +5,14 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct AccountInsert {
-    pub email: String,
+    pub username: String,
     pub password: Vec<u8>,
 }
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct AccountResult {
     pub id: Uuid,
-    pub email: String,
+    pub username: String,
     pub password_hash: String,
     pub password_updated_at: DateTime<Utc>,
     pub created_at: DateTime<Utc>,
@@ -32,13 +32,13 @@ pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
 
     let res = sqlx::query_as::<_, AccountResult>(
         r"
-        INSERT INTO account (id, email, password_hash)
+        INSERT INTO account (id, username, password_hash)
         VALUES (?, ?, ?)
-        RETURNING id, email, created_at, password_hash, password_updated_at
+        RETURNING id, username, created_at, password_hash, password_updated_at
         ",
     )
     .bind(uuid::Uuid::now_v7())
-    .bind(&insert.email)
+    .bind(&insert.username)
     .bind(&hash)
     .fetch_one(executor)
     .await?;
@@ -47,16 +47,16 @@ pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
 
 pub async fn get_by_email<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
-    email: &str,
+    username: &str,
 ) -> Result<Option<AccountResult>, error::Error> {
     let res = sqlx::query_as::<_, AccountResult>(
         r"
-        SELECT id, email, created_at, password_hash, password_updated_at
+        SELECT id, username, created_at, password_hash, password_updated_at
         FROM account
-        WHERE email = ?
+        WHERE username = ?
         ",
     )
-    .bind(email)
+    .bind(username)
     .fetch_optional(executor)
     .await?;
     Ok(res)
@@ -68,7 +68,7 @@ pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
 ) -> Result<Option<AccountResult>, error::Error> {
     let res = sqlx::query_as::<_, AccountResult>(
         r"
-        SELECT id, email, created_at, password_hash, password_updated_at
+        SELECT id, username, created_at, password_hash, password_updated_at
         FROM account
         WHERE id = ?
         ",
@@ -111,13 +111,13 @@ mod test {
         let result = insert(
             &pool,
             &AccountInsert {
-                email: "test@example.com".into(),
+                username: "test@example.com".into(),
                 password: "password".into(),
             },
         )
         .await
         .unwrap();
-        assert_eq!(result.email, "test@example.com");
+        assert_eq!(result.username, "test@example.com");
         assert!(result.password_hash != "password");
         assert!(result.verify_password("password".as_bytes()).await);
     }
@@ -131,13 +131,13 @@ mod test {
         let result = insert(
             &pool,
             &AccountInsert {
-                email: "test@example.com".into(),
+                username: "test@example.com".into(),
                 password: "password".into(),
             },
         )
         .await
         .unwrap();
-        let account = get_by_email(&pool, &result.email).await.unwrap();
+        let account = get_by_email(&pool, &result.username).await.unwrap();
         assert!(account.is_some())
     }
 
@@ -148,13 +148,13 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
         let account_insert = AccountInsert {
-            email: "test@example.com".into(),
+            username: "test@example.com".into(),
             password: "password".into(),
         };
         let result = insert(&pool, &account_insert).await.unwrap();
         let account = get_by_id(&pool, &result.id).await.unwrap();
         let account = account.unwrap();
-        assert_eq!(account.email, account_insert.email);
+        assert_eq!(account.username, account_insert.username);
     }
 
     #[tokio::test]
@@ -164,7 +164,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
         let account_insert = AccountInsert {
-            email: "test@example.com".into(),
+            username: "test@example.com".into(),
             password: "password".into(),
         };
         let result = insert(&pool, &account_insert).await.unwrap();

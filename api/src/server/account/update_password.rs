@@ -202,7 +202,9 @@ mod test {
 
         let response = server
             .post("/api/login")
-            .json(&json!({"email": account.email, "password":  &hex::encode([1u8].repeat(32))}))
+            .json(
+                &json!({"username": account.username, "password":  &hex::encode([1u8].repeat(32))}),
+            )
             .await;
         response.assert_status_ok();
     }

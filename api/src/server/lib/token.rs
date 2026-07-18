@@ -47,7 +47,7 @@ mod test {
         let account = database::account::insert(
             &state.pool,
             &database::account::AccountInsert {
-                email: "test@mail.com".into(),
+                username: "test@mail.com".into(),
                 password: "123456789".into(),
             },
         )
@@ -64,7 +64,7 @@ mod test {
         let account = database::account::insert(
             &state.pool,
             &database::account::AccountInsert {
-                email: "test@mail.com".into(),
+                username: "test@mail.com".into(),
                 password: "123456789".into(),
             },
         )

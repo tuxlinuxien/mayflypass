@@ -25,7 +25,7 @@ pub async fn build_default_account(pool: &sqlx::SqlitePool) -> AccountResult {
     database::account::insert(
         pool,
         &database::account::AccountInsert {
-            email: "test@mail.com".into(),
+            username: "username".into(),
             password: [0u8].repeat(32),
         },
     )

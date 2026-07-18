@@ -12,7 +12,7 @@ use crate::{
 #[derive(Debug, Serialize)]
 pub struct InfoResponse {
     id: Uuid,
-    email: String,
+    username: String,
 }
 
 pub async fn info(
@@ -24,7 +24,7 @@ pub async fn info(
         .ok_or(ApiError::UnauthorizedError)?;
     Ok(Json(InfoResponse {
         id: account.id,
-        email: account.email,
+        username: account.username,
     }))
 }
 
@@ -42,7 +42,7 @@ mod test {
         response.assert_status_ok();
         let body = response.json::<serde_json::Value>();
         assert_eq!(body["id"], account.id.to_string());
-        assert_eq!(body["email"], account.email);
+        assert_eq!(body["username"], account.username);
     }
 
     #[tokio::test]
