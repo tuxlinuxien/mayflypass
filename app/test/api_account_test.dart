@@ -9,16 +9,16 @@ void main() {
     test('account info', () async {
       await setupAccount();
       final response = await API().accountInfo();
-      expect(response.email.isNotEmpty, true);
+      expect(response.username.isNotEmpty, true);
       expect(response.id.isNotEmpty, true);
     });
 
     test('account update password', () async {
       await setupAccount();
       final account = await API().accountInfo();
-      final oldPassword = await buildPassword(account.email);
+      final oldPassword = await buildPassword(account.username);
       final newPassword = await buildPassword(
-        account.email,
+        account.username,
         password: 'aaaaaaaa',
       );
       try {

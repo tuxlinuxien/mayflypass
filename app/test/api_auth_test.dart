@@ -5,32 +5,32 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/secure/derive.dart';
 import 'package:uuid/v7.dart';
 
-String buildTestEmail() {
-  return '${UuidV7().generate()}@mail.com';
+String buildTestUsername() {
+  return '${UuidV7().generate()}user';
 }
 
 Future<Uint8List> buildPassword(
-  String email, {
+  String username, {
   String password = '12345678',
 }) async {
-  final masterKey = await deriveMasterPassword(email, password);
+  final masterKey = await deriveMasterPassword(username, password);
   final buffer = await (await deriveAuthKey(masterKey)).extractBytes();
   return Uint8List.fromList(buffer);
 }
 
 Future<LoginResponse> setupAccount() async {
   final challenge = await API().challenge();
-  final email = buildTestEmail();
-  final password = await buildPassword(email);
+  final username = buildTestUsername();
+  final password = await buildPassword(username);
   await API().register(
     RegisterInput(
-      email: email,
+      username: username,
       password: password,
       challengeKey: challenge.key,
       challengeNonce: await challenge.solve(),
     ),
   );
-  return await API().login(LoginInput(email: email, password: password));
+  return await API().login(LoginInput(username: username, password: password));
 }
 
 void main() {
@@ -48,11 +48,11 @@ void main() {
 
     test('register new account', () async {
       final challenge = await API().challenge();
-      final email = buildTestEmail();
-      final password = await buildPassword(email);
+      final username = buildTestUsername();
+      final password = await buildPassword(username);
       await API().register(
         RegisterInput(
-          email: email,
+          username: username,
           password: password,
           challengeKey: challenge.key,
           challengeNonce: await challenge.solve(),
@@ -62,18 +62,18 @@ void main() {
 
     test('register new account  and login', () async {
       final challenge = await API().challenge();
-      final email = buildTestEmail();
-      final password = await buildPassword(email);
+      final username = buildTestUsername();
+      final password = await buildPassword(username);
       await API().register(
         RegisterInput(
-          email: email,
+          username: username,
           password: password,
           challengeKey: challenge.key,
           challengeNonce: await challenge.solve(),
         ),
       );
       final response = await API().login(
-        LoginInput(email: email, password: password),
+        LoginInput(username: username, password: password),
       );
       expect(response.accessToken.isNotEmpty, true);
       expect(response.refreshToken.isNotEmpty, true);

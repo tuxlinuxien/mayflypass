@@ -10,15 +10,15 @@ void main() {
     test('FieldErrorEmailInvalid can be parsed from JSON string', () {
       const jsonString = '''
         {
-          "field": "email",
-          "code": "EMAIL_INVALID"
+          "field": "username",
+          "code": "USERNAME_INVALID"
         }
       ''';
       final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
       final error = FieldError.fromJson(jsonMap);
 
-      expect(error, isA<FieldErrorEmailInvalid>());
-      expect(error.field, 'email');
+      expect(error, isA<FieldErrorUsernameInvalid>());
+      expect(error.field, 'username');
     });
 
     test('FieldErrorCredentialsInvalid can be parsed from JSON string', () {
@@ -136,8 +136,8 @@ void main() {
         {
           "errors": [
             {
-              "field": "email",
-              "code": "EMAIL_INVALID"
+              "field": "username@invalid",
+              "code": "USERNAME_INVALID"
             },
             {
               "field": "password",
@@ -155,7 +155,7 @@ void main() {
         final error = ApiErrorBadRequestWithFields.fromJson(jsonMap);
 
         expect(error.errors, hasLength(3));
-        expect(error.errors[0], isA<FieldErrorEmailInvalid>());
+        expect(error.errors[0], isA<FieldErrorUsernameInvalid>());
         expect(error.errors[0].field, 'email');
         expect(error.errors[1], isA<FieldErrorValueTooShort>());
         expect(error.errors[1].field, 'password');
