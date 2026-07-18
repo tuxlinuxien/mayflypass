@@ -79,6 +79,25 @@ pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
     Ok(res)
 }
 
+pub async fn update_password<'c, E: super::SqliteExecutor<'c>>(
+    executor: E,
+    id: &Uuid,
+    new_password: &str,
+) -> Result<(), error::Error> {
+    let new_hash = super::password::hash_password(new_password.as_bytes()).await;
+    sqlx::query_as::<_, AccountResult>(
+        r"
+        UPDATE account SET password_hash = ?, password_updated_at = (datetime('now'))
+        WHERE id = ?
+        ",
+    )
+    .bind(new_hash)
+    .bind(id)
+    .fetch_optional(executor)
+    .await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -136,5 +155,23 @@ mod test {
         let account = get_by_id(&pool, &result.id).await.unwrap();
         let account = account.unwrap();
         assert_eq!(account.email, account_insert.email);
+    }
+
+    #[tokio::test]
+    async fn test_update_password() {
+        let pool = super::super::create_pool("sqlite::memory:", 1)
+            .await
+            .unwrap();
+        super::super::run_migrations(&pool).await.unwrap();
+        let account_insert = AccountInsert {
+            email: "test@example.com".into(),
+            password: "password".into(),
+        };
+        let result = insert(&pool, &account_insert).await.unwrap();
+        update_password(&pool, &result.id, "new_password")
+            .await
+            .unwrap();
+        let account = get_by_id(&pool, &result.id).await.unwrap().unwrap();
+        assert!(account.verify_password("new_password".as_bytes()).await == true);
     }
 }

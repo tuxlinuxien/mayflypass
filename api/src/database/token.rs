@@ -78,6 +78,22 @@ pub async fn delete<'c, E: super::SqliteExecutor<'c>>(
     Ok(())
 }
 
+pub async fn delete_all<'c, E: super::SqliteExecutor<'c>>(
+    executor: E,
+    account_id: &Uuid,
+) -> Result<(), error::Error> {
+    sqlx::query(
+        r"
+        DELETE FROM refresh_token
+        WHERE account_id = ?
+    ",
+    )
+    .bind(account_id)
+    .execute(executor)
+    .await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod test {
     use super::super::SqliteExecutor;
@@ -168,6 +184,32 @@ mod test {
         delete(&pool, &"").await.unwrap();
         assert_eq!(1, count_tokens(&pool).await);
         delete(&pool, &refresh_token).await.unwrap();
+        assert_eq!(0, count_tokens(&pool).await);
+    }
+
+    #[tokio::test]
+    async fn test_delete_all() {
+        let pool = super::super::create_pool("sqlite::memory:", 1)
+            .await
+            .unwrap();
+        super::super::run_migrations(&pool).await.unwrap();
+        // create a dummy account since refresh tokens are bound to them
+        let account = account::insert(
+            &pool,
+            &account::AccountInsert {
+                email: "test@email.com".into(),
+                password: "12345678".into(),
+            },
+        )
+        .await
+        .unwrap();
+        let _ = generate(&pool, &account.id).await.unwrap();
+        let _ = generate(&pool, &account.id).await.unwrap();
+        let _ = generate(&pool, &account.id).await.unwrap();
+        let _ = generate(&pool, &account.id).await.unwrap();
+        let _ = generate(&pool, &account.id).await.unwrap();
+        assert_eq!(5, count_tokens(&pool).await);
+        delete_all(&pool, &account.id).await.unwrap();
         assert_eq!(0, count_tokens(&pool).await);
     }
 }

@@ -96,6 +96,17 @@ pub async fn upsert<'c, E: super::SqliteExecutor<'c>>(
     Ok(res)
 }
 
+pub async fn delete_all<'c, E: super::SqliteExecutor<'c>>(
+    executor: E,
+    account_id: &Uuid,
+) -> Result<(), error::Error> {
+    sqlx::query(r#"DELETE FROM storage WHERE account_id = ?"#)
+        .bind(account_id)
+        .execute(executor)
+        .await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod test {
     use super::super::account;
@@ -324,6 +335,50 @@ mod test {
         .await
         .unwrap();
         let result = select(&pool, &account2.id).await.unwrap();
+        assert_eq!(0, result.len());
+    }
+
+    #[tokio::test]
+    async fn test_delete_all() {
+        let pool = super::super::create_pool("sqlite::memory:", 1)
+            .await
+            .unwrap();
+        super::super::run_migrations(&pool).await.unwrap();
+
+        // Create an account first
+        let account1 = account::insert(
+            &pool,
+            &account::AccountInsert {
+                email: "test1@example.com".into(),
+                password: "password".into(),
+            },
+        )
+        .await
+        .unwrap();
+
+        let item1_id = uuid::Uuid::from_u128(11111111111111111111111111111111);
+        let item2_id = uuid::Uuid::from_u128(22222222222222222222222222222222);
+        let item1 = StorageUpsert {
+            id: item1_id,
+            updated_at_ms: 1,
+            deleted: false,
+            encrypted_dek: vec![1, 1, 1],
+            encrypted_payload: vec![2, 2, 2],
+        };
+        let item2 = StorageUpsert {
+            id: item2_id,
+            updated_at_ms: 1,
+            deleted: false,
+            encrypted_dek: vec![3, 3, 3],
+            encrypted_payload: vec![4, 4, 4],
+        };
+
+        let _ = upsert(&pool, &account1.id, &item1).await.unwrap().unwrap();
+        let _ = upsert(&pool, &account1.id, &item2).await.unwrap().unwrap();
+        let result = select(&pool, &account1.id).await.unwrap();
+        assert_eq!(2, result.len());
+        assert!(delete_all(&pool, &account1.id).await.is_ok());
+        let result = select(&pool, &account1.id).await.unwrap();
         assert_eq!(0, result.len());
     }
 }
