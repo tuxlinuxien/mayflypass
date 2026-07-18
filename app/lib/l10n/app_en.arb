@@ -90,5 +90,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "changePasswordSuccess" : "The master password has been updated successfully.\nPlease login to your account.",
+  "@changePasswordSuccess": {}
 }

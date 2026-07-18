@@ -5,6 +5,7 @@ import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/forms/confirm_master_password.dart';
 import 'package:mayflypass/forms/username.dart';
 import 'package:mayflypass/forms/master_password.dart';
+import 'package:mayflypass/helpers/toasts.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/register/form_cubit.dart';
 
@@ -39,21 +40,11 @@ class _RegisterPageState extends State<RegisterPage> {
           final l10n = AppLocalizations.of(context)!;
           switch (state.status) {
             case FormStatus.success:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.accountCreatedSuccessfully),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              showSuccess(context, l10n.accountCreatedSuccessfully);
               router.go('/login');
             case FormStatus.failure:
               if (state.apiError == null) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.thereWasProblem),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              showFailure(context, l10n.thereWasProblem);
             default:
             // do nothing
           }
@@ -118,12 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: state.status == FormStatus.submitting
                         ? null
                         : cubit.submit,
-                    child: state.status == FormStatus.submitting
-                        ? const SizedBox.square(
-                            dimension: 16,
-                            child: CircularProgressIndicator(),
-                          )
-                        : Text(l10n.register),
+                    child: Text(l10n.register),
                   ),
                   SpacerSection,
                   Spacer(),

@@ -1,7 +1,6 @@
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/core/logger.dart';
 import 'package:mayflypass/database/database.dart';
 
 Future<void> syncLocalAndRemote() async {
@@ -24,6 +23,7 @@ Future<void> syncLocalAndRemote() async {
       await API().storageUpsert(remoteEntries);
     } on ApiErrorNoNetwork {
       logger.i('no network');
+      return;
     } on ApiError catch (e) {
       logger.e(e);
     }
@@ -47,6 +47,7 @@ Future<void> syncLocalAndRemote() async {
       }
     } catch (e) {
       logger.e(e);
+      return;
     }
   }
   await globalStore.setLastSync();

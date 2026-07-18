@@ -2,6 +2,7 @@ import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/forms/confirm_master_password.dart';
 import 'package:mayflypass/forms/master_password.dart';
+import 'package:mayflypass/helpers/toasts.dart';
 
 import 'cubit.dart';
 
@@ -19,26 +20,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       create: (context) => ChangePasswordCubit(),
       child: BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
         listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           switch (state.status) {
             case ChangePasswordStatus.success:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'The master password has been updated successfully\nPlease login to your account',
-                  ),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              showSuccess(context, l10n.changePasswordSuccess);
               globalAuth.logout();
             case ChangePasswordStatus.failure:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'There was an issue while processing your request',
-                  ),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              showFailure(context, l10n.thereWasProblem);
             default:
           }
         },
@@ -78,10 +66,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     SpacerSection,
                     FilledButton(
-                      onPressed: state.status == .ready ? cubit.submit : null,
-                      child: state.status == .ready
-                          ? Text('Submit')
-                          : CircularProgressIndicator(),
+                      onPressed: state.status == .submitting
+                          ? null
+                          : cubit.submit,
+                      child: Text('Submit'),
                     ),
                     SpacerSection,
                     Row(

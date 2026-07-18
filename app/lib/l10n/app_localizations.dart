@@ -254,6 +254,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{seconds, plural, =0{0 seconds} =1{1 second} other{{seconds} seconds}}'**
   String totpPeriodSeconds(int seconds);
+
+  /// No description provided for @changePasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'The master password has been updated successfully.\nPlease login to your account.'**
+  String get changePasswordSuccess;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

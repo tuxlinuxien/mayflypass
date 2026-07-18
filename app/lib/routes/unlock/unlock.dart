@@ -88,12 +88,7 @@ class _UnlockPageState extends State<UnlockPage> {
                     onPressed: state.status == FormStatus.submitting
                         ? null
                         : cubit.unlock,
-                    child: state.status == FormStatus.submitting
-                        ? const SizedBox.square(
-                            dimension: 16,
-                            child: CircularProgressIndicator(),
-                          )
-                        : Text(l10n.unlock),
+                    child: Text(l10n.unlock),
                   ),
                   state.biometricUnlock ? SpacerFormField : null,
                   state.biometricUnlock

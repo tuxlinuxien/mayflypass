@@ -13,7 +13,7 @@ import 'package:mayflypass/secure/secure.dart';
 
 part 'cubit.freezed.dart';
 
-enum ChangePasswordStatus { ready, loading, success, failure }
+enum ChangePasswordStatus { ready, submitting, success, failure }
 
 @freezed
 abstract class ChangePasswordState with _$ChangePasswordState {
@@ -85,7 +85,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    emit(state.copyWith(status: .loading));
+    emit(state.copyWith(status: .submitting));
 
     // compute and derive all the keys.
     final oldMasterKey = await deriveMasterPassword(

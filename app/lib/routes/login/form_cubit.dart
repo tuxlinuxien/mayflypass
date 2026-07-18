@@ -44,6 +44,7 @@ class LoginFormCubit extends Cubit<LoginFormState> {
       state.copyWith(
         masterPassword: MasterPasswordValue.dirty(value),
         apiError: null,
+        usernameError: null,
       ),
     );
   }

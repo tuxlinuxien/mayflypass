@@ -4,6 +4,7 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/forms/username.dart';
 import 'package:mayflypass/forms/master_password.dart';
+import 'package:mayflypass/helpers/toasts.dart';
 
 import 'form_cubit.dart';
 
@@ -38,20 +39,10 @@ class _LoginPageState extends State<LoginPage> {
           final l10n = AppLocalizations.of(context)!;
           switch (state.status) {
             case FormStatus.success:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.loggedIn(state.username.value)),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              showSuccess(context, l10n.loggedIn(state.username.value));
             case FormStatus.failure:
               if (state.apiError == null) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.thereWasProblem),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              showFailure(context, l10n.thereWasProblem);
             default:
             // do nothing
           }
@@ -105,12 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: state.status == FormStatus.submitting
                             ? null
                             : cubit.submit,
-                        child: state.status == FormStatus.submitting
-                            ? const SizedBox.square(
-                                dimension: 16,
-                                child: CircularProgressIndicator(),
-                              )
-                            : Text('Sign in'),
+                        child: Text('Sign in'),
                       ),
                       SpacerSection,
                       Spacer(),

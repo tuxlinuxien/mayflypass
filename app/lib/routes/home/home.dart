@@ -190,7 +190,7 @@ Future<void> _showEntryMenu(
             title: const Text('Update'),
             onTap: () async {
               Navigator.pop(sheetCtx);
-              await router.push<bool?>('/totp/$id');
+              await router.push('/totp/$id');
               await cubit.load();
             },
           ),
@@ -294,9 +294,9 @@ class _TotpEntryItemState extends State<TotpEntryItem> {
             child: Row(
               children: [
                 _icon(),
-                SizedBox(width: 20),
+                SizedBox(width: 16),
                 Expanded(child: _otp()),
-                SizedBox(width: 20),
+                SizedBox(width: 16),
                 _timer(),
               ],
             ),

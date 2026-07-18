@@ -107,4 +107,7 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get changePasswordSuccess => 'The master password has been updated successfully.\nPlease login to your account.';
 }
