@@ -14,6 +14,8 @@ sealed class UsernameValueError {
       UsernameValueInvalidError() => l10n.usernameInvalid,
       UsernameValueDuplicatedError() => l10n.accountAlreadyExists,
       UsernameValueCredentialsError() => l10n.invalidCredentials,
+      UsernameValueTooLongError(:final max) => l10n.usernameTooLong(max),
+      UsernameValueTooShortError(:final min) => l10n.usernameTooShort(min),
       null => null,
     };
   }
@@ -35,6 +37,16 @@ class UsernameValueCredentialsError extends UsernameValueError {
   const UsernameValueCredentialsError();
 }
 
+class UsernameValueTooShortError extends UsernameValueError {
+  final int min;
+  const UsernameValueTooShortError(this.min);
+}
+
+class UsernameValueTooLongError extends UsernameValueError {
+  final int max;
+  const UsernameValueTooLongError(this.max);
+}
+
 class UsernameValue extends FormzInput<String, UsernameValueError> {
   const UsernameValue.pure([super.value = '']) : super.pure();
   const UsernameValue.dirty([super.value = '']) : super.dirty();
@@ -42,7 +54,11 @@ class UsernameValue extends FormzInput<String, UsernameValueError> {
   @override
   UsernameValueError? validator(String value) {
     if (value.isEmpty) return const UsernameValueRequiredError();
-    if (!value.contains('@')) return const UsernameValueInvalidError();
+    if (value.length < 5) return const UsernameValueTooShortError(5);
+    if (value.length > 50) return const UsernameValueTooLongError(50);
+    if (!RegExp(r'^[a-z0-9]+$').hasMatch(value.trim().toLowerCase())) {
+      return const UsernameValueInvalidError();
+    }
     return null;
   }
 }

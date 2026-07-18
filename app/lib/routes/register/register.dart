@@ -88,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   // email
                   MTextFormField(
                     labelText: l10n.username,
-                    onChanged: cubit.emailChanged,
+                    onChanged: cubit.usernameChanged,
                     errorText: UsernameValueError.toHuman(context, [
                       state.username.displayError,
                       state.apiUsernameError,

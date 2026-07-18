@@ -118,7 +118,7 @@ void main() {
     test('FieldErrorValueDuplicated can be parsed from JSON string', () {
       const jsonString = '''
         {
-          "field": "email",
+          "field": "username",
           "code": "VALUE_DUPLICATED"
         }
       ''';
@@ -126,7 +126,7 @@ void main() {
       final error = FieldError.fromJson(jsonMap);
 
       expect(error, isA<FieldErrorValueDuplicated>());
-      expect(error.field, 'email');
+      expect(error.field, 'username');
     });
 
     test(
@@ -136,7 +136,7 @@ void main() {
         {
           "errors": [
             {
-              "field": "username@invalid",
+              "field": "username",
               "code": "USERNAME_INVALID"
             },
             {
@@ -156,7 +156,7 @@ void main() {
 
         expect(error.errors, hasLength(3));
         expect(error.errors[0], isA<FieldErrorUsernameInvalid>());
-        expect(error.errors[0].field, 'email');
+        expect(error.errors[0].field, 'username');
         expect(error.errors[1], isA<FieldErrorValueTooShort>());
         expect(error.errors[1].field, 'password');
         expect((error.errors[1] as FieldErrorValueTooShort).min, 8);

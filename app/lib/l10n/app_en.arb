@@ -3,7 +3,7 @@
   "@@author": "Yoann Cerda <yoann.cerda@proton.me>",
   "appName": "Mayfly Pass",
   "@appName": {},
-  "username": "username",
+  "username": "Username",
   "@username": {},
   "login": "Login",
   "@login": {},
@@ -23,6 +23,22 @@
   "@fieldRequired": {},
   "usernameInvalid": "Invalid username",
   "@usernameInvalid": {},
+  "usernameTooShort": "Username must be at least {min} characters long",
+  "@usernameTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "usernameTooLong": "Username must be at less than {max} characters long",
+  "@usernameTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "passwordTooShort": "Password must be at least {min} characters long",
   "@passwordTooShort": {
     "placeholders": {

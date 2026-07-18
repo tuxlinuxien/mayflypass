@@ -3,10 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/secure/derive.dart';
-import 'package:uuid/v7.dart';
 
 String buildTestUsername() {
-  return '${UuidV7().generate()}user';
+  return '${DateTime.now().millisecondsSinceEpoch}user';
 }
 
 Future<Uint8List> buildPassword(

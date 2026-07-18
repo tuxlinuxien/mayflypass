@@ -35,7 +35,7 @@ class SettingsPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: .start,
                               children: [
-                                Text('Username'),
+                                Text(l10i.username),
                                 Text(
                                   state.username ?? '',
                                   style: AppTheme.helperStyle,

@@ -29,7 +29,7 @@ abstract class RegisterFormState with _$RegisterFormState {
 class RegisterFormCubit extends Cubit<RegisterFormState> {
   RegisterFormCubit() : super(RegisterFormState());
 
-  void emailChanged(String value) {
+  void usernameChanged(String value) {
     emit(
       state.copyWith(
         username: UsernameValue.dirty(value),

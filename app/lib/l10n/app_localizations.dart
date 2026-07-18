@@ -102,7 +102,7 @@ abstract class AppLocalizations {
   /// No description provided for @username.
   ///
   /// In en, this message translates to:
-  /// **'username'**
+  /// **'Username'**
   String get username;
 
   /// No description provided for @login.
@@ -158,6 +158,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid username'**
   String get usernameInvalid;
+
+  /// No description provided for @usernameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least {min} characters long'**
+  String usernameTooShort(int min);
+
+  /// No description provided for @usernameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at less than {max} characters long'**
+  String usernameTooLong(int max);
 
   /// No description provided for @passwordTooShort.
   ///

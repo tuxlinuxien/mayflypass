@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       SizedBox(height: 44),
                       MTextFormField(
-                        labelText: 'username',
+                        labelText: l10n.username,
                         onChanged: cubit.usernameChanged,
                         errorText: UsernameValueError.toHuman(context, [
                           state.username.displayError,

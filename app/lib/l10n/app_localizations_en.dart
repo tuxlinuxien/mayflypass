@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Mayfly Pass';
 
   @override
-  String get username => 'username';
+  String get username => 'Username';
 
   @override
   String get login => 'Login';
@@ -40,6 +40,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usernameInvalid => 'Invalid username';
+
+  @override
+  String usernameTooShort(int min) {
+    return 'Username must be at least $min characters long';
+  }
+
+  @override
+  String usernameTooLong(int max) {
+    return 'Username must be at less than $max characters long';
+  }
 
   @override
   String passwordTooShort(int min) {
