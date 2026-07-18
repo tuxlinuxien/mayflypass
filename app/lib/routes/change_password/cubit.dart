@@ -79,7 +79,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    final email = await globalStore.getEmail();
+    final email = await globalStore.getUsername();
     if (email == null) {
       emit(state.copyWith(status: .failure));
       return;

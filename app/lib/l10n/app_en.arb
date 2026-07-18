@@ -3,8 +3,8 @@
   "@@author": "Yoann Cerda <yoann.cerda@proton.me>",
   "appName": "Mayfly Pass",
   "@appName": {},
-  "email": "E-Mail",
-  "@email": {},
+  "username": "username",
+  "@username": {},
   "login": "Login",
   "@login": {},
   "loginToAccount": "Login to your account",
@@ -21,8 +21,8 @@
   "@registerNewAccount": {},
   "fieldRequired": "This field is required",
   "@fieldRequired": {},
-  "emailInvalid": "Invalid email address",
-  "@emailInvalid": {},
+  "usernameInvalid": "Invalid username",
+  "@usernameInvalid": {},
   "passwordTooShort": "Password must be at least {min} characters long",
   "@passwordTooShort": {
     "placeholders": {
@@ -35,16 +35,16 @@
   "@passwordMismatch": {},
   "accountCreatedSuccessfully": "Account created successfully",
   "@accountCreatedSuccessfully": {},
-  "accountAlreadyExists": "An account with this email already exists",
+  "accountAlreadyExists": "An account with this username already exists",
   "@accountAlreadyExists": {},
   "thereWasProblem": "There was a problem while processing your request",
   "@thereWasProblem": {},
   "invalidCredentials": "Invalid credentials",
   "@invalidCredentials": {},
-  "loggedIn": "Welcome back {email}",
+  "loggedIn": "Welcome back {username}",
   "@loggedIn": {
     "placeholders": {
-      "email": {
+      "username": {
         "type": "String"
       }
     }

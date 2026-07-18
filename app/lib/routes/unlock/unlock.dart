@@ -69,7 +69,7 @@ class _UnlockPageState extends State<UnlockPage> {
                       Icon(Icons.account_circle),
                       SizedBox(width: 10),
                       Text(
-                        state.email,
+                        state.username,
                         style: AppTheme.helperStyle,
                         textAlign: .center,
                       ),

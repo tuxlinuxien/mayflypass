@@ -38,9 +38,9 @@ class RefreshResponse {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class AccountInfo {
   final String id;
-  final String email;
+  final String username;
 
-  const AccountInfo({required this.id, required this.email});
+  const AccountInfo({required this.id, required this.username});
 
   factory AccountInfo.fromJson(Map<String, dynamic> json) =>
       _$AccountInfoFromJson(json);
@@ -110,11 +110,11 @@ class ChallengeResult {
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class LoginInput {
-  final String email;
+  final String username;
   @HexBytesConverter()
   final Uint8List password;
 
-  const LoginInput({required this.email, required this.password});
+  const LoginInput({required this.username, required this.password});
 
   factory LoginInput.fromJson(Map<String, dynamic> json) =>
       _$LoginInputFromJson(json);
@@ -124,7 +124,7 @@ class LoginInput {
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class RegisterInput {
-  final String email;
+  final String username;
   @HexBytesConverter()
   final Uint8List password;
   @HexBytesConverter()
@@ -132,7 +132,7 @@ class RegisterInput {
   final int challengeNonce;
 
   const RegisterInput({
-    required this.email,
+    required this.username,
     required this.password,
     required this.challengeKey,
     required this.challengeNonce,

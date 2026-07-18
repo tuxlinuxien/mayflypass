@@ -15,8 +15,8 @@ abstract class Store {
   Future<void> deleteApiRefreshToken();
 
   // account
-  Future<String?> getEmail();
-  Future<void> setEmail(String value);
+  Future<String?> getUsername();
+  Future<void> setUsername(String value);
   Future<bool?> unlockSession(SecretKey sessionKey);
   Future<void> setSession(SecretKey sessionKey);
   Future<bool> hasSession();
@@ -64,15 +64,15 @@ class MemoryStore extends Store {
   }
 
   @override
-  Future<String?> getEmail() async {
-    logger.d('getEmail');
-    return values['email'] as String?;
+  Future<String?> getUsername() async {
+    logger.d('getUsername');
+    return values['username'] as String?;
   }
 
   @override
-  Future<void> setEmail(String value) async {
-    logger.d('setEmail');
-    values['email'] = value;
+  Future<void> setUsername(String value) async {
+    logger.d('setUsername');
+    values['username'] = value;
   }
 
   @override
@@ -200,15 +200,15 @@ class FSStore extends Store {
   }
 
   @override
-  Future<String?> getEmail() async {
-    logger.d('getEmail');
-    return await _getSafeStorage().read(key: 'account::email');
+  Future<String?> getUsername() async {
+    logger.d('getUsername');
+    return await _getSafeStorage().read(key: 'account::username');
   }
 
   @override
-  Future<void> setEmail(String value) async {
-    logger.d('setEmail');
-    await _getSafeStorage().write(key: 'account::email', value: value);
+  Future<void> setUsername(String value) async {
+    logger.d('setUsername');
+    await _getSafeStorage().write(key: 'account::username', value: value);
   }
 
   @override

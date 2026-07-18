@@ -1,14 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/database/database.dart';
-import 'package:mayflypass/database/helpers.dart';
-import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/helpers/sync.dart';
-import 'package:mayflypass/secure/encryption.dart';
 
 part 'cubit.freezed.dart';
 
@@ -18,7 +12,7 @@ enum SettingsStatus { loading, ready, sync }
 abstract class SettingsState with _$SettingsState {
   const factory SettingsState({
     @Default(SettingsStatus.loading) SettingsStatus status,
-    @Default(null) String? email,
+    @Default(null) String? username,
     @Default(null) DateTime? lastSync,
     @Default(null) Duration? lockoutAfter,
     @Default(null) bool? biometricUnlock,
@@ -43,7 +37,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        email: await globalStore.getEmail(),
+        username: await globalStore.getUsername(),
         lockoutAfter: await globalStore.getSettingsLockAfterDuration(),
         biometricUnlock: await globalStore.hasKek(),
         biometricUnlockAvailable: biometricUnlockAvailable,

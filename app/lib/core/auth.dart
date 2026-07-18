@@ -47,7 +47,7 @@ class AuthCubit extends Cubit<AuthStatus> {
     emit(AuthStatus.loading);
 
     logger.i('check email is stored');
-    final email = await globalStore.getEmail();
+    final email = await globalStore.getUsername();
     if (email == null) {
       logger.w('email not stored');
       emit(AuthStatus.unauthenticated);

@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/widgets/logo.dart';
-import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/username.dart';
 import 'package:mayflypass/forms/master_password.dart';
 
 import 'form_cubit.dart';
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
             case FormStatus.success:
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(l10n.loggedIn(state.email.value)),
+                  content: Text(l10n.loggedIn(state.username.value)),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -85,11 +85,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       SizedBox(height: 44),
                       MTextFormField(
-                        labelText: l10n.email,
-                        onChanged: cubit.emailChanged,
-                        errorText: EmailValueError.toHuman(context, [
-                          state.email.displayError,
-                          state.emailError,
+                        labelText: 'username',
+                        onChanged: cubit.usernameChanged,
+                        errorText: UsernameValueError.toHuman(context, [
+                          state.username.displayError,
+                          state.usernameError,
                         ]),
                       ),
                       SpacerFormField,

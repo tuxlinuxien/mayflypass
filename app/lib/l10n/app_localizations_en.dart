@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Mayfly Pass';
 
   @override
-  String get email => 'E-Mail';
+  String get username => 'username';
 
   @override
   String get login => 'Login';
@@ -39,7 +39,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldRequired => 'This field is required';
 
   @override
-  String get emailInvalid => 'Invalid email address';
+  String get usernameInvalid => 'Invalid username';
 
   @override
   String passwordTooShort(int min) {
@@ -53,19 +53,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountCreatedSuccessfully => 'Account created successfully';
 
   @override
-  String get accountAlreadyExists =>
-      'An account with this email already exists';
+  String get accountAlreadyExists => 'An account with this username already exists';
 
   @override
-  String get thereWasProblem =>
-      'There was a problem while processing your request';
+  String get thereWasProblem => 'There was a problem while processing your request';
 
   @override
   String get invalidCredentials => 'Invalid credentials';
 
   @override
-  String loggedIn(String email) {
-    return 'Welcome back $email';
+  String loggedIn(String username) {
+    return 'Welcome back $username';
   }
 
   @override

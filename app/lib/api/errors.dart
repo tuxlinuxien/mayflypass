@@ -8,8 +8,8 @@ sealed class FieldError {
 
   factory FieldError.fromJson(Map<String, dynamic> json) {
     switch (json['code']! as String) {
-      case 'EMAIL_INVALID':
-        return FieldErrorEmailInvalid.fromJson(json);
+      case 'USERNAME_INVALID':
+        return FieldErrorUsernameInvalid.fromJson(json);
       case 'CREDENTIALS_INVALID':
         return FieldErrorCredentialsInvalid.fromJson(json);
       case 'CHALLENGE_INVALID':
@@ -36,13 +36,13 @@ sealed class FieldError {
 }
 
 @JsonSerializable(createToJson: false)
-class FieldErrorEmailInvalid extends FieldError {
-  final String code = 'EMAIL_INVALID';
+class FieldErrorUsernameInvalid extends FieldError {
+  final String code = 'USERNAME_INVALID';
 
-  const FieldErrorEmailInvalid({required super.field});
+  const FieldErrorUsernameInvalid({required super.field});
 
-  factory FieldErrorEmailInvalid.fromJson(Map<String, dynamic> json) =>
-      _$FieldErrorEmailInvalidFromJson(json);
+  factory FieldErrorUsernameInvalid.fromJson(Map<String, dynamic> json) =>
+      _$FieldErrorUsernameInvalidFromJson(json);
 
   @override
   String toString() {

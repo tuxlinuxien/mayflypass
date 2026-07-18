@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LoginFormState {
 
- EmailValue get email; MasterPasswordValue get masterPassword; FormStatus get status; EmailValueError? get emailError; ApiError? get apiError;
+ UsernameValue get username; MasterPasswordValue get masterPassword; FormStatus get status; UsernameValueError? get usernameError; ApiError? get apiError;
 /// Create a copy of LoginFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $LoginFormStateCopyWith<LoginFormState> get copyWith => _$LoginFormStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.emailError, emailError) || other.emailError == emailError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.usernameError, usernameError) || other.usernameError == usernameError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,masterPassword,status,emailError,apiError);
+int get hashCode => Object.hash(runtimeType,username,masterPassword,status,usernameError,apiError);
 
 @override
 String toString() {
-  return 'LoginFormState(email: $email, masterPassword: $masterPassword, status: $status, emailError: $emailError, apiError: $apiError)';
+  return 'LoginFormState(username: $username, masterPassword: $masterPassword, status: $status, usernameError: $usernameError, apiError: $apiError)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $LoginFormStateCopyWith<$Res>  {
   factory $LoginFormStateCopyWith(LoginFormState value, $Res Function(LoginFormState) _then) = _$LoginFormStateCopyWithImpl;
 @useResult
 $Res call({
- EmailValue email, MasterPasswordValue masterPassword, FormStatus status, EmailValueError? emailError, ApiError? apiError
+ UsernameValue username, MasterPasswordValue masterPassword, FormStatus status, UsernameValueError? usernameError, ApiError? apiError
 });
 
 
@@ -63,13 +63,13 @@ class _$LoginFormStateCopyWithImpl<$Res>
 
 /// Create a copy of LoginFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? masterPassword = null,Object? status = null,Object? emailError = freezed,Object? apiError = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? masterPassword = null,Object? status = null,Object? usernameError = freezed,Object? apiError = freezed,}) {
   return _then(LoginFormState(
-email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as EmailValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as UsernameValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
 as MasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as FormStatus,emailError: freezed == emailError ? _self.emailError : emailError // ignore: cast_nullable_to_non_nullable
-as EmailValueError?,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
+as FormStatus,usernameError: freezed == usernameError ? _self.usernameError : usernameError // ignore: cast_nullable_to_non_nullable
+as UsernameValueError?,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
 as ApiError?,
   ));
 }
@@ -155,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( EmailValue email,  MasterPasswordValue masterPassword,  FormStatus status,  EmailValueError? emailError,  ApiError? apiError)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( UsernameValue username,  MasterPasswordValue masterPassword,  FormStatus status,  UsernameValueError? usernameError,  ApiError? apiError)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoginFormState() when $default != null:
-return $default(_that.email,_that.masterPassword,_that.status,_that.emailError,_that.apiError);case _:
+return $default(_that.username,_that.masterPassword,_that.status,_that.usernameError,_that.apiError);case _:
   return orElse();
 
 }
@@ -176,10 +176,10 @@ return $default(_that.email,_that.masterPassword,_that.status,_that.emailError,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( EmailValue email,  MasterPasswordValue masterPassword,  FormStatus status,  EmailValueError? emailError,  ApiError? apiError)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( UsernameValue username,  MasterPasswordValue masterPassword,  FormStatus status,  UsernameValueError? usernameError,  ApiError? apiError)  $default,) {final _that = this;
 switch (_that) {
 case _LoginFormState():
-return $default(_that.email,_that.masterPassword,_that.status,_that.emailError,_that.apiError);case _:
+return $default(_that.username,_that.masterPassword,_that.status,_that.usernameError,_that.apiError);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +196,10 @@ return $default(_that.email,_that.masterPassword,_that.status,_that.emailError,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( EmailValue email,  MasterPasswordValue masterPassword,  FormStatus status,  EmailValueError? emailError,  ApiError? apiError)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( UsernameValue username,  MasterPasswordValue masterPassword,  FormStatus status,  UsernameValueError? usernameError,  ApiError? apiError)?  $default,) {final _that = this;
 switch (_that) {
 case _LoginFormState() when $default != null:
-return $default(_that.email,_that.masterPassword,_that.status,_that.emailError,_that.apiError);case _:
+return $default(_that.username,_that.masterPassword,_that.status,_that.usernameError,_that.apiError);case _:
   return null;
 
 }
@@ -211,13 +211,13 @@ return $default(_that.email,_that.masterPassword,_that.status,_that.emailError,_
 
 
 class _LoginFormState implements LoginFormState {
-  const _LoginFormState({this.email = const EmailValue.pure(), this.masterPassword = const MasterPasswordValue.pure(), this.status = FormStatus.initial, this.emailError, this.apiError});
+  const _LoginFormState({this.username = const UsernameValue.pure(), this.masterPassword = const MasterPasswordValue.pure(), this.status = FormStatus.initial, this.usernameError, this.apiError});
   
 
-@override@JsonKey() final  EmailValue email;
+@override@JsonKey() final  UsernameValue username;
 @override@JsonKey() final  MasterPasswordValue masterPassword;
 @override@JsonKey() final  FormStatus status;
-@override final  EmailValueError? emailError;
+@override final  UsernameValueError? usernameError;
 @override final  ApiError? apiError;
 
 /// Create a copy of LoginFormState
@@ -230,16 +230,16 @@ _$LoginFormStateCopyWith<_LoginFormState> get copyWith => __$LoginFormStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.emailError, emailError) || other.emailError == emailError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.usernameError, usernameError) || other.usernameError == usernameError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,masterPassword,status,emailError,apiError);
+int get hashCode => Object.hash(runtimeType,username,masterPassword,status,usernameError,apiError);
 
 @override
 String toString() {
-  return 'LoginFormState(email: $email, masterPassword: $masterPassword, status: $status, emailError: $emailError, apiError: $apiError)';
+  return 'LoginFormState(username: $username, masterPassword: $masterPassword, status: $status, usernameError: $usernameError, apiError: $apiError)';
 }
 
 
@@ -250,7 +250,7 @@ abstract mixin class _$LoginFormStateCopyWith<$Res> implements $LoginFormStateCo
   factory _$LoginFormStateCopyWith(_LoginFormState value, $Res Function(_LoginFormState) _then) = __$LoginFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- EmailValue email, MasterPasswordValue masterPassword, FormStatus status, EmailValueError? emailError, ApiError? apiError
+ UsernameValue username, MasterPasswordValue masterPassword, FormStatus status, UsernameValueError? usernameError, ApiError? apiError
 });
 
 
@@ -267,13 +267,13 @@ class __$LoginFormStateCopyWithImpl<$Res>
 
 /// Create a copy of LoginFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? masterPassword = null,Object? status = null,Object? emailError = freezed,Object? apiError = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? masterPassword = null,Object? status = null,Object? usernameError = freezed,Object? apiError = freezed,}) {
   return _then(_LoginFormState(
-email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as EmailValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as UsernameValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
 as MasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as FormStatus,emailError: freezed == emailError ? _self.emailError : emailError // ignore: cast_nullable_to_non_nullable
-as EmailValueError?,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
+as FormStatus,usernameError: freezed == usernameError ? _self.usernameError : usernameError // ignore: cast_nullable_to_non_nullable
+as UsernameValueError?,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
 as ApiError?,
   ));
 }

@@ -6,9 +6,9 @@ part of 'errors.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-FieldErrorEmailInvalid _$FieldErrorEmailInvalidFromJson(
+FieldErrorUsernameInvalid _$FieldErrorUsernameInvalidFromJson(
   Map<String, dynamic> json,
-) => FieldErrorEmailInvalid(field: json['field'] as String);
+) => FieldErrorUsernameInvalid(field: json['field'] as String);
 
 FieldErrorCredentialsInvalid _$FieldErrorCredentialsInvalidFromJson(
   Map<String, dynamic> json,

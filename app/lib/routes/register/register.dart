@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/core/widgets/logo.dart';
 import 'package:mayflypass/forms/confirm_master_password.dart';
-import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/username.dart';
 import 'package:mayflypass/forms/master_password.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/register/form_cubit.dart';
@@ -87,11 +87,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(height: 44),
                   // email
                   MTextFormField(
-                    labelText: l10n.email,
+                    labelText: l10n.username,
                     onChanged: cubit.emailChanged,
-                    errorText: EmailValueError.toHuman(context, [
-                      state.email.displayError,
-                      state.apiEmailError,
+                    errorText: UsernameValueError.toHuman(context, [
+                      state.username.displayError,
+                      state.apiUsernameError,
                     ]),
                   ),
                   SpacerFormField,

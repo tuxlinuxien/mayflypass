@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RegisterFormState {
 
- EmailValue get email; MasterPasswordValue get masterPassword; ConfirmMasterPasswordValue get confirmMasterPassword; FormStatus get status; ApiError? get apiError; EmailValueError? get apiEmailError;
+ UsernameValue get username; MasterPasswordValue get masterPassword; ConfirmMasterPasswordValue get confirmMasterPassword; FormStatus get status; ApiError? get apiError; UsernameValueError? get apiUsernameError;
 /// Create a copy of RegisterFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $RegisterFormStateCopyWith<RegisterFormState> get copyWith => _$RegisterFormStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiEmailError, apiEmailError) || other.apiEmailError == apiEmailError));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiUsernameError, apiUsernameError) || other.apiUsernameError == apiUsernameError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,masterPassword,confirmMasterPassword,status,apiError,apiEmailError);
+int get hashCode => Object.hash(runtimeType,username,masterPassword,confirmMasterPassword,status,apiError,apiUsernameError);
 
 @override
 String toString() {
-  return 'RegisterFormState(email: $email, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiEmailError: $apiEmailError)';
+  return 'RegisterFormState(username: $username, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiUsernameError: $apiUsernameError)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $RegisterFormStateCopyWith<$Res>  {
   factory $RegisterFormStateCopyWith(RegisterFormState value, $Res Function(RegisterFormState) _then) = _$RegisterFormStateCopyWithImpl;
 @useResult
 $Res call({
- EmailValue email, MasterPasswordValue masterPassword, ConfirmMasterPasswordValue confirmMasterPassword, FormStatus status, ApiError? apiError, EmailValueError? apiEmailError
+ UsernameValue username, MasterPasswordValue masterPassword, ConfirmMasterPasswordValue confirmMasterPassword, FormStatus status, ApiError? apiError, UsernameValueError? apiUsernameError
 });
 
 
@@ -63,15 +63,15 @@ class _$RegisterFormStateCopyWithImpl<$Res>
 
 /// Create a copy of RegisterFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? masterPassword = null,Object? confirmMasterPassword = null,Object? status = null,Object? apiError = freezed,Object? apiEmailError = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? masterPassword = null,Object? confirmMasterPassword = null,Object? status = null,Object? apiError = freezed,Object? apiUsernameError = freezed,}) {
   return _then(RegisterFormState(
-email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as EmailValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as UsernameValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
 as MasterPasswordValue,confirmMasterPassword: null == confirmMasterPassword ? _self.confirmMasterPassword : confirmMasterPassword // ignore: cast_nullable_to_non_nullable
 as ConfirmMasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FormStatus,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
-as ApiError?,apiEmailError: freezed == apiEmailError ? _self.apiEmailError : apiEmailError // ignore: cast_nullable_to_non_nullable
-as EmailValueError?,
+as ApiError?,apiUsernameError: freezed == apiUsernameError ? _self.apiUsernameError : apiUsernameError // ignore: cast_nullable_to_non_nullable
+as UsernameValueError?,
   ));
 }
 
@@ -156,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( EmailValue email,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailValueError? apiEmailError)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( UsernameValue username,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  UsernameValueError? apiUsernameError)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RegisterFormState() when $default != null:
-return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiEmailError);case _:
+return $default(_that.username,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiUsernameError);case _:
   return orElse();
 
 }
@@ -177,10 +177,10 @@ return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( EmailValue email,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailValueError? apiEmailError)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( UsernameValue username,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  UsernameValueError? apiUsernameError)  $default,) {final _that = this;
 switch (_that) {
 case _RegisterFormState():
-return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiEmailError);case _:
+return $default(_that.username,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiUsernameError);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +197,10 @@ return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( EmailValue email,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  EmailValueError? apiEmailError)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( UsernameValue username,  MasterPasswordValue masterPassword,  ConfirmMasterPasswordValue confirmMasterPassword,  FormStatus status,  ApiError? apiError,  UsernameValueError? apiUsernameError)?  $default,) {final _that = this;
 switch (_that) {
 case _RegisterFormState() when $default != null:
-return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiEmailError);case _:
+return $default(_that.username,_that.masterPassword,_that.confirmMasterPassword,_that.status,_that.apiError,_that.apiUsernameError);case _:
   return null;
 
 }
@@ -212,15 +212,15 @@ return $default(_that.email,_that.masterPassword,_that.confirmMasterPassword,_th
 
 
 class _RegisterFormState implements RegisterFormState {
-  const _RegisterFormState({this.email = const EmailValue.pure(), this.masterPassword = const MasterPasswordValue.pure(), this.confirmMasterPassword = const ConfirmMasterPasswordValue.pure(''), this.status = FormStatus.initial, this.apiError, this.apiEmailError});
+  const _RegisterFormState({this.username = const UsernameValue.pure(), this.masterPassword = const MasterPasswordValue.pure(), this.confirmMasterPassword = const ConfirmMasterPasswordValue.pure(''), this.status = FormStatus.initial, this.apiError, this.apiUsernameError});
   
 
-@override@JsonKey() final  EmailValue email;
+@override@JsonKey() final  UsernameValue username;
 @override@JsonKey() final  MasterPasswordValue masterPassword;
 @override@JsonKey() final  ConfirmMasterPasswordValue confirmMasterPassword;
 @override@JsonKey() final  FormStatus status;
 @override final  ApiError? apiError;
-@override final  EmailValueError? apiEmailError;
+@override final  UsernameValueError? apiUsernameError;
 
 /// Create a copy of RegisterFormState
 /// with the given fields replaced by the non-null parameter values.
@@ -232,16 +232,16 @@ _$RegisterFormStateCopyWith<_RegisterFormState> get copyWith => __$RegisterFormS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterFormState&&(identical(other.email, email) || other.email == email)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiEmailError, apiEmailError) || other.apiEmailError == apiEmailError));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiUsernameError, apiUsernameError) || other.apiUsernameError == apiUsernameError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,masterPassword,confirmMasterPassword,status,apiError,apiEmailError);
+int get hashCode => Object.hash(runtimeType,username,masterPassword,confirmMasterPassword,status,apiError,apiUsernameError);
 
 @override
 String toString() {
-  return 'RegisterFormState(email: $email, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiEmailError: $apiEmailError)';
+  return 'RegisterFormState(username: $username, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiUsernameError: $apiUsernameError)';
 }
 
 
@@ -252,7 +252,7 @@ abstract mixin class _$RegisterFormStateCopyWith<$Res> implements $RegisterFormS
   factory _$RegisterFormStateCopyWith(_RegisterFormState value, $Res Function(_RegisterFormState) _then) = __$RegisterFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- EmailValue email, MasterPasswordValue masterPassword, ConfirmMasterPasswordValue confirmMasterPassword, FormStatus status, ApiError? apiError, EmailValueError? apiEmailError
+ UsernameValue username, MasterPasswordValue masterPassword, ConfirmMasterPasswordValue confirmMasterPassword, FormStatus status, ApiError? apiError, UsernameValueError? apiUsernameError
 });
 
 
@@ -269,15 +269,15 @@ class __$RegisterFormStateCopyWithImpl<$Res>
 
 /// Create a copy of RegisterFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? masterPassword = null,Object? confirmMasterPassword = null,Object? status = null,Object? apiError = freezed,Object? apiEmailError = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? masterPassword = null,Object? confirmMasterPassword = null,Object? status = null,Object? apiError = freezed,Object? apiUsernameError = freezed,}) {
   return _then(_RegisterFormState(
-email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as EmailValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as UsernameValue,masterPassword: null == masterPassword ? _self.masterPassword : masterPassword // ignore: cast_nullable_to_non_nullable
 as MasterPasswordValue,confirmMasterPassword: null == confirmMasterPassword ? _self.confirmMasterPassword : confirmMasterPassword // ignore: cast_nullable_to_non_nullable
 as ConfirmMasterPasswordValue,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as FormStatus,apiError: freezed == apiError ? _self.apiError : apiError // ignore: cast_nullable_to_non_nullable
-as ApiError?,apiEmailError: freezed == apiEmailError ? _self.apiEmailError : apiEmailError // ignore: cast_nullable_to_non_nullable
-as EmailValueError?,
+as ApiError?,apiUsernameError: freezed == apiUsernameError ? _self.apiUsernameError : apiUsernameError // ignore: cast_nullable_to_non_nullable
+as UsernameValueError?,
   ));
 }
 

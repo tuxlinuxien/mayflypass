@@ -14,7 +14,7 @@ Future<void> main() async {
     initStore(MemoryStore());
     initDB(NativeDatabase.memory(logStatements: true));
     initDBTestFixtures(getGlobalKek()!);
-    await globalStore.setEmail('yoann@mail.com');
+    await globalStore.setUsername('username1');
     globalAuth.unlocked();
     router.go('/home');
   } else {

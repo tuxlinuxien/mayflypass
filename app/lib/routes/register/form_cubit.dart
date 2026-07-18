@@ -5,7 +5,7 @@ import 'package:mayflypass/api/api.dart';
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/forms/confirm_master_password.dart';
-import 'package:mayflypass/forms/email.dart';
+import 'package:mayflypass/forms/username.dart';
 import 'package:mayflypass/forms/master_password.dart';
 import 'package:mayflypass/secure/secure.dart';
 
@@ -16,13 +16,13 @@ enum FormStatus { initial, submitting, success, failure }
 @freezed
 abstract class RegisterFormState with _$RegisterFormState {
   const factory RegisterFormState({
-    @Default(EmailValue.pure()) EmailValue email,
+    @Default(UsernameValue.pure()) UsernameValue username,
     @Default(MasterPasswordValue.pure()) MasterPasswordValue masterPassword,
     @Default(ConfirmMasterPasswordValue.pure(''))
     ConfirmMasterPasswordValue confirmMasterPassword,
     @Default(FormStatus.initial) FormStatus status,
     ApiError? apiError,
-    EmailValueError? apiEmailError,
+    UsernameValueError? apiUsernameError,
   }) = _RegisterFormState;
 }
 
@@ -30,7 +30,12 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
   RegisterFormCubit() : super(RegisterFormState());
 
   void emailChanged(String value) {
-    emit(state.copyWith(email: EmailValue.dirty(value), apiEmailError: null));
+    emit(
+      state.copyWith(
+        username: UsernameValue.dirty(value),
+        apiUsernameError: null,
+      ),
+    );
   }
 
   void masterPasswordChanged(String value) {
@@ -61,7 +66,7 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
 
   Future<void> submit() async {
     final isValid = Formz.validate([
-      state.email,
+      state.username,
       state.masterPassword,
       state.confirmMasterPassword,
     ]);
@@ -72,14 +77,14 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
       state.copyWith(
         status: FormStatus.submitting,
         apiError: null,
-        apiEmailError: null,
+        apiUsernameError: null,
       ),
     );
 
     logger.i('derive auth password');
     // create auth key
     final masterKey = await deriveMasterPassword(
-      state.email.value,
+      state.username.value,
       state.masterPassword.value,
     );
     final authKey = await deriveAuthKey(masterKey);
@@ -93,7 +98,7 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
       // register the account
       await API().register(
         RegisterInput(
-          email: state.email.value,
+          username: state.username.value,
           password: Uint8List.fromList(await authKey.extractBytes()),
           challengeKey: challenge.key,
           challengeNonce: nonce,
@@ -103,10 +108,16 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
       for (final error in e.errors) {
         if (error.field == 'email') {
           switch (error) {
-            case FieldErrorEmailInvalid():
-              emit(state.copyWith(apiEmailError: EmailValueInvalidError()));
+            case FieldErrorUsernameInvalid():
+              emit(
+                state.copyWith(apiUsernameError: UsernameValueInvalidError()),
+              );
             case FieldErrorValueDuplicated():
-              emit(state.copyWith(apiEmailError: EmailValueDuplicatedError()));
+              emit(
+                state.copyWith(
+                  apiUsernameError: UsernameValueDuplicatedError(),
+                ),
+              );
             default:
           }
         }

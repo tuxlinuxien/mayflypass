@@ -31,10 +31,10 @@ Map<String, dynamic> _$RefreshResponseToJson(RefreshResponse instance) =>
     };
 
 AccountInfo _$AccountInfoFromJson(Map<String, dynamic> json) =>
-    AccountInfo(id: json['id'] as String, email: json['email'] as String);
+    AccountInfo(id: json['id'] as String, username: json['username'] as String);
 
 Map<String, dynamic> _$AccountInfoToJson(AccountInfo instance) =>
-    <String, dynamic>{'id': instance.id, 'email': instance.email};
+    <String, dynamic>{'id': instance.id, 'username': instance.username};
 
 ChallengeResult _$ChallengeResultFromJson(Map<String, dynamic> json) =>
     ChallengeResult(
@@ -53,19 +53,19 @@ Map<String, dynamic> _$ChallengeResultToJson(ChallengeResult instance) =>
     };
 
 LoginInput _$LoginInputFromJson(Map<String, dynamic> json) => LoginInput(
-  email: json['email'] as String,
+  username: json['username'] as String,
   password: const HexBytesConverter().fromJson(json['password'] as String),
 );
 
 Map<String, dynamic> _$LoginInputToJson(LoginInput instance) =>
     <String, dynamic>{
-      'email': instance.email,
+      'username': instance.username,
       'password': const HexBytesConverter().toJson(instance.password),
     };
 
 RegisterInput _$RegisterInputFromJson(Map<String, dynamic> json) =>
     RegisterInput(
-      email: json['email'] as String,
+      username: json['username'] as String,
       password: const HexBytesConverter().fromJson(json['password'] as String),
       challengeKey: const HexBytesConverter().fromJson(
         json['challenge_key'] as String,
@@ -75,7 +75,7 @@ RegisterInput _$RegisterInputFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$RegisterInputToJson(RegisterInput instance) =>
     <String, dynamic>{
-      'email': instance.email,
+      'username': instance.username,
       'password': const HexBytesConverter().toJson(instance.password),
       'challenge_key': const HexBytesConverter().toJson(instance.challengeKey),
       'challenge_nonce': instance.challengeNonce,
