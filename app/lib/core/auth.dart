@@ -27,17 +27,9 @@ class AuthCubit extends Cubit<AuthStatus> {
   }
 
   void checkLockTimeout(DateTime now) {
-    switch (state) {
-      case .loading:
-        return;
-      case .unauthenticated:
-        return;
-      case .locked:
-        return;
-      default:
-      // do nothing
+    if (state != .unlocked) {
+      return;
     }
-    logger.w('check auth ${_lockAfter.difference(now)}');
     if (now.isAfter(_lockAfter)) {
       lock();
     }

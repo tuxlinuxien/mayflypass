@@ -21,7 +21,21 @@ class Timer extends StatelessWidget {
                 SizedBox(
                   height: size,
                   width: size,
-                  child: CircularProgressIndicator(value: _progressLeft(state)),
+                  child: CircularProgressIndicator(
+                    value: 1,
+                    color: AppTheme.BrightColor.withValues(alpha: 0.2),
+                  ),
+                ),
+                SizedBox(
+                  height: size,
+                  width: size,
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween<double>(end: _progressLeft(state)),
+                    duration: const Duration(milliseconds: 499),
+                    curve: Curves.linear,
+                    builder: (context, value, _) =>
+                        CircularProgressIndicator(value: value),
+                  ),
                 ),
                 SizedBox(
                   height: size,

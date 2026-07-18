@@ -7,7 +7,7 @@ int currentEpochMs() {
 }
 
 final _timerTicker = Stream.periodic(
-  const Duration(milliseconds: 250),
+  const Duration(milliseconds: 500),
   (_) => currentEpochMs,
 ).asBroadcastStream();
 

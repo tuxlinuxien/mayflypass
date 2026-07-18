@@ -64,12 +64,17 @@ class SettingsPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                state.status == .sync
-                                    ? CircularProgressIndicator()
-                                    : IconButton.filled(
-                                        onPressed: cubit.sync,
-                                        icon: Icon(Icons.sync),
-                                      ),
+                                IconButton.filled(
+                                  onPressed: state.status == .sync
+                                      ? null
+                                      : cubit.sync,
+                                  icon: state.status == .sync
+                                      ? SizedBox.square(
+                                          dimension: 24,
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : Icon(Icons.sync),
+                                ),
                               ],
                             ),
                           ),

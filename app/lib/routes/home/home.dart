@@ -4,6 +4,7 @@ import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/home/cubit.dart';
+import 'package:mayflypass/routes/home/widgets/sync_button.dart';
 import 'package:mayflypass/routes/home/widgets/timer.dart';
 import 'package:mayflypass/routes/home/widgets/otp_code.dart';
 
@@ -33,6 +34,7 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               actions: [
+                SyncButton(onDone: cubit.load),
                 IconButton(
                   onPressed: () async {
                     await router.push('/settings');

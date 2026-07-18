@@ -17,26 +17,31 @@ class _BackupSecretsState extends State<BackupSecrets> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return CircularProgressIndicator();
-    }
     return IconButton.filled(
-      onPressed: () async {
-        final ok = await _exportSecrets();
-        if (!ok) {
-          return;
-        }
-        if (!context.mounted) {
-          return;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Your secrets have been exported'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      },
-      icon: Icon(Icons.download),
+      onPressed: _loading
+          ? null
+          : () async {
+              final ok = await _exportSecrets();
+              if (!ok) {
+                return;
+              }
+              if (!context.mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Your secrets have been exported'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+      icon: _loading
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(),
+            )
+          : const Icon(Icons.download),
     );
   }
 

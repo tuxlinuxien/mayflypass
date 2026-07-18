@@ -20,26 +20,27 @@ class _ImportSecretsState extends State<ImportSecrets> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return CircularProgressIndicator();
-    }
     return IconButton.filled(
-      onPressed: () async {
-        final total = await _importSecrets();
-        if (total == null) {
-          return;
-        }
-        if (!context.mounted) {
-          return;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$total secrets have been imported'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      },
-      icon: Icon(Icons.upload),
+      onPressed: _loading
+          ? null
+          : () async {
+              final total = await _importSecrets();
+              if (total == null) {
+                return;
+              }
+              if (!context.mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('$total secrets have been imported'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+      icon: _loading
+          ? SizedBox.square(dimension: 24, child: CircularProgressIndicator())
+          : Icon(Icons.upload),
     );
   }
 
