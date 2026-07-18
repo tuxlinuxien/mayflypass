@@ -75,6 +75,7 @@ pub fn create_routes(state: state::AppState) -> Router<state::AppState> {
     let private = Router::new()
         // account
         .route("/api/account/info", get(account::info))
+        .route("/api/account/password", post(account::update_password))
         // storage
         .route("/api/storage", post(storage::upsert))
         .route("/api/storage", get(storage::select))
