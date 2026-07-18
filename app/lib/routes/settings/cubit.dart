@@ -1,8 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/database/database.dart';
+import 'package:mayflypass/database/helpers.dart';
+import 'package:mayflypass/databox/databox.dart';
 import 'package:mayflypass/helpers/sync.dart';
+import 'package:mayflypass/secure/encryption.dart';
 
 part 'cubit.freezed.dart';
 
@@ -92,5 +98,82 @@ class SettingsCubit extends Cubit<SettingsState> {
     } finally {
       emit(state.copyWith(status: .ready));
     }
+  }
+
+  Future<bool> exportSecrets() async {
+    try {
+      final name =
+          'mayflypass_export_${DateTime.now().millisecondsSinceEpoch}.json';
+      final kek = getGlobalKek()!;
+      final items = await globalDB.selectLocalStorage(withDeleted: false);
+      final output = <String, Map<String, dynamic>>{};
+      for (final item in items) {
+        try {
+          output[item.id] = (await decryptDataBox(
+            kek,
+            item.encryptedDek,
+            item.encryptedPayload,
+          )).writeToJsonMap();
+        } catch (e) {
+          logger.e(e);
+        }
+      }
+      final content = jsonEncode(output);
+      return await FilePicker.saveFile(
+            fileName: name,
+            type: FileType.any,
+            bytes: Utf8Encoder().convert(content),
+          ) !=
+          null;
+    } catch (e) {
+      logger.e(e);
+      return false;
+    }
+  }
+
+  Future<int?> importSecrets() async {
+    try {
+      FilePickerResult? result = await FilePicker.pickFiles(
+        type: .custom,
+        allowMultiple: false,
+        allowedExtensions: ['json'],
+        withData: true,
+      );
+      if (result == null) {
+        return null;
+      }
+      final dynResult = jsonDecode(
+        Utf8Decoder().convert(result.files[0].bytes!.toList()),
+      );
+      final mapResult = dynResult as Map<String, dynamic>;
+      var totalImported = 0;
+      final kek = getGlobalKek()!;
+      for (final k in mapResult.keys) {
+        try {
+          final dbox = DataBox.create()..mergeFromJsonMap(mapResult[k]);
+          final (encryptedDek, encryptedPayload) = await encryptDataBox(
+            kek,
+            dbox,
+          );
+          await globalDB.upsertLocalStorage(
+            LocalStorageData(
+              id: k,
+              updatedAtMs: generateVersion(),
+              deleted: false,
+              encryptedDek: encryptedDek,
+              encryptedPayload: encryptedPayload,
+            ),
+          );
+          totalImported++;
+        } catch (e) {
+          logger.e(e);
+        }
+      }
+      await syncLocalAndRemote();
+      return totalImported;
+    } catch (e) {
+      logger.e(e);
+    }
+    return null;
   }
 }

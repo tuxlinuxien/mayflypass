@@ -171,13 +171,39 @@ class SettingsPage extends StatelessWidget {
                         children: [
                           IconRow(
                             icon: Icons.cloud_download,
-                            child: Column(
-                              crossAxisAlignment: .start,
+                            child: Row(
                               children: [
-                                Text('Backup'),
-                                Text(
-                                  'Download your secrets onto your device',
-                                  style: AppTheme.helperStyle,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text('Backup'),
+                                      Text(
+                                        'Download your secrets onto your device',
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton.filled(
+                                  onPressed: () async {
+                                    final ok = await cubit.exportSecrets();
+                                    if (!ok) {
+                                      return;
+                                    }
+                                    if (!context.mounted) {
+                                      return;
+                                    }
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Your secrets have been exported',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.download),
                                 ),
                               ],
                             ),
@@ -185,13 +211,39 @@ class SettingsPage extends StatelessWidget {
                           Divider(height: 1),
                           IconRow(
                             icon: Icons.cloud_upload,
-                            child: Column(
-                              crossAxisAlignment: .start,
+                            child: Row(
                               children: [
-                                Text('Import'),
-                                Text(
-                                  'Import secrets into you account',
-                                  style: AppTheme.helperStyle,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text('Import'),
+                                      Text(
+                                        'Import secrets into you account',
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton.filled(
+                                  onPressed: () async {
+                                    final total = await cubit.importSecrets();
+                                    if (total == null) {
+                                      return;
+                                    }
+                                    if (!context.mounted) {
+                                      return;
+                                    }
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '$total secrets have been imported',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.upload),
                                 ),
                               ],
                             ),
