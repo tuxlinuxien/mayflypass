@@ -3,6 +3,8 @@ import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
+import 'package:mayflypass/routes/settings/widgets/backup_secrets.dart';
+import 'package:mayflypass/routes/settings/widgets/import_secrets.dart';
 import 'package:mayflypass/routes/settings/widgets/lockout_dropdown.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -185,26 +187,7 @@ class SettingsPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                IconButton.filled(
-                                  onPressed: () async {
-                                    final ok = await cubit.exportSecrets();
-                                    if (!ok) {
-                                      return;
-                                    }
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Your secrets have been exported',
-                                        ),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
-                                  },
-                                  icon: Icon(Icons.download),
-                                ),
+                                BackupSecrets(),
                               ],
                             ),
                           ),
@@ -225,26 +208,7 @@ class SettingsPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                IconButton.filled(
-                                  onPressed: () async {
-                                    final total = await cubit.importSecrets();
-                                    if (total == null) {
-                                      return;
-                                    }
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '$total secrets have been imported',
-                                        ),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
-                                  },
-                                  icon: Icon(Icons.upload),
-                                ),
+                                ImportSecrets(),
                               ],
                             ),
                           ),

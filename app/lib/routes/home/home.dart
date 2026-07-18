@@ -34,7 +34,10 @@ class HomePage extends StatelessWidget {
               ),
               actions: [
                 IconButton(
-                  onPressed: () => router.push('/settings'),
+                  onPressed: () async {
+                    await router.push('/settings');
+                    await cubit.load();
+                  },
                   icon: const Icon(Icons.settings),
                 ),
               ],
