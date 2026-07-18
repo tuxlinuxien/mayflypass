@@ -39,8 +39,8 @@
   "@accountAlreadyExists": {},
   "thereWasProblem": "There was a problem while processing your request",
   "@thereWasProblem": {},
-  "invalidCrentials": "Invalid credentials",
-  "@invalidCrentials": {},
+  "invalidCredentials": "Invalid credentials",
+  "@invalidCredentials": {},
   "loggedIn": "Welcome back {email}",
   "@loggedIn": {
     "placeholders": {

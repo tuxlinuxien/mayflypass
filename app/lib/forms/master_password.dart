@@ -12,6 +12,7 @@ sealed class MasterPasswordValueError {
     return switch (errors.nonNulls.firstOrNull) {
       MasterPasswordValueRequiredError() => l10n.fieldRequired,
       MasterPasswordValueMinError(:final min) => l10n.passwordTooShort(min),
+      MasterPasswordValueInvalidError() => l10n.invalidCredentials,
       null => null,
     };
   }
@@ -24,6 +25,10 @@ class MasterPasswordValueRequiredError extends MasterPasswordValueError {
 class MasterPasswordValueMinError extends MasterPasswordValueError {
   final int min;
   const MasterPasswordValueMinError(this.min);
+}
+
+class MasterPasswordValueInvalidError extends MasterPasswordValueError {
+  const MasterPasswordValueInvalidError();
 }
 
 class MasterPasswordValue extends FormzInput<String, MasterPasswordValueError> {

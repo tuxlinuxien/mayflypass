@@ -21,12 +21,12 @@ Future<SecretKey> deriveMasterPassword(String email, String password) async {
 }
 
 Future<SecretKey> deriveAuthKey(SecretKey masterKey) async {
-  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: authOuputLen);
+  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: authOutputLen);
   return await hasher.deriveKey(secretKey: masterKey, nonce: authSalt);
 }
 
 Future<SecretKey> deriveKek(SecretKey masterKey) async {
-  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: kekOuputLen);
+  final hasher = Hkdf(hmac: Hmac.sha256(), outputLength: kekOutputLen);
   return await hasher.deriveKey(secretKey: masterKey, nonce: kekSalt);
 }
 

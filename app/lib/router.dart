@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/routes/change_password/change_password.dart';
 import 'package:mayflypass/routes/home/home.dart';
 import 'package:mayflypass/routes/login/login.dart';
 import 'package:mayflypass/routes/register/register.dart';
@@ -94,6 +95,10 @@ void initRouter() {
       GoRoute(
         path: '/totp-manual',
         builder: (ctx, state) => const TotpManualPage(id: null),
+      ),
+      GoRoute(
+        path: '/change-password',
+        builder: (ctx, state) => const ChangePasswordPage(),
       ),
     ],
   );

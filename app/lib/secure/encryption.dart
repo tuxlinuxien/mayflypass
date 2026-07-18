@@ -60,3 +60,12 @@ void zeroing<T>(T buffer) {
     buffer.fillRange(0, buffer.length, 0);
   }
 }
+
+Future<Uint8List> updateDekEncryption(
+  SecretKey oldKek,
+  SecretKey newKek,
+  Uint8List encryptedDek,
+) async {
+  final dek = await decrypt(oldKek, encryptedDek);
+  return await encrypt(newKek, dek);
+}

@@ -53,13 +53,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountCreatedSuccessfully => 'Account created successfully';
 
   @override
-  String get accountAlreadyExists => 'An account with this email already exists';
+  String get accountAlreadyExists =>
+      'An account with this email already exists';
 
   @override
-  String get thereWasProblem => 'There was a problem while processing your request';
+  String get thereWasProblem =>
+      'There was a problem while processing your request';
 
   @override
-  String get invalidCrentials => 'Invalid credentials';
+  String get invalidCredentials => 'Invalid credentials';
 
   @override
   String loggedIn(String email) {

@@ -10,7 +10,7 @@ sealed class EmailValueError {
       EmailValueRequiredError() => l10n.fieldRequired,
       EmailValueInvalidError() => l10n.emailInvalid,
       EmailValueDuplicatedError() => l10n.accountAlreadyExists,
-      EmailValueCredentialsError() => l10n.invalidCrentials,
+      EmailValueCredentialsError() => l10n.invalidCredentials,
       null => null,
     };
   }

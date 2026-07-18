@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
 import 'package:mayflypass/routes/settings/widgets/lockout_dropdown.dart';
 
@@ -61,15 +62,37 @@ class SettingsPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 44,
-                                  width: 44,
-                                  child: state.status == .sync
-                                      ? CircularProgressIndicator()
-                                      : IconButton.filled(
-                                          onPressed: cubit.sync,
-                                          icon: Icon(Icons.sync),
-                                        ),
+                                state.status == .sync
+                                    ? CircularProgressIndicator()
+                                    : IconButton.filled(
+                                        onPressed: cubit.sync,
+                                        icon: Icon(Icons.sync),
+                                      ),
+                              ],
+                            ),
+                          ),
+                          Divider(height: 1),
+                          IconRow(
+                            icon: Icons.lock_reset,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text('Change password'),
+                                      Text(
+                                        'Change your account password',
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton.filled(
+                                  onPressed: () {
+                                    router.push('/change-password');
+                                  },
+                                  icon: Icon(Icons.arrow_forward),
                                 ),
                               ],
                             ),

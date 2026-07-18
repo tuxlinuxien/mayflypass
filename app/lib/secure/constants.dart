@@ -7,9 +7,9 @@ import 'package:cryptography_plus/cryptography_plus.dart';
 final secretKeyLength = Xchacha20.poly1305Aead().secretKeyLength;
 
 final authSalt = utf8.encode('domain/derive/auth');
-final authOuputLen = secretKeyLength;
+final authOutputLen = secretKeyLength;
 final kekSalt = utf8.encode('domain/derive/kek');
-final kekOuputLen = secretKeyLength;
+final kekOutputLen = secretKeyLength;
 final sessionSalt = utf8.encode('domain/derive/session');
 final sessionOutputLen = secretKeyLength;
 
