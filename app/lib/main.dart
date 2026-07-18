@@ -16,6 +16,7 @@ Future<void> main() async {
     initDBTestFixtures(getGlobalKek()!);
     await globalStore.setEmail('yoann@mail.com');
     globalAuth.unlocked();
+    router.go('/home');
   } else {
     initStore(FSStore());
     initDB();
