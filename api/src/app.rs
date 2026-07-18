@@ -22,4 +22,7 @@ pub struct App {
 
     #[arg(long, env, default_value = "easy")]
     pub challenge: DIFFICULTY,
+
+    #[arg(long, env, default_value = "")]
+    pub access_token_key: String,
 }
