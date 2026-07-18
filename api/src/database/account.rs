@@ -45,7 +45,7 @@ pub async fn insert<'c, E: super::SqliteExecutor<'c>>(
     Ok(res)
 }
 
-pub async fn get_by_email<'c, E: super::SqliteExecutor<'c>>(
+pub async fn get_by_username<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     username: &str,
 ) -> Result<Option<AccountResult>, error::Error> {
@@ -111,19 +111,19 @@ mod test {
         let result = insert(
             &pool,
             &AccountInsert {
-                username: "test@example.com".into(),
+                username: "username".into(),
                 password: "password".into(),
             },
         )
         .await
         .unwrap();
-        assert_eq!(result.username, "test@example.com");
+        assert_eq!(result.username, "username");
         assert!(result.password_hash != "password");
         assert!(result.verify_password("password".as_bytes()).await);
     }
 
     #[tokio::test]
-    async fn test_get_by_email() {
+    async fn test_get_by_username() {
         let pool = super::super::create_pool("sqlite::memory:", 1)
             .await
             .unwrap();
@@ -131,13 +131,13 @@ mod test {
         let result = insert(
             &pool,
             &AccountInsert {
-                username: "test@example.com".into(),
+                username: "username".into(),
                 password: "password".into(),
             },
         )
         .await
         .unwrap();
-        let account = get_by_email(&pool, &result.username).await.unwrap();
+        let account = get_by_username(&pool, &result.username).await.unwrap();
         assert!(account.is_some())
     }
 
@@ -148,7 +148,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
         let account_insert = AccountInsert {
-            username: "test@example.com".into(),
+            username: "username".into(),
             password: "password".into(),
         };
         let result = insert(&pool, &account_insert).await.unwrap();
@@ -164,7 +164,7 @@ mod test {
             .unwrap();
         super::super::run_migrations(&pool).await.unwrap();
         let account_insert = AccountInsert {
-            username: "test@example.com".into(),
+            username: "username".into(),
             password: "password".into(),
         };
         let result = insert(&pool, &account_insert).await.unwrap();

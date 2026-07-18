@@ -126,7 +126,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                username: "test@example.com".into(),
+                username: "username".into(),
                 password: "password".into(),
             },
         )
@@ -170,7 +170,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                username: "test@example.com".into(),
+                username: "username".into(),
                 password: "password".into(),
             },
         )
@@ -254,7 +254,7 @@ mod test {
         let account = account::insert(
             &pool,
             &account::AccountInsert {
-                username: "test@example.com".into(),
+                username: "username".into(),
                 password: "password".into(),
             },
         )
@@ -293,7 +293,7 @@ mod test {
         let account1 = account::insert(
             &pool,
             &account::AccountInsert {
-                username: "test1@example.com".into(),
+                username: "username1".into(),
                 password: "password".into(),
             },
         )
@@ -328,7 +328,7 @@ mod test {
         let account2 = account::insert(
             &pool,
             &account::AccountInsert {
-                username: "test2@example.com".into(),
+                username: "username2".into(),
                 password: "password".into(),
             },
         )
@@ -349,7 +349,7 @@ mod test {
         let account1 = account::insert(
             &pool,
             &account::AccountInsert {
-                username: "test1@example.com".into(),
+                username: "username".into(),
                 password: "password".into(),
             },
         )

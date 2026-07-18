@@ -40,7 +40,7 @@ impl LoginInput {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct LoginReponse {
+pub struct LoginResponse {
     pub access_token: String,
     pub refresh_token: String,
 }
@@ -52,7 +52,7 @@ pub async fn login(
     payload.validate()?;
 
     // fetch the account by username.
-    let account = database::account::get_by_email(&state.pool, &payload.username).await?;
+    let account = database::account::get_by_username(&state.pool, &payload.username).await?;
     let account = match account {
         Some(account) => account,
         None => {
@@ -73,7 +73,7 @@ pub async fn login(
     let access_token = token::new(&state.access_token_key, &account.id, Utc::now())?;
     // create refresh_token
     let refresh_token = database::token::generate(&state.pool, &account.id).await?;
-    let mut response = Json(LoginReponse {
+    let mut response = Json(LoginResponse {
         access_token: access_token,
         refresh_token: refresh_token.clone(),
     })
