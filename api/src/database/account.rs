@@ -82,9 +82,9 @@ pub async fn get_by_id<'c, E: super::SqliteExecutor<'c>>(
 pub async fn update_password<'c, E: super::SqliteExecutor<'c>>(
     executor: E,
     id: &Uuid,
-    new_password: &str,
+    new_password: &[u8],
 ) -> Result<(), error::Error> {
-    let new_hash = super::password::hash_password(new_password.as_bytes()).await;
+    let new_hash = super::password::hash_password(&new_password).await;
     sqlx::query_as::<_, AccountResult>(
         r"
         UPDATE account SET password_hash = ?, password_updated_at = (datetime('now'))
@@ -168,7 +168,7 @@ mod test {
             password: "password".into(),
         };
         let result = insert(&pool, &account_insert).await.unwrap();
-        update_password(&pool, &result.id, "new_password")
+        update_password(&pool, &result.id, "new_password".as_bytes())
             .await
             .unwrap();
         let account = get_by_id(&pool, &result.id).await.unwrap().unwrap();
