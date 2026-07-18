@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:mayflypass/api/errors.dart';
+import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
 import 'logger_interceptor.dart';
 import 'models.dart';
@@ -163,25 +164,57 @@ class API extends _API {
 
   @override
   Future<AccountInfo> accountInfo() async {
-    final response = await getProtected('/api/account/info');
-    return AccountInfo.fromJson(response.data);
+    try {
+      final response = await getProtected('/api/account/info');
+      return AccountInfo.fromJson(response.data);
+    } on ApiErrorUnauthorized {
+      await globalAuth.logout();
+      await logout();
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<void> storageUpsert(dynamic input) async {
-    await postProtected('/api/storage', data: jsonEncode(input));
+    try {
+      await postProtected('/api/storage', data: jsonEncode(input));
+    } on ApiErrorUnauthorized {
+      await globalAuth.logout();
+      await logout();
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<List<ApiStorage>> storageSelect() async {
-    final response = await getProtected('/api/storage');
-    return (response.data as List<dynamic>).map((item) {
-      return ApiStorage.fromJson(item as Map<String, dynamic>);
-    }).toList();
+    try {
+      final response = await getProtected('/api/storage');
+      return (response.data as List<dynamic>).map((item) {
+        return ApiStorage.fromJson(item as Map<String, dynamic>);
+      }).toList();
+    } on ApiErrorUnauthorized {
+      await globalAuth.logout();
+      await logout();
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<void> updatePassword(UpdatePasswordInput input) async {
-    await postProtected('/api/account/password', data: jsonEncode(input));
+    try {
+      await postProtected('/api/account/password', data: jsonEncode(input));
+    } on ApiErrorUnauthorized {
+      await globalAuth.logout();
+      await logout();
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

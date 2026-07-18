@@ -8,6 +8,7 @@ abstract final class AppTheme {
   // Colors
   static Color PrimaryColor = Color(0xFF6D28D9);
   static Color BrightColor = Color(0xFF8B5CF6);
+  static Color helperTextColor = Color(0xFF948F9E);
 
   static Color DangerColor = Color(0xFFF87171);
   static Color SuccessColor = Color(0xFF4ADE80);
@@ -20,14 +21,14 @@ abstract final class AppTheme {
 
   // styles
   static TextStyle labelStyle = TextStyle(
-    color: Color(0xFF948F9E),
+    color: helperTextColor,
     fontFamily: 'Roboto Mono',
     fontSize: 11,
     letterSpacing: 1.2,
   );
 
   static TextStyle helperStyle = TextStyle(
-    color: Color(0xFF948F9E),
+    color: helperTextColor,
     fontSize: 14,
   );
 

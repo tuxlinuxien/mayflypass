@@ -76,12 +76,31 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         [state.confirmNewPassword.displayError],
                       ),
                     ),
-                    SpacerFormField,
+                    SpacerSection,
                     FilledButton(
                       onPressed: state.status == .ready ? cubit.submit : null,
                       child: state.status == .ready
                           ? Text('Submit')
                           : CircularProgressIndicator(),
+                    ),
+                    SpacerSection,
+                    Row(
+                      spacing: 8,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: AppTheme.helperTextColor,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'This action might take a while because secrets will be re-encrypted with new keys. '
+                            'After completion you will have to login again across all your devices.',
+                            style: AppTheme.helperStyle,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
