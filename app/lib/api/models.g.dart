@@ -125,3 +125,24 @@ Map<String, dynamic> _$ApiStorageToJson(ApiStorage instance) =>
         instance.encryptedPayload,
       ),
     };
+
+UpdatePasswordInput _$UpdatePasswordInputFromJson(Map<String, dynamic> json) =>
+    UpdatePasswordInput(
+      oldPassword: const HexBytesConverter().fromJson(
+        json['old_password'] as String,
+      ),
+      newPassword: const HexBytesConverter().fromJson(
+        json['new_password'] as String,
+      ),
+      storageItems: (json['storage_items'] as List<dynamic>)
+          .map((e) => ApiStorage.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$UpdatePasswordInputToJson(
+  UpdatePasswordInput instance,
+) => <String, dynamic>{
+  'old_password': const HexBytesConverter().toJson(instance.oldPassword),
+  'new_password': const HexBytesConverter().toJson(instance.newPassword),
+  'storage_items': instance.storageItems,
+};

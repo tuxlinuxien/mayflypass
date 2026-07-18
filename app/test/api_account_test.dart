@@ -12,5 +12,27 @@ void main() {
       expect(response.email.isNotEmpty, true);
       expect(response.id.isNotEmpty, true);
     });
+
+    test('account update password', () async {
+      await setupAccount();
+      final account = await API().accountInfo();
+      final oldPassword = await buildPassword(account.email);
+      final newPassword = await buildPassword(
+        account.email,
+        password: 'aaaaaaaa',
+      );
+      try {
+        await API().updatePassword(
+          UpdatePasswordInput(
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+            storageItems: [],
+          ),
+        );
+      } catch (e) {
+        logger.e(e);
+        expect(false, true, reason: 'shouldn\'t be here');
+      }
+    });
   });
 }

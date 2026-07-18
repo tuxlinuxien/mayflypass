@@ -9,8 +9,11 @@ String buildTestEmail() {
   return '${UuidV7().generate()}@mail.com';
 }
 
-Future<Uint8List> buildPassword(String email) async {
-  final masterKey = await deriveMasterPassword(email, '12345678');
+Future<Uint8List> buildPassword(
+  String email, {
+  String password = '12345678',
+}) async {
+  final masterKey = await deriveMasterPassword(email, password);
   final buffer = await (await deriveAuthKey(masterKey)).extractBytes();
   return Uint8List.fromList(buffer);
 }

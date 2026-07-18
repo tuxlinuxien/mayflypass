@@ -15,6 +15,7 @@ abstract class _API {
   Future<void> logout();
   // account
   Future<AccountInfo> accountInfo();
+  Future<void> updatePassword(UpdatePasswordInput input);
   // storage
   Future<void> storageUpsert(ApiStorage storage);
   Future<List<ApiStorage>> storageSelect();
@@ -25,8 +26,8 @@ class API extends _API {
     BaseOptions(
       baseUrl: API_URL,
       connectTimeout: Duration(seconds: 5),
-      sendTimeout: Duration(seconds: 5),
-      receiveTimeout: Duration(seconds: 5),
+      sendTimeout: Duration(seconds: 10),
+      receiveTimeout: Duration(seconds: 10),
       validateStatus: (status) => true,
     ),
   )..interceptors.addAll([LoggerInterceptor()]);
@@ -38,10 +39,10 @@ class API extends _API {
     String method,
     String path, {
     Object? data,
-    Dio? customclient,
+    Dio? customClient,
   }) async {
     final option = Options(method: method);
-    final client = customclient ?? _dio;
+    final client = customClient ?? _dio;
     try {
       final response = await client.request(path, data: data, options: option);
       final status = response.statusCode ?? 0;
@@ -85,7 +86,7 @@ class API extends _API {
       client.options.headers.addEntries(
         {'Authorization': 'Bearer ${API.accessToken}'}.entries,
       );
-      return _request(method, path, data: data, customclient: client);
+      return _request(method, path, data: data, customClient: client);
     }
 
     final refreshToken = await globalStore.getApiRefreshToken();
@@ -177,5 +178,10 @@ class API extends _API {
     return (response.data as List<dynamic>).map((item) {
       return ApiStorage.fromJson(item as Map<String, dynamic>);
     }).toList();
+  }
+
+  @override
+  Future<void> updatePassword(UpdatePasswordInput input) async {
+    await postProtected('/api/account/password', data: jsonEncode(input));
   }
 }

@@ -220,3 +220,23 @@ class ApiStorage {
     );
   }
 }
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class UpdatePasswordInput {
+  @HexBytesConverter()
+  final Uint8List oldPassword;
+  @HexBytesConverter()
+  final Uint8List newPassword;
+  final List<ApiStorage> storageItems;
+
+  const UpdatePasswordInput({
+    required this.oldPassword,
+    required this.newPassword,
+    required this.storageItems,
+  });
+
+  factory UpdatePasswordInput.fromJson(Map<String, dynamic> json) =>
+      _$UpdatePasswordInputFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpdatePasswordInputToJson(this);
+}
