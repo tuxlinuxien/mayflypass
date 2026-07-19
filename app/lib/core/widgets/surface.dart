@@ -7,10 +7,11 @@ class Surface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.InputBackgroundColor,
-        border: Border.all(
+    return Material(
+      color: AppTheme.InputBackgroundColor,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
           color: Colors.white.withValues(alpha: 0.06),
           width: 1,
         ),

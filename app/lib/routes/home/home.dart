@@ -8,6 +8,8 @@ import 'package:mayflypass/routes/home/widgets/sync_button.dart';
 import 'package:mayflypass/routes/home/widgets/timer.dart';
 import 'package:mayflypass/routes/home/widgets/otp_code.dart';
 
+part 'functions.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -162,144 +164,29 @@ class TotpEntryList extends StatelessWidget {
   }
 }
 
-Future<void> _showEntryMenu(
-  BuildContext context,
-  HomeCubit cubit,
-  String id,
-  Totp totp,
-) {
-  return showModalBottomSheet(
-    context: context,
-    backgroundColor: AppTheme.AppBackgroundColor,
-    builder: (sheetCtx) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: Icon(totp.favorite ? Icons.star : Icons.star_border),
-            title: Text(
-              totp.favorite ? 'Remove from favorites' : 'Add to favorites',
-            ),
-            onTap: () async {
-              Navigator.pop(sheetCtx);
-              await cubit.toggleFavorite(id, totp);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text('Update'),
-            onTap: () async {
-              Navigator.pop(sheetCtx);
-              await router.push('/totp/$id');
-              await cubit.load();
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.delete_outline),
-            title: const Text('Delete'),
-            onTap: () async {
-              Navigator.pop(sheetCtx);
-              final confirmed = await _confirmDelete(context);
-              if (confirmed) await cubit.delete(id);
-            },
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Future<bool> _confirmDelete(BuildContext context) async {
-  final result = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Delete account?'),
-      content: const Text('This will remove this TOTP entry.'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Delete'),
-        ),
-      ],
-    ),
-  );
-  return result ?? false;
-}
-
-class TotpEntryItem extends StatefulWidget {
+class TotpEntryItem extends StatelessWidget {
   final String id;
   final Totp totp;
 
   const TotpEntryItem({super.key, required this.id, required this.totp});
 
   @override
-  State<TotpEntryItem> createState() => _TotpEntryItemState();
-}
-
-class _TotpEntryItemState extends State<TotpEntryItem> {
-  bool _clicked = false;
-
-  @override
   Widget build(BuildContext context) {
     final cubit = context.read<HomeCubit>();
-    return GestureDetector(
-      onTap: () async {
-        final code = getCode(
-          secret: widget.totp.secret,
-          algorithm: widget.totp.algorithm,
-          digits: widget.totp.digits,
-          period: widget.totp.period,
-          ms: DateTime.now().millisecondsSinceEpoch,
-        );
-        await Clipboard.setData(ClipboardData(text: code));
-        if (!context.mounted) {
-          return;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: const Duration(milliseconds: 1500),
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            backgroundColor: Colors.black87,
-            content: Text(
-              'Copied to clipboard',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        );
-      },
-      onLongPress: () => _showEntryMenu(context, cubit, widget.id, widget.totp),
-      onTapDown: (_) {
-        setState(() {
-          _clicked = true;
-        });
-      },
-      child: AnimatedOpacity(
-        duration: Duration(milliseconds: 100),
-        opacity: _clicked ? 0.5 : 1,
-        onEnd: () {
-          if (_clicked) {
-            setState(() {
-              _clicked = false;
-            });
-          }
-        },
-        child: Surface(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              children: [
-                _icon(),
-                SizedBox(width: 16),
-                Expanded(child: _otp()),
-                SizedBox(width: 16),
-                _timer(),
-              ],
-            ),
+    return Surface(
+      child: InkWell(
+        onTap: () => _showCopyCode(context, totp),
+        onLongPress: () => _showEntryMenu(context, cubit, id, totp),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Row(
+            children: [
+              _icon(),
+              SizedBox(width: 16),
+              Expanded(child: _otp()),
+              SizedBox(width: 16),
+              _timer(),
+            ],
           ),
         ),
       ),
@@ -307,11 +194,9 @@ class _TotpEntryItemState extends State<TotpEntryItem> {
   }
 
   Widget _icon() {
-    final iconPath = BrandIcons.resolve(widget.totp.issuer);
-
-    String totpIssuer = widget.totp.issuer.isEmpty ? '*' : widget.totp.issuer;
+    final iconPath = BrandIcons.resolve(totp.issuer);
+    String totpIssuer = totp.issuer.isEmpty ? '*' : totp.issuer;
     totpIssuer = totpIssuer[0].toUpperCase();
-
     return SizedBox(
       height: 44,
       width: 44,
@@ -358,13 +243,13 @@ class _TotpEntryItemState extends State<TotpEntryItem> {
           crossAxisAlignment: .end,
           children: [
             Text(
-              widget.totp.issuer,
+              totp.issuer,
               style: TextStyle(fontSize: 13.5, fontWeight: FontWeight(600)),
             ),
             SizedBox(width: 5),
             Expanded(
               child: Text(
-                widget.totp.account,
+                totp.account,
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight(400),
@@ -376,16 +261,16 @@ class _TotpEntryItemState extends State<TotpEntryItem> {
           ],
         ),
         OTPCode(
-          secret: widget.totp.secret,
-          algorithm: widget.totp.algorithm,
-          digits: widget.totp.digits,
-          period: widget.totp.period,
+          secret: totp.secret,
+          algorithm: totp.algorithm,
+          digits: totp.digits,
+          period: totp.period,
         ),
       ],
     );
   }
 
   Widget _timer() {
-    return Timer(period: widget.totp.period);
+    return Timer(period: totp.period);
   }
 }
