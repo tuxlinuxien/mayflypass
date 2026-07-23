@@ -17,6 +17,7 @@ class _BackupSecretsState extends State<BackupSecrets> {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return IconButton.filled(
       onPressed: _loading
           ? null
@@ -30,7 +31,7 @@ class _BackupSecretsState extends State<BackupSecrets> {
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Your secrets have been exported'),
+                  content: Text(l10i.secretsExported),
                   backgroundColor: Colors.green,
                 ),
               );

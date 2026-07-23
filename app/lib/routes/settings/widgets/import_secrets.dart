@@ -20,6 +20,7 @@ class _ImportSecretsState extends State<ImportSecrets> {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return IconButton.filled(
       onPressed: _loading
           ? null
@@ -33,7 +34,7 @@ class _ImportSecretsState extends State<ImportSecrets> {
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('$total secrets have been imported'),
+                  content: Text(l10i.secretsImported(total)),
                   backgroundColor: Colors.green,
                 ),
               );

@@ -19,13 +19,13 @@ class SettingsPage extends StatelessWidget {
           final l10i = AppLocalizations.of(context)!;
           final cubit = context.read<SettingsCubit>();
           return Scaffold(
-            appBar: AppBar(title: Text('Settings')),
+            appBar: AppBar(title: Text(l10i.settings)),
             body: SingleChildScrollView(
               child: MainContainer(
                 child: Column(
                   crossAxisAlignment: .stretch,
                   children: [
-                    Text('Account', style: AppTheme.helperStyle),
+                    Text(l10i.accountSection, style: AppTheme.helperStyle),
                     Spacer8,
                     Surface(
                       child: Column(
@@ -52,7 +52,7 @@ class SettingsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text('Last synchronization'),
+                                      Text(l10i.lastSynchronization),
                                       Text(
                                         state.lastSync == null
                                             ? '--'
@@ -87,9 +87,9 @@ class SettingsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text('Change password'),
+                                      Text(l10i.changePassword),
                                       Text(
-                                        'Change your account password',
+                                        l10i.changePasswordDescription,
                                         style: AppTheme.helperStyle,
                                       ),
                                     ],
@@ -108,7 +108,7 @@ class SettingsPage extends StatelessWidget {
                       ),
                     ),
                     SpacerSection,
-                    Text('Security', style: AppTheme.helperStyle),
+                    Text(l10i.securitySection, style: AppTheme.helperStyle),
                     Spacer8,
                     Surface(
                       child: Column(
@@ -121,9 +121,9 @@ class SettingsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text('Biometric unlock'),
+                                      Text(l10i.biometricUnlock),
                                       Text(
-                                        'Use your fingerprint to unlock the application',
+                                        l10i.biometricUnlockDescription,
                                         style: AppTheme.helperStyle,
                                       ),
                                     ],
@@ -136,7 +136,9 @@ class SettingsPage extends StatelessWidget {
                                               false) ==
                                           false)
                                       ? null
-                                      : (_) => cubit.updateBiometricUnlock(),
+                                      : (_) => cubit.updateBiometricUnlock(
+                                          l10i.biometricUnlockReason,
+                                        ),
                                 ),
                               ],
                             ),
@@ -150,9 +152,9 @@ class SettingsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text('Auto-lock'),
+                                      Text(l10i.autoLock),
                                       Text(
-                                        'Automatically lock after',
+                                        l10i.autoLockDescription,
                                         style: AppTheme.helperStyle,
                                       ),
                                     ],
@@ -171,7 +173,7 @@ class SettingsPage extends StatelessWidget {
                       ),
                     ),
                     SpacerSection,
-                    Text('Backup / Import', style: AppTheme.helperStyle),
+                    Text(l10i.backupImportSection, style: AppTheme.helperStyle),
                     SizedBox(height: 9),
                     Surface(
                       child: Column(
@@ -184,9 +186,9 @@ class SettingsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text('Backup'),
+                                      Text(l10i.backup),
                                       Text(
-                                        'Download your secrets onto your device',
+                                        l10i.backupDescription,
                                         style: AppTheme.helperStyle,
                                       ),
                                     ],
@@ -205,9 +207,9 @@ class SettingsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text('Import'),
+                                      Text(l10i.import),
                                       Text(
-                                        'Import secrets into you account',
+                                        l10i.importDescription,
                                         style: AppTheme.helperStyle,
                                       ),
                                     ],
@@ -232,7 +234,7 @@ class SettingsPage extends StatelessWidget {
                       ),
                       onPressed: globalAuth.logout,
                       label: Text(
-                        'Logout',
+                        l10i.logout,
                         style: TextStyle(color: AppTheme.DangerColor),
                       ),
                       icon: Icon(Icons.logout),

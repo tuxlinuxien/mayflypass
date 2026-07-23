@@ -47,7 +47,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> updateBiometricUnlock() async {
+  Future<void> updateBiometricUnlock(String localizedReason) async {
     emit(state.copyWith(status: .loading));
     final kek = getGlobalKek();
     if (kek == null) {
@@ -61,7 +61,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       try {
         final LocalAuthentication auth = LocalAuthentication();
         final isAuthenticated = await auth.authenticate(
-          localizedReason: 'Unlock',
+          localizedReason: localizedReason,
         );
         if (isAuthenticated) {
           await globalStore.setKek(kek);

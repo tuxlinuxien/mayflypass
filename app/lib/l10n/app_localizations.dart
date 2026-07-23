@@ -260,6 +260,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The master password has been updated successfully.\nPlease login to your account.'**
   String get changePasswordSuccess;
+
+  /// No description provided for @addAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get addAccount;
+
+  /// No description provided for @updateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Update account'**
+  String get updateAccount;
+
+  /// No description provided for @scanQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get scanQrCode;
+
+  /// No description provided for @scanQrDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at the QR code \nshown by the service you\'re adding.'**
+  String get scanQrDescription;
+
+  /// No description provided for @enterSetupKeyManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter setup key manually'**
+  String get enterSetupKeyManually;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// No description provided for @issuer.
+  ///
+  /// In en, this message translates to:
+  /// **'Issuer'**
+  String get issuer;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'(optional)'**
+  String get optional;
+
+  /// No description provided for @secret.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret'**
+  String get secret;
+
+  /// No description provided for @algorithm.
+  ///
+  /// In en, this message translates to:
+  /// **'Algorithm'**
+  String get algorithm;
+
+  /// No description provided for @digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Digits'**
+  String get digits;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSection;
+
+  /// No description provided for @lastSynchronization.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synchronization'**
+  String get lastSynchronization;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your account password'**
+  String get changePasswordDescription;
+
+  /// No description provided for @securitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get securitySection;
+
+  /// No description provided for @biometricUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric unlock'**
+  String get biometricUnlock;
+
+  /// No description provided for @biometricUnlockDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your fingerprint to unlock the application'**
+  String get biometricUnlockDescription;
+
+  /// No description provided for @autoLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-lock'**
+  String get autoLock;
+
+  /// No description provided for @autoLockDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically lock after'**
+  String get autoLockDescription;
+
+  /// No description provided for @backupImportSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup / Import'**
+  String get backupImportSection;
+
+  /// No description provided for @backup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backup;
+
+  /// No description provided for @backupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Download your secrets onto your device'**
+  String get backupDescription;
+
+  /// No description provided for @import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get import;
+
+  /// No description provided for @importDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Import secrets into your account'**
+  String get importDescription;
+
+  /// No description provided for @secretsExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Your secrets have been exported'**
+  String get secretsExported;
+
+  /// No description provided for @secretsImported.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No secrets imported} =1{1 secret imported} other{{count} secrets imported}}'**
+  String secretsImported(int count);
+
+  /// No description provided for @biometricUnlockReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get biometricUnlockReason;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

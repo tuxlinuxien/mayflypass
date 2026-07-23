@@ -63,7 +63,9 @@ class __TotpManualPageState extends State<_TotpManualPage> {
           final cubit = context.read<TotpCubit>();
           return Scaffold(
             appBar: AppBar(
-              title: Text(widget.id == null ? 'Add account' : 'Update account'),
+              title: Text(
+                widget.id == null ? l10i.addAccount : l10i.updateAccount,
+              ),
             ),
             body: SingleChildScrollView(
               child: MainContainer(
@@ -107,12 +109,15 @@ class __TotpManualPageState extends State<_TotpManualPage> {
                     ),
                     SpacerSection,
                     MTextFormField(
-                      labelText: 'Tags',
+                      labelText: l10i.tags,
                       controller: _tagsController,
                       onChanged: cubit.changeTags,
                     ),
                     SpacerSection,
-                    FilledButton(onPressed: cubit.submit, child: Text('Save')),
+                    FilledButton(
+                      onPressed: cubit.submit,
+                      child: Text(l10i.save),
+                    ),
                   ],
                 ),
               ),
@@ -138,8 +143,9 @@ class IssuerInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return MTextFormField(
-      labelText: 'Issuer',
+      labelText: l10i.issuer,
       errorText: errorText,
       controller: controller,
       onChanged: onChanged,
@@ -161,9 +167,10 @@ class AccountInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return MTextFormField(
-      labelText: 'Account',
-      hintText: '(optional)',
+      labelText: l10i.account,
+      hintText: l10i.optional,
       controller: controller,
       onChanged: onChanged,
     );
@@ -184,8 +191,9 @@ class SecretInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return MTextFormField(
-      labelText: 'Secret',
+      labelText: l10i.secret,
       errorText: errorText,
       controller: controller,
       onChanged: onChanged,
@@ -205,10 +213,11 @@ class AlgorithmSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        MLabel(text: 'Algorithm'),
+        MLabel(text: l10i.algorithm),
         Spacer4,
         DropdownButtonFormField<TotpAlgorithm>(
           decoration: InputDecoration(border: OutlineInputBorder()),
@@ -235,10 +244,11 @@ class DigitsSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        MLabel(text: 'Digits'),
+        MLabel(text: l10i.digits),
         Spacer4,
         DropdownButtonFormField<int>(
           decoration: InputDecoration(border: OutlineInputBorder()),
@@ -269,7 +279,7 @@ class PeriodSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        MLabel(text: 'Period'),
+        MLabel(text: l10i.period),
         Spacer4,
         DropdownButtonFormField<int>(
           initialValue: value,

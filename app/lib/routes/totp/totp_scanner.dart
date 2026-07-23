@@ -98,6 +98,7 @@ class __TotpScannerState extends State<_TotpScanner> {
 
   @override
   Widget build(BuildContext context) {
+    final l10i = AppLocalizations.of(context)!;
     final size = MediaQuery.sizeOf(context);
     final side = size.shortestSide * 0.7;
     final square = Rect.fromCenter(
@@ -106,7 +107,7 @@ class __TotpScannerState extends State<_TotpScanner> {
       height: side,
     );
     return Scaffold(
-      appBar: AppBar(title: Text('Add account')),
+      appBar: AppBar(title: Text(l10i.addAccount)),
       body: Stack(
         children: [
           MobileScanner(
@@ -134,7 +135,7 @@ class __TotpScannerState extends State<_TotpScanner> {
             height: 36 + 16 + 28,
             child: Center(
               child: Text(
-                'Scan QR code',
+                l10i.scanQrCode,
                 style: AppTheme.subTitleStyle,
                 textAlign: .center,
               ),
@@ -148,7 +149,7 @@ class __TotpScannerState extends State<_TotpScanner> {
               crossAxisAlignment: .stretch,
               children: [
                 Text(
-                  'Point your camera at the QR code \nshown by the service you\'re adding.',
+                  l10i.scanQrDescription,
                   style: AppTheme.helperStyle,
                   textAlign: .center,
                 ),
@@ -170,7 +171,7 @@ class __TotpScannerState extends State<_TotpScanner> {
                         size: 30,
                       ),
                       SizedBox(width: 10),
-                      Text('Enter setup key manually'),
+                      Text(l10i.enterSetupKeyManually),
                     ],
                   ),
                 ),
