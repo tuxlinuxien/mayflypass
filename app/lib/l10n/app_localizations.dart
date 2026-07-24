@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
 
 // ignore_for_file: type=lint
 
@@ -90,7 +91,8 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
-    Locale('en')
+    Locale('en'),
+    Locale('fr')
   ];
 
   /// No description provided for @appName.
@@ -168,7 +170,7 @@ abstract class AppLocalizations {
   /// No description provided for @usernameTooLong.
   ///
   /// In en, this message translates to:
-  /// **'Username must be at less than {max} characters long'**
+  /// **'Username must be at most {max} characters long'**
   String usernameTooLong(int max);
 
   /// No description provided for @passwordTooShort.
@@ -246,7 +248,7 @@ abstract class AppLocalizations {
   /// No description provided for @totpSecretTooShort.
   ///
   /// In en, this message translates to:
-  /// **'Secrete must be at least {min} characters long'**
+  /// **'Secret must be at least {min} characters long'**
   String totpSecretTooShort(int min);
 
   /// No description provided for @totpPeriodSeconds.
@@ -457,7 +459,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -469,6 +471,7 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en': return AppLocalizationsEn();
+    case 'fr': return AppLocalizationsFr();
   }
 
   throw FlutterError(

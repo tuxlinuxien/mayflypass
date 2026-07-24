@@ -48,7 +48,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String usernameTooLong(int max) {
-    return 'Username must be at less than $max characters long';
+    return 'Username must be at most $max characters long';
   }
 
   @override
@@ -93,7 +93,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String totpSecretTooShort(int min) {
-    return 'Secrete must be at least $min characters long';
+    return 'Secret must be at least $min characters long';
   }
 
   @override
