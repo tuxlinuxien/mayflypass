@@ -1,0 +1,164 @@
+{
+  "@@locale": "fr",
+  "@@author": "Yoann Cerda <yoann.cerda@proton.me>",
+  "appName": "Mayfly Pass",
+  "@appName": {},
+  "username": "Nom d'utilisateur",
+  "@username": {},
+  "login": "Connexion",
+  "@login": {},
+  "loginToAccount": "Connectez-vous à votre compte",
+  "@loginToAccount": {},
+  "register": "S'inscrire",
+  "@register": {},
+  "masterPassword": "Mot de passe principal",
+  "@masterPassword": {},
+  "confirmMasterPassword": "Confirmer le mot de passe principal",
+  "@confirmMasterPassword": {},
+  "or": "ou",
+  "@or": {},
+  "registerNewAccount": "Créer un nouveau compte",
+  "@registerNewAccount": {},
+  "fieldRequired": "Ce champ est obligatoire",
+  "@fieldRequired": {},
+  "usernameInvalid": "Nom d'utilisateur invalide",
+  "@usernameInvalid": {},
+  "usernameTooShort": "Le nom d'utilisateur doit contenir au moins {min} caractères",
+  "@usernameTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "usernameTooLong": "Le nom d'utilisateur ne peut pas dépasser {max} caractères",
+  "@usernameTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "passwordTooShort": "Le mot de passe doit contenir au moins {min} caractères",
+  "@passwordTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "passwordMismatch": "Les mots de passe ne correspondent pas",
+  "@passwordMismatch": {},
+  "accountCreatedSuccessfully": "Compte créé avec succès",
+  "@accountCreatedSuccessfully": {},
+  "accountAlreadyExists": "Un compte avec ce nom d'utilisateur existe déjà",
+  "@accountAlreadyExists": {},
+  "thereWasProblem": "Un problème est survenu lors du traitement de votre demande",
+  "@thereWasProblem": {},
+  "invalidCredentials": "Identifiants invalides",
+  "@invalidCredentials": {},
+  "loggedIn": "Bonjour de retour {username}",
+  "@loggedIn": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidMasterPassword": "Mot de passe principal invalide",
+  "@invalidMasterPassword": {},
+  "unlock": "Déverrouiller",
+  "@unlock": {},
+  "settings": "Paramètres",
+  "@settings": {},
+  "logout": "Déconnexion",
+  "@logout": {},
+  "newTotp": "Nouveau TOTP",
+  "@newTotp": {},
+  "totpSecretTooShort": "La clé secrète doit contenir au moins {min} caractères",
+  "@totpSecretTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "totpPeriodSeconds": "{seconds, plural, =0{0 seconde} =1{1 seconde} other{{seconds} secondes}}",
+  "@totpPeriodSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "changePasswordSuccess": "Le mot de passe principal a été mis à jour avec succès.\nVeuillez vous connecter à votre compte.",
+  "@changePasswordSuccess": {},
+  "addAccount": "Ajouter un compte",
+  "@addAccount": {},
+  "updateAccount": "Modifier le compte",
+  "@updateAccount": {},
+  "scanQrCode": "Scanner le code QR",
+  "@scanQrCode": {},
+  "scanQrDescription": "Pointez votre caméra vers le code QR\naffiché par le service que vous ajoutez.",
+  "@scanQrDescription": {},
+  "enterSetupKeyManually": "Saisir la clé de configuration manuellement",
+  "@enterSetupKeyManually": {},
+  "save": "Enregistrer",
+  "@save": {},
+  "tags": "Étiquettes",
+  "@tags": {},
+  "issuer": "Émetteur",
+  "@issuer": {},
+  "account": "Compte",
+  "@account": {},
+  "optional": "(facultatif)",
+  "@optional": {},
+  "secret": "Clé secrète",
+  "@secret": {},
+  "algorithm": "Algorithme",
+  "@algorithm": {},
+  "digits": "Chiffres",
+  "@digits": {},
+  "period": "Durée",
+  "@period": {},
+  "accountSection": "Compte",
+  "@accountSection": {},
+  "lastSynchronization": "Dernière synchronisation",
+  "@lastSynchronization": {},
+  "changePassword": "Modifier le mot de passe",
+  "@changePassword": {},
+  "changePasswordDescription": "Modifier le mot de passe de votre compte",
+  "@changePasswordDescription": {},
+  "securitySection": "Sécurité",
+  "@securitySection": {},
+  "biometricUnlock": "Déverrouillage biométrique",
+  "@biometricUnlock": {},
+  "biometricUnlockDescription": "Utiliser votre empreinte digitale pour déverrouiller l'application",
+  "@biometricUnlockDescription": {},
+  "autoLock": "Verrouillage automatique",
+  "@autoLock": {},
+  "autoLockDescription": "Se verrouiller automatiquement après",
+  "@autoLockDescription": {},
+  "backupImportSection": "Sauvegarde / Importation",
+  "@backupImportSection": {},
+  "backup": "Sauvegarde",
+  "@backup": {},
+  "backupDescription": "Télécharger vos clés secrètes sur votre appareil",
+  "@backupDescription": {},
+  "import": "Importer",
+  "@import": {},
+  "importDescription": "Importer des clés secrètes dans votre compte",
+  "@importDescription": {},
+  "secretsExported": "Vos clés secrètes ont été exportées",
+  "@secretsExported": {},
+  "secretsImported": "{count, plural, =0{Aucune clé secrète importée} =1{1 clé secrète importée} other{{count} clés secrètes importées}}",
+  "@secretsImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "biometricUnlockReason": "Déverrouiller",
+  "@biometricUnlockReason": {}
+}
