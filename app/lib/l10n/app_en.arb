@@ -31,7 +31,7 @@
       }
     }
   },
-  "usernameTooLong": "Username must be at less than {max} characters long",
+  "usernameTooLong": "Username must be at most {max} characters long",
   "@usernameTooLong": {
     "placeholders": {
       "max": {
@@ -75,7 +75,7 @@
   "@logout": {},
   "newTotp": "New TOTP",
   "@newTotp": {},
-  "totpSecretTooShort": "Secrete must be at least {min} characters long",
+  "totpSecretTooShort": "Secret must be at least {min} characters long",
   "@totpSecretTooShort": {
     "placeholders": {
       "min": {
