@@ -9,16 +9,10 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appName => 'Mayfly Pass';
-
-  @override
   String get username => 'Nom d\'utilisateur';
 
   @override
   String get login => 'Connexion';
-
-  @override
-  String get loginToAccount => 'Connectez-vous à votre compte';
 
   @override
   String get register => 'S\'inscrire';
@@ -31,9 +25,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get or => 'ou';
-
-  @override
-  String get registerNewAccount => 'Créer un nouveau compte';
 
   @override
   String get fieldRequired => 'Ce champ est obligatoire';
@@ -87,9 +78,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get logout => 'Déconnexion';
-
-  @override
-  String get newTotp => 'Nouveau TOTP';
 
   @override
   String totpSecretTooShort(int min) {

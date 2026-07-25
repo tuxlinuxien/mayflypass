@@ -1,14 +1,10 @@
 {
   "@@locale": "en",
   "@@author": "Yoann Cerda <yoann.cerda@proton.me>",
-  "appName": "Mayfly Pass",
-  "@appName": {},
   "username": "Username",
   "@username": {},
   "login": "Login",
   "@login": {},
-  "loginToAccount": "Login to your account",
-  "@loginToAccount": {},
   "register": "Register",
   "@register": {},
   "masterPassword": "Master Password",
@@ -17,8 +13,6 @@
   "@confirmMasterPassword": {},
   "or": "or",
   "@or": {},
-  "registerNewAccount": "Register new account",
-  "@registerNewAccount": {},
   "fieldRequired": "This field is required",
   "@fieldRequired": {},
   "usernameInvalid": "Invalid username",
@@ -73,8 +67,6 @@
   "@settings": {},
   "logout": "Logout",
   "@logout": {},
-  "newTotp": "New TOTP",
-  "@newTotp": {},
   "totpSecretTooShort": "Secret must be at least {min} characters long",
   "@totpSecretTooShort": {
     "placeholders": {

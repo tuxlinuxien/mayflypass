@@ -95,12 +95,6 @@ abstract class AppLocalizations {
     Locale('fr')
   ];
 
-  /// No description provided for @appName.
-  ///
-  /// In en, this message translates to:
-  /// **'Mayfly Pass'**
-  String get appName;
-
   /// No description provided for @username.
   ///
   /// In en, this message translates to:
@@ -112,12 +106,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login'**
   String get login;
-
-  /// No description provided for @loginToAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Login to your account'**
-  String get loginToAccount;
 
   /// No description provided for @register.
   ///
@@ -142,12 +130,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'or'**
   String get or;
-
-  /// No description provided for @registerNewAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Register new account'**
-  String get registerNewAccount;
 
   /// No description provided for @fieldRequired.
   ///
@@ -238,12 +220,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logout'**
   String get logout;
-
-  /// No description provided for @newTotp.
-  ///
-  /// In en, this message translates to:
-  /// **'New TOTP'**
-  String get newTotp;
 
   /// No description provided for @totpSecretTooShort.
   ///
