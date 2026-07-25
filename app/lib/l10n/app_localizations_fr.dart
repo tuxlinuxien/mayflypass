@@ -302,4 +302,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsLanguageDescription => 'Changer la langue de l\'application';
+
+  @override
+  String get settingsLanguageRestartRequired => 'Vous devez redémarrer l\'application afin d\'appliquer ce paramètre';
 }

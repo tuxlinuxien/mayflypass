@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:mayflypass/helpers/toasts.dart';
 import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
 import 'package:mayflypass/routes/settings/widgets/backup_secrets.dart';
@@ -127,7 +128,14 @@ class SettingsPage extends StatelessWidget {
                                 ),
                                 LocaleDropdown(
                                   value: state.lang,
-                                  onChanged: cubit.updateLang,
+                                  onChanged: (lang) async {
+                                    await cubit.updateLang(lang);
+                                    if (!context.mounted) return;
+                                    showSuccess(
+                                      context,
+                                      l10i.settingsLanguageRestartRequired,
+                                    );
+                                  },
                                 ),
                               ],
                             ),

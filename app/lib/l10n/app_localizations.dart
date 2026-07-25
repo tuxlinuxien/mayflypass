@@ -628,6 +628,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change the language of the application'**
   String get settingsLanguageDescription;
+
+  /// No description provided for @settingsLanguageRestartRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to restart the application in order to apply this setting'**
+  String get settingsLanguageRestartRequired;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

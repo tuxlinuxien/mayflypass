@@ -9,6 +9,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // initialize all routes
   initRouter();
+  // initialize brand icons asset
+  await BrandIcons.init();
+
   if (DEV_MODE) {
     setGlobalTestKek();
     initStore(MemoryStore());
@@ -21,13 +24,15 @@ Future<void> main() async {
     initStore(FSStore());
     initDB();
   }
-  logger.i('[API_URL] $API_URL');
-  await BrandIcons.init();
-  runApp(const MyApp());
+
+  final lang = await globalStore.getLang();
+  runApp(MyApp(lang: lang));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final String lang;
+
+  const MyApp({super.key, required this.lang});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -74,7 +79,7 @@ class _MyAppState extends State<MyApp> {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: AppLocalizations.supportedLocales[1],
+          locale: Locale.fromSubtags(languageCode: widget.lang),
           theme: AppTheme.dark,
           darkTheme: AppTheme.dark,
           themeMode: .dark,

@@ -221,5 +221,7 @@
   "settingsLanguageTitle": "Language",
   "@settingsLanguageTitle": {},
   "settingsLanguageDescription": "Change the language of the application",
-  "@settingsLanguageDescription": {}
+  "@settingsLanguageDescription": {},
+  "settingsLanguageRestartRequired": "You need to restart the application in order to apply this setting",
+  "@settingsLanguageRestartRequired": {}
 }
