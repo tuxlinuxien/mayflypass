@@ -17,6 +17,7 @@ abstract class SettingsState with _$SettingsState {
     @Default(null) Duration? lockoutAfter,
     @Default(null) bool? biometricUnlock,
     @Default(null) bool? biometricUnlockAvailable,
+    @Default(null) String? lang,
   }) = _SettingsState;
 }
 
@@ -42,6 +43,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         biometricUnlock: await globalStore.hasKek(),
         biometricUnlockAvailable: biometricUnlockAvailable,
         lastSync: await globalStore.getLastSync(),
+        lang: await globalStore.getLang(),
         status: SettingsStatus.ready,
       ),
     );
@@ -79,6 +81,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(status: .loading));
     await globalStore.setSettingsLockAfterDuration(value);
     emit(state.copyWith(status: .ready, lockoutAfter: value));
+  }
+
+  Future<void> updateLang(String? lang) async {
+    emit(state.copyWith(status: .loading));
+    if (lang != null) {
+      await globalStore.setLang(lang);
+    }
+    final current = await globalStore.getLang();
+    emit(state.copyWith(status: .ready, lang: current));
   }
 
   Future<void> sync() async {

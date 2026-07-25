@@ -63,14 +63,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(height: 22),
                   Center(
                     child: Text(
-                      'Create account',
+                      l10n.registerTitle,
                       style: AppTheme.mainTitleStyle,
                     ),
                   ),
                   Spacer8,
                   Center(
                     child: Text(
-                      'Your codes stay encrypted on this device.\nOne account to sync and restore.',
+                      l10n.registerSubtitle,
                       style: AppTheme.helperStyle,
                       textAlign: .center,
                     ),
@@ -116,11 +116,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: 'Already have an account? ',
+                        text: l10n.registerHaveAccountPrefix,
                         style: AppTheme.helperStyle,
                         children: [
                           TextSpan(
-                            text: 'Sign in',
+                            text: l10n.registerSignInLink,
                             style: AppTheme.helperStyleLink,
                             recognizer: _signInTap,
                           ),

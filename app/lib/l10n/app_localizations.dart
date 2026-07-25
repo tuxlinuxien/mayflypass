@@ -448,6 +448,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlock'**
   String get biometricUnlockReason;
+
+  /// No description provided for @loginWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get loginWelcomeTitle;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Mayfly Pass to sync your codes.'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get loginSubmit;
+
+  /// No description provided for @loginNewHerePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'New here? '**
+  String get loginNewHerePrefix;
+
+  /// No description provided for @loginCreateAccountLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account'**
+  String get loginCreateAccountLink;
+
+  /// No description provided for @registerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get registerTitle;
+
+  /// No description provided for @registerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your codes stay encrypted on this device.\nOne account to sync and restore.'**
+  String get registerSubtitle;
+
+  /// No description provided for @registerHaveAccountPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get registerHaveAccountPrefix;
+
+  /// No description provided for @registerSignInLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get registerSignInLink;
+
+  /// No description provided for @unlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked vault'**
+  String get unlockTitle;
+
+  /// No description provided for @unlockBiometricLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with fingerprint'**
+  String get unlockBiometricLabel;
+
+  /// No description provided for @unlockNotYouPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Not you? '**
+  String get unlockNotYouPrefix;
+
+  /// No description provided for @unlockSignOutLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get unlockSignOutLink;
+
+  /// No description provided for @changePasswordFormOldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Old password'**
+  String get changePasswordFormOldLabel;
+
+  /// No description provided for @changePasswordFormNewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get changePasswordFormNewLabel;
+
+  /// No description provided for @changePasswordFormConfirmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get changePasswordFormConfirmLabel;
+
+  /// No description provided for @homeFavoritesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'favorites'**
+  String get homeFavoritesTitle;
+
+  /// No description provided for @homeAccountsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'accounts'**
+  String get homeAccountsTitle;
+
+  /// No description provided for @homeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get homeSearchHint;
+
+  /// No description provided for @entryMenuAddToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get entryMenuAddToFavorites;
+
+  /// No description provided for @entryMenuRemoveFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get entryMenuRemoveFromFavorites;
+
+  /// No description provided for @entryMenuUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get entryMenuUpdate;
+
+  /// No description provided for @entryMenuDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get entryMenuDelete;
+
+  /// No description provided for @confirmDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get confirmDialogTitle;
+
+  /// No description provided for @confirmDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove this TOTP entry.'**
+  String get confirmDialogContent;
+
+  /// No description provided for @confirmDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get confirmDialogCancel;
+
+  /// No description provided for @confirmDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get confirmDialogConfirm;
+
+  /// No description provided for @clipboardCopiedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get clipboardCopiedMessage;
+
+  /// No description provided for @settingsLanguageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageTitle;
+
+  /// No description provided for @settingsLanguageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the language of the application'**
+  String get settingsLanguageDescription;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

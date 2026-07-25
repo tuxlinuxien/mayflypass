@@ -6,6 +6,7 @@ Future<void> _showEntryMenu(
   String id,
   Totp totp,
 ) {
+  final l10n = AppLocalizations.of(context)!;
   return showModalBottomSheet(
     context: context,
     backgroundColor: AppTheme.AppBackgroundColor,
@@ -16,7 +17,9 @@ Future<void> _showEntryMenu(
           ListTile(
             leading: Icon(totp.favorite ? Icons.star : Icons.star_border),
             title: Text(
-              totp.favorite ? 'Remove from favorites' : 'Add to favorites',
+              totp.favorite
+                  ? l10n.entryMenuRemoveFromFavorites
+                  : l10n.entryMenuAddToFavorites,
             ),
             onTap: () async {
               Navigator.pop(sheetCtx);
@@ -25,7 +28,7 @@ Future<void> _showEntryMenu(
           ),
           ListTile(
             leading: const Icon(Icons.edit),
-            title: const Text('Update'),
+            title: Text(l10n.entryMenuUpdate),
             onTap: () async {
               Navigator.pop(sheetCtx);
               await router.push('/totp/$id');
@@ -34,7 +37,7 @@ Future<void> _showEntryMenu(
           ),
           ListTile(
             leading: const Icon(Icons.delete_outline),
-            title: const Text('Delete'),
+            title: Text(l10n.entryMenuDelete),
             onTap: () async {
               Navigator.pop(sheetCtx);
               final confirmed = await _confirmDelete(context);
@@ -48,19 +51,20 @@ Future<void> _showEntryMenu(
 }
 
 Future<bool> _confirmDelete(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
   final result = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Delete account?'),
-      content: const Text('This will remove this TOTP entry.'),
+      title: Text(l10n.confirmDialogTitle),
+      content: Text(l10n.confirmDialogContent),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
+          child: Text(l10n.confirmDialogCancel),
         ),
         TextButton(
           onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Delete'),
+          child: Text(l10n.confirmDialogConfirm),
         ),
       ],
     ),
@@ -80,6 +84,7 @@ Future<void> _showCopyCode(BuildContext context, Totp totp) async {
   if (!context.mounted) {
     return;
   }
+  final l10n = AppLocalizations.of(context)!;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       duration: const Duration(milliseconds: 1500),
@@ -87,7 +92,7 @@ Future<void> _showCopyCode(BuildContext context, Totp totp) async {
       margin: const EdgeInsets.all(16),
       backgroundColor: Colors.black87,
       content: Text(
-        'Copied to clipboard',
+        l10n.clipboardCopiedMessage,
         style: TextStyle(color: Colors.white),
       ),
     ),

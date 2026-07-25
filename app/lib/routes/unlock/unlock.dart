@@ -60,7 +60,10 @@ class _UnlockPageState extends State<UnlockPage> {
                   Center(child: Logo()),
                   SizedBox(height: 22),
                   Center(
-                    child: Text('Locked vault', style: AppTheme.mainTitleStyle),
+                    child: Text(
+                      l10n.unlockTitle,
+                      style: AppTheme.mainTitleStyle,
+                    ),
                   ),
                   Spacer8,
                   Row(
@@ -106,7 +109,7 @@ class _UnlockPageState extends State<UnlockPage> {
                                 size: 30,
                               ),
                               SizedBox(width: 10),
-                              Text('Unlock with fingerprint'),
+                              Text(l10n.unlockBiometricLabel),
                             ],
                           ),
                         )
@@ -116,11 +119,11 @@ class _UnlockPageState extends State<UnlockPage> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: 'Not you? ',
+                        text: l10n.unlockNotYouPrefix,
                         style: AppTheme.helperStyle,
                         children: [
                           TextSpan(
-                            text: 'Sign out',
+                            text: l10n.unlockSignOutLink,
                             style: AppTheme.helperStyleLink,
                             recognizer: _signOutTap,
                           ),

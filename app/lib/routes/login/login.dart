@@ -63,14 +63,14 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 22),
                       Center(
                         child: Text(
-                          'Welcome back',
+                          l10n.loginWelcomeTitle,
                           style: AppTheme.mainTitleStyle,
                         ),
                       ),
                       Spacer8,
                       Center(
                         child: Text(
-                          'Sign in to Mayfly Pass to sync your codes.',
+                          l10n.loginSubtitle,
                           style: AppTheme.helperStyle,
                         ),
                       ),
@@ -96,18 +96,18 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: state.status == FormStatus.submitting
                             ? null
                             : cubit.submit,
-                        child: Text('Sign in'),
+                        child: Text(l10n.loginSubmit),
                       ),
                       SpacerSection,
                       Spacer(),
                       Center(
                         child: RichText(
                           text: TextSpan(
-                            text: 'New here? ',
+                            text: l10n.loginNewHerePrefix,
                             style: AppTheme.helperStyle,
                             children: [
                               TextSpan(
-                                text: 'Create an account',
+                                text: l10n.loginCreateAccountLink,
                                 style: AppTheme.helperStyleLink,
                                 recognizer: _signUpTap,
                               ),

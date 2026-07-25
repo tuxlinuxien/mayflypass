@@ -5,6 +5,7 @@ import 'package:mayflypass/router.dart';
 import 'package:mayflypass/routes/settings/cubit.dart';
 import 'package:mayflypass/routes/settings/widgets/backup_secrets.dart';
 import 'package:mayflypass/routes/settings/widgets/import_secrets.dart';
+import 'package:mayflypass/routes/settings/widgets/locale_dropdown.dart';
 import 'package:mayflypass/routes/settings/widgets/lockout_dropdown.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -47,6 +48,7 @@ class SettingsPage extends StatelessWidget {
                           IconRow(
                             icon: Icons.cloud_sync_outlined,
                             child: Row(
+                              spacing: 16,
                               children: [
                                 Expanded(
                                   child: Column(
@@ -82,6 +84,7 @@ class SettingsPage extends StatelessWidget {
                           IconRow(
                             icon: Icons.lock_reset,
                             child: Row(
+                              spacing: 16,
                               children: [
                                 Expanded(
                                   child: Column(
@@ -104,6 +107,31 @@ class SettingsPage extends StatelessWidget {
                               ],
                             ),
                           ),
+                          Divider(height: 1),
+                          IconRow(
+                            icon: Icons.translate,
+                            child: Row(
+                              spacing: 16,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .stretch,
+                                    children: [
+                                      Text(l10i.settingsLanguageTitle),
+                                      Text(
+                                        l10i.settingsLanguageDescription,
+                                        style: AppTheme.helperStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                LocaleDropdown(
+                                  value: state.lang,
+                                  onChanged: cubit.updateLang,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -116,6 +144,7 @@ class SettingsPage extends StatelessWidget {
                           IconRow(
                             icon: Icons.fingerprint,
                             child: Row(
+                              spacing: 16,
                               children: [
                                 Expanded(
                                   child: Column(
@@ -147,6 +176,7 @@ class SettingsPage extends StatelessWidget {
                           IconRow(
                             icon: Icons.lock,
                             child: Row(
+                              spacing: 16,
                               children: [
                                 Expanded(
                                   child: Column(
@@ -181,6 +211,7 @@ class SettingsPage extends StatelessWidget {
                           IconRow(
                             icon: Icons.cloud_download,
                             child: Row(
+                              spacing: 16,
                               children: [
                                 Expanded(
                                   child: Column(
@@ -202,6 +233,7 @@ class SettingsPage extends StatelessWidget {
                           IconRow(
                             icon: Icons.cloud_upload,
                             child: Row(
+                              spacing: 16,
                               children: [
                                 Expanded(
                                   child: Column(

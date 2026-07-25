@@ -32,14 +32,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         },
         builder: (context, state) {
           final cubit = context.read<ChangePasswordCubit>();
+          final l10n = AppLocalizations.of(context)!;
           return Scaffold(
-            appBar: AppBar(title: Text('Change password')),
+            appBar: AppBar(title: Text(l10n.changePassword)),
             body: SingleChildScrollView(
               child: MainContainer(
                 child: Column(
                   children: [
                     PasswordField(
-                      labelText: 'Old password',
+                      labelText: l10n.changePasswordFormOldLabel,
                       onChanged: cubit.changeOldPassword,
                       errorText: MasterPasswordValueError.toHuman(context, [
                         state.oldPassword.displayError,
@@ -48,7 +49,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     SpacerFormField,
                     PasswordField(
-                      labelText: 'New password',
+                      labelText: l10n.changePasswordFormNewLabel,
                       onChanged: cubit.changeNewPassword,
                       errorText: MasterPasswordValueError.toHuman(context, [
                         state.newPassword.displayError,
@@ -57,7 +58,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                     SpacerFormField,
                     PasswordField(
-                      labelText: 'Confirm new password',
+                      labelText: l10n.changePasswordFormConfirmLabel,
                       onChanged: cubit.changeConfirmNewPassword,
                       errorText: ConfirmMasterPasswordValueError.toHuman(
                         context,
@@ -69,7 +70,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       onPressed: state.status == .submitting
                           ? null
                           : cubit.submit,
-                      child: Text('Submit'),
+                      child: Text(l10n.save),
                     ),
                     SpacerSection,
                     Row(

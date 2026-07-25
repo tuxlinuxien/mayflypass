@@ -212,4 +212,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get biometricUnlockReason => 'Unlock';
+
+  @override
+  String get loginWelcomeTitle => 'Welcome back';
+
+  @override
+  String get loginSubtitle => 'Sign in to Mayfly Pass to sync your codes.';
+
+  @override
+  String get loginSubmit => 'Sign in';
+
+  @override
+  String get loginNewHerePrefix => 'New here? ';
+
+  @override
+  String get loginCreateAccountLink => 'Create an account';
+
+  @override
+  String get registerTitle => 'Create account';
+
+  @override
+  String get registerSubtitle => 'Your codes stay encrypted on this device.\nOne account to sync and restore.';
+
+  @override
+  String get registerHaveAccountPrefix => 'Already have an account? ';
+
+  @override
+  String get registerSignInLink => 'Sign in';
+
+  @override
+  String get unlockTitle => 'Locked vault';
+
+  @override
+  String get unlockBiometricLabel => 'Unlock with fingerprint';
+
+  @override
+  String get unlockNotYouPrefix => 'Not you? ';
+
+  @override
+  String get unlockSignOutLink => 'Sign out';
+
+  @override
+  String get changePasswordFormOldLabel => 'Old password';
+
+  @override
+  String get changePasswordFormNewLabel => 'New password';
+
+  @override
+  String get changePasswordFormConfirmLabel => 'Confirm new password';
+
+  @override
+  String get homeFavoritesTitle => 'favorites';
+
+  @override
+  String get homeAccountsTitle => 'accounts';
+
+  @override
+  String get homeSearchHint => 'Search';
+
+  @override
+  String get entryMenuAddToFavorites => 'Add to favorites';
+
+  @override
+  String get entryMenuRemoveFromFavorites => 'Remove from favorites';
+
+  @override
+  String get entryMenuUpdate => 'Update';
+
+  @override
+  String get entryMenuDelete => 'Delete';
+
+  @override
+  String get confirmDialogTitle => 'Delete account?';
+
+  @override
+  String get confirmDialogContent => 'This will remove this TOTP entry.';
+
+  @override
+  String get confirmDialogCancel => 'Cancel';
+
+  @override
+  String get confirmDialogConfirm => 'Delete';
+
+  @override
+  String get clipboardCopiedMessage => 'Copied to clipboard';
+
+  @override
+  String get settingsLanguageTitle => 'Language';
+
+  @override
+  String get settingsLanguageDescription => 'Change the language of the application';
 }

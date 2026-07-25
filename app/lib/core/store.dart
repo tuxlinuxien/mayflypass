@@ -36,6 +36,8 @@ abstract class Store {
   Future<void> setSettingsBiometricEnabled(bool value);
   Future<Duration> getSettingsLockAfterDuration();
   Future<void> setSettingsLockAfterDuration(Duration value);
+  Future<String> getLang();
+  Future<void> setLang(String value);
 
   Future<void> flushAll();
 }
@@ -155,6 +157,16 @@ class MemoryStore extends Store {
   @override
   Future<void> setSettingsLockAfterDuration(Duration value) async {
     values['settings_lock_after_duration'] = value.inMinutes;
+  }
+
+  @override
+  Future<String> getLang() async {
+    return values['settings_lang'] as String? ?? 'en';
+  }
+
+  @override
+  Future<void> setLang(String value) async {
+    values['settings_lang'] = value;
   }
 
   @override
@@ -284,6 +296,18 @@ class FSStore extends Store {
       key: 'settings::lock_after_duration',
       value: value.inMinutes.toString(),
     );
+  }
+
+  @override
+  Future<String> getLang() async {
+    logger.d('getLang');
+    return await _getSafeStorage().read(key: 'settings::lang') ?? 'en';
+  }
+
+  @override
+  Future<void> setLang(String value) async {
+    logger.d('setLang');
+    await _getSafeStorage().write(key: 'settings::lang', value: value);
   }
 
   @override

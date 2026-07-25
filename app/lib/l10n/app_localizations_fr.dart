@@ -212,4 +212,94 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get biometricUnlockReason => 'Déverrouiller';
+
+  @override
+  String get loginWelcomeTitle => 'Bon retour';
+
+  @override
+  String get loginSubtitle => 'Connectez-vous à Mayfly Pass pour synchroniser vos codes.';
+
+  @override
+  String get loginSubmit => 'Connexion';
+
+  @override
+  String get loginNewHerePrefix => 'Nouveau ici ? ';
+
+  @override
+  String get loginCreateAccountLink => 'Créer un compte';
+
+  @override
+  String get registerTitle => 'Créer un compte';
+
+  @override
+  String get registerSubtitle => 'Vos codes restent chiffrés sur cet appareil.\nUn seul compte pour synchroniser et restaurer.';
+
+  @override
+  String get registerHaveAccountPrefix => 'Vous avez déjà un compte ? ';
+
+  @override
+  String get registerSignInLink => 'Se connecter';
+
+  @override
+  String get unlockTitle => 'Coffre-verrouillé';
+
+  @override
+  String get unlockBiometricLabel => 'Déverrouiller avec l\'empreinte digitale';
+
+  @override
+  String get unlockNotYouPrefix => 'Pas vous ? ';
+
+  @override
+  String get unlockSignOutLink => 'Se déconnecter';
+
+  @override
+  String get changePasswordFormOldLabel => 'Ancien mot de passe';
+
+  @override
+  String get changePasswordFormNewLabel => 'Nouveau mot de passe';
+
+  @override
+  String get changePasswordFormConfirmLabel => 'Confirmer le nouveau mot de passe';
+
+  @override
+  String get homeFavoritesTitle => 'favoris';
+
+  @override
+  String get homeAccountsTitle => 'comptes';
+
+  @override
+  String get homeSearchHint => 'Rechercher';
+
+  @override
+  String get entryMenuAddToFavorites => 'Ajouter aux favoris';
+
+  @override
+  String get entryMenuRemoveFromFavorites => 'Retirer des favoris';
+
+  @override
+  String get entryMenuUpdate => 'Modifier';
+
+  @override
+  String get entryMenuDelete => 'Supprimer';
+
+  @override
+  String get confirmDialogTitle => 'Supprimer l\'entrée ?';
+
+  @override
+  String get confirmDialogContent => 'Cette action supprimera cette entrée TOTP.';
+
+  @override
+  String get confirmDialogCancel => 'Annuler';
+
+  @override
+  String get confirmDialogConfirm => 'Supprimer';
+
+  @override
+  String get clipboardCopiedMessage => 'Copié dans le presse-papiers';
+
+  @override
+  String get settingsLanguageTitle => 'Langue';
+
+  @override
+  String get settingsLanguageDescription => 'Changer la langue de l\'application';
 }

@@ -20,6 +20,7 @@ class HomePage extends StatelessWidget {
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           final cubit = context.read<HomeCubit>();
+          final l10n = AppLocalizations.of(context)!;
           return Scaffold(
             appBar: AppBar(
               title: Row(
@@ -63,12 +64,12 @@ class HomePage extends StatelessWidget {
                       children: [
                         TotpEntryList(
                           items: _fav(_filter(state.totps, state.query)),
-                          title: 'favorites',
+                          title: l10n.homeFavoritesTitle,
                         ),
                         SpacerSection,
                         TotpEntryList(
                           items: _nonFav(_filter(state.totps, state.query)),
-                          title: 'accounts',
+                          title: l10n.homeAccountsTitle,
                         ),
                       ],
                     ),
@@ -90,9 +91,9 @@ class HomePage extends StatelessWidget {
                   Expanded(
                     child: TextField(
                       onChanged: (q) => cubit.search(q),
-                      decoration: const InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search),
+                      decoration: InputDecoration(
+                        hintText: l10n.homeSearchHint,
+                        prefixIcon: const Icon(Icons.search),
                       ),
                     ),
                   ),
