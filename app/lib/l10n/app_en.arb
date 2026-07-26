@@ -75,6 +75,14 @@
       }
     }
   },
+  "totpSecretTooLong": "Secret must be at most {max} characters long",
+  "@totpSecretTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "totpPeriodSeconds": "{seconds, plural, =0{0 seconds} =1{1 second} other{{seconds} seconds}}",
   "@totpPeriodSeconds": {
     "placeholders": {
@@ -101,8 +109,24 @@
   "@tags": {},
   "issuer": "Issuer",
   "@issuer": {},
+  "totpIssuerTooLong": "Issuer must be at most {max} characters long",
+  "@totpIssuerTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "account": "Account",
   "@account": {},
+  "totpAccountTooLong": "Account must be at most {max} characters long",
+  "@totpAccountTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "optional": "(optional)",
   "@optional": {},
   "secret": "Secret",

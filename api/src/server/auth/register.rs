@@ -29,7 +29,7 @@ impl RegisterInput {
                     "username",
                     &self.username,
                 ))
-                .or(FieldError::check_too_long("username", &self.username, 50))
+                .or(FieldError::check_too_long("username", &self.username, 64))
                 .or(FieldError::check_too_short("username", &self.username, 5)),
             // password
             FieldError::check_required("password", &self.password).or(
@@ -133,13 +133,13 @@ mod test {
 
         // username too long
         let mut input = base.clone();
-        input.username = "usernameusernameusernameusernameusernameusernameusernameusername".into();
+        input.username = "usernameusernameusernameusernameusernameusernameusernameusernamex".into();
         let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
             panic!("BadRequestFieldErrors");
         };
-        assert_eq!(val, vec![FieldError::ValueTooLong("username".into(), 50)]);
+        assert_eq!(val, vec![FieldError::ValueTooLong("username".into(), 64)]);
 
         // username too short
         let mut input = base.clone();

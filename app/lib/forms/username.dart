@@ -55,8 +55,8 @@ class UsernameValue extends FormzInput<String, UsernameValueError> {
   UsernameValueError? validator(String value) {
     if (value.isEmpty) return const UsernameValueRequiredError();
     if (value.length < 5) return const UsernameValueTooShortError(5);
-    if (value.length > 50) return const UsernameValueTooLongError(50);
-    if (!RegExp(r'^[a-z0-9]+$').hasMatch(value.trim().toLowerCase())) {
+    if (value.length > 64) return const UsernameValueTooLongError(64);
+    if (!RegExp(r'^[\x21-\x7e]+$').hasMatch(value.trim())) {
       return const UsernameValueInvalidError();
     }
     return null;

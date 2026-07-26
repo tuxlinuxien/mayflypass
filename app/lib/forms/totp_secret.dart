@@ -12,6 +12,7 @@ sealed class TotpSecretValueError {
     final l10i = AppLocalizations.of(context)!;
     return switch (error) {
       TotpSecretValueErrorMin() => l10i.totpSecretTooShort(error.min),
+      TotpSecretValueTooLongError(:final max) => l10i.totpSecretTooLong(max),
       null => null,
     };
   }
@@ -19,8 +20,12 @@ sealed class TotpSecretValueError {
 
 class TotpSecretValueErrorMin extends TotpSecretValueError {
   final int min;
-
   const TotpSecretValueErrorMin(this.min);
+}
+
+class TotpSecretValueTooLongError extends TotpSecretValueError {
+  final int max;
+  const TotpSecretValueTooLongError(this.max);
 }
 
 class TotpSecretValue extends FormzInput<String, TotpSecretValueError> {
@@ -31,6 +36,9 @@ class TotpSecretValue extends FormzInput<String, TotpSecretValueError> {
   TotpSecretValueError? validator(String value) {
     if (value.trim().length < 16) {
       return TotpSecretValueErrorMin(16);
+    }
+    if (value.length > 64) {
+      return const TotpSecretValueTooLongError(64);
     }
     return null;
   }

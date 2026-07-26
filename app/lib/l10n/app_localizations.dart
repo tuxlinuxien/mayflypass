@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'Secret must be at least {min} characters long'**
   String totpSecretTooShort(int min);
 
+  /// No description provided for @totpSecretTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret must be at most {max} characters long'**
+  String totpSecretTooLong(int max);
+
   /// No description provided for @totpPeriodSeconds.
   ///
   /// In en, this message translates to:
@@ -287,11 +293,23 @@ abstract class AppLocalizations {
   /// **'Issuer'**
   String get issuer;
 
+  /// No description provided for @totpIssuerTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Issuer must be at most {max} characters long'**
+  String totpIssuerTooLong(int max);
+
   /// No description provided for @account.
   ///
   /// In en, this message translates to:
   /// **'Account'**
   String get account;
+
+  /// No description provided for @totpAccountTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Account must be at most {max} characters long'**
+  String totpAccountTooLong(int max);
 
   /// No description provided for @optional.
   ///

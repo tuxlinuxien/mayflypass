@@ -75,6 +75,14 @@
       }
     }
   },
+  "totpSecretTooLong": "La clé secrète ne peut pas dépasser {max} caractères",
+  "@totpSecretTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "totpPeriodSeconds": "{seconds, plural, =0{0 seconde} =1{1 seconde} other{{seconds} secondes}}",
   "@totpPeriodSeconds": {
     "placeholders": {
@@ -101,8 +109,24 @@
   "@tags": {},
   "issuer": "Émetteur",
   "@issuer": {},
+  "totpIssuerTooLong": "L'émetteur ne peut pas dépasser {max} caractères",
+  "@totpIssuerTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "account": "Compte",
   "@account": {},
+  "totpAccountTooLong": "Le compte ne peut pas dépasser {max} caractères",
+  "@totpAccountTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "optional": "(facultatif)",
   "@optional": {},
   "secret": "Clé secrète",

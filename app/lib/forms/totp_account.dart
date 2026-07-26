@@ -8,8 +8,17 @@ sealed class TotpAccountValueError {
     BuildContext context,
     List<TotpAccountValueError?> errors,
   ) {
-    return null;
+    final l10n = AppLocalizations.of(context)!;
+    return switch (errors.nonNulls.firstOrNull) {
+      TotpAccountValueTooLongError(:final max) => l10n.totpAccountTooLong(max),
+      null => null,
+    };
   }
+}
+
+class TotpAccountValueTooLongError extends TotpAccountValueError {
+  final int max;
+  const TotpAccountValueTooLongError(this.max);
 }
 
 class TotpAccountValue extends FormzInput<String, TotpAccountValueError> {
@@ -18,6 +27,9 @@ class TotpAccountValue extends FormzInput<String, TotpAccountValueError> {
 
   @override
   TotpAccountValueError? validator(String value) {
+    if (value.length > 64) {
+      return const TotpAccountValueTooLongError(64);
+    }
     return null;
   }
 }

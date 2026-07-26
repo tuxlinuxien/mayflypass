@@ -85,6 +85,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String totpSecretTooLong(int max) {
+    return 'La clé secrète ne peut pas dépasser $max caractères';
+  }
+
+  @override
   String totpPeriodSeconds(int seconds) {
     String _temp0 = intl.Intl.pluralLogic(
       seconds,
@@ -124,7 +129,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get issuer => 'Émetteur';
 
   @override
+  String totpIssuerTooLong(int max) {
+    return 'L\'émetteur ne peut pas dépasser $max caractères';
+  }
+
+  @override
   String get account => 'Compte';
+
+  @override
+  String totpAccountTooLong(int max) {
+    return 'Le compte ne peut pas dépasser $max caractères';
+  }
 
   @override
   String get optional => '(facultatif)';

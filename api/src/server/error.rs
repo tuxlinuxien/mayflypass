@@ -115,10 +115,7 @@ impl FieldError {
     }
 
     pub fn check_username_invalid(field: &str, value: &str) -> Option<FieldError> {
-        if value
-            .chars()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit())
-        {
+        if value.chars().all(|c| c.is_ascii_graphic()) {
             Option::None
         } else {
             Some(Self::UsernameInvalid(field.to_string()))
