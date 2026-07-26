@@ -34,9 +34,6 @@ class OtpAuthResult {
       return null;
     }
 
-    // Parse path: can be <issuer>:<account> or just <account>
-    // Path starts with / so we remove it
-    final path = parsedUri.path.substring(1);
     // default parameters
     String issuer = '';
     String account = '';
@@ -45,6 +42,7 @@ class OtpAuthResult {
     int period = 30;
     TotpAlgorithm algorithm = TotpAlgorithm.SHA1;
 
+    final path = Uri.decodeComponent(parsedUri.path.replaceAll('/', ''));
     final colonIndex = path.indexOf(':');
     if (colonIndex > 0 && colonIndex < path.length - 1) {
       issuer = path.substring(0, colonIndex);
