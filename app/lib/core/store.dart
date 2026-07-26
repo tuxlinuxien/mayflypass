@@ -3,7 +3,6 @@ import 'package:cryptography_plus/cryptography_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hex/hex.dart';
 import 'package:mayflypass/core/core.dart';
-import 'package:mayflypass/core/logger.dart';
 import 'package:mayflypass/secure/secure.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/v7.dart';

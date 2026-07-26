@@ -240,26 +240,25 @@ class TotpEntryItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Row(
-          crossAxisAlignment: .end,
-          children: [
-            Text(
-              totp.issuer,
-              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight(600)),
-            ),
-            SizedBox(width: 5),
-            Expanded(
-              child: Text(
-                totp.account,
+        RichText(
+          maxLines: 1,
+          overflow: .ellipsis,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: totp.issuer,
                 style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight(400),
-                  color: Color(0xff7c7788),
-                  overflow: .ellipsis,
+                  color: Colors.white,
+                  fontWeight: FontWeight(600),
                 ),
               ),
-            ),
-          ],
+              TextSpan(text: '  '),
+              TextSpan(
+                text: totp.account,
+                style: TextStyle(color: AppTheme.helperTextColor, fontSize: 12),
+              ),
+            ],
+          ),
         ),
         OTPCode(
           secret: totp.secret,

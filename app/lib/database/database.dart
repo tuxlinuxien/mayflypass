@@ -64,6 +64,30 @@ Future<void> initDBTestFixtures(SecretKey kek) async {
       encryptedPayload: encryptedPayload,
     ),
   );
+
+  databox = DataBox.create();
+  databox.totp = Totp(
+    issuer: 'Issuer 33333333333333333333333333333333333',
+    account: 'account00000000000000000000000000000000000',
+    secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    algorithm: TotpAlgorithm.SHA1,
+    createdAtMs: Int64(DateTime.now().millisecondsSinceEpoch),
+    digits: 6,
+    period: 60,
+    favorite: false,
+    tags: [],
+  );
+
+  (encryptedDek, encryptedPayload) = await encryptDataBox(kek, databox);
+  await globalDB.upsertLocalStorage(
+    LocalStorageData(
+      id: UuidV7().generate(),
+      updatedAtMs: DateTime.now().millisecondsSinceEpoch,
+      deleted: false,
+      encryptedDek: encryptedDek,
+      encryptedPayload: encryptedPayload,
+    ),
+  );
 }
 
 @DriftDatabase(tables: [LocalStorage])
