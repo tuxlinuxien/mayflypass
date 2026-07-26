@@ -37,8 +37,13 @@ class OtpAuthResult {
     // Parse path: can be <issuer>:<account> or just <account>
     // Path starts with / so we remove it
     final path = parsedUri.path.substring(1);
+    // default parameters
     String issuer = '';
     String account = '';
+    String secret = '';
+    int digits = 6;
+    int period = 30;
+    TotpAlgorithm algorithm = TotpAlgorithm.SHA1;
 
     final colonIndex = path.indexOf(':');
     if (colonIndex > 0 && colonIndex < path.length - 1) {
@@ -47,12 +52,6 @@ class OtpAuthResult {
     } else {
       account = path;
     }
-
-    // Parse query parameters
-    String secret = '';
-    int digits = 6;
-    int period = 30;
-    TotpAlgorithm algorithm = TotpAlgorithm.SHA1;
 
     for (final entry in parsedUri.queryParameters.entries) {
       final key = entry.key;
@@ -90,13 +89,16 @@ class OtpAuthResult {
     }
 
     // Validate required fields
+    if (issuer.isEmpty) {
+      return null;
+    }
     if (secret.isEmpty) {
       return null;
     }
 
     return OtpAuthResult(
-      issuer: Uri.decodeComponent(issuer),
-      account: Uri.decodeComponent(account),
+      issuer: issuer,
+      account: account,
       secret: secret,
       algorithm: algorithm,
       digits: digits,
