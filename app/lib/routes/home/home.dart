@@ -249,6 +249,7 @@ class TotpEntryItem extends StatelessWidget {
                 text: totp.issuer,
                 style: TextStyle(
                   color: Colors.white,
+                  fontSize: 12,
                   fontWeight: FontWeight(600),
                 ),
               ),
