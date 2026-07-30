@@ -113,7 +113,7 @@ mod test {
         };
         // bad username
         let mut input = base.clone();
-        input.username = "usern@me".into();
+        input.username = "usern\n@me".into();
         let res = input.validate();
         assert!(res.is_err());
         let ApiError::BadRequestFieldErrors(val) = res.err().unwrap() else {
