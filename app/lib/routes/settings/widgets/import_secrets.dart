@@ -65,7 +65,7 @@ class _ImportSecretsState extends State<ImportSecrets> {
       final kek = getGlobalKek()!;
       for (final k in mapResult.keys) {
         try {
-          final dbox = DataBox.create()..mergeFromJsonMap(mapResult[k]);
+          final dbox = DataBox.create()..mergeFromProto3Json(mapResult[k]);
           final (encryptedDek, encryptedPayload) = await encryptDataBox(
             kek,
             dbox,

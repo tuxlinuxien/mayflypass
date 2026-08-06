@@ -55,24 +55,21 @@ class HomePage extends StatelessWidget {
               onPointerMove: (event) {
                 FocusManager.instance.primaryFocus?.unfocus();
               },
-              child: RefreshIndicator(
-                onRefresh: () => cubit.sync(),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.only(bottom: 66),
-                  child: MainContainer(
-                    child: Column(
-                      children: [
-                        TotpEntryList(
-                          items: _fav(_filter(state.totps, state.query)),
-                          title: l10n.homeFavoritesTitle,
-                        ),
-                        SpacerSection,
-                        TotpEntryList(
-                          items: _nonFav(_filter(state.totps, state.query)),
-                          title: l10n.homeAccountsTitle,
-                        ),
-                      ],
-                    ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 66),
+                child: MainContainer(
+                  child: Column(
+                    children: [
+                      TotpEntryList(
+                        items: _fav(_filter(state.totps, state.query)),
+                        title: l10n.homeFavoritesTitle,
+                      ),
+                      SpacerSection,
+                      TotpEntryList(
+                        items: _nonFav(_filter(state.totps, state.query)),
+                        title: l10n.homeAccountsTitle,
+                      ),
+                    ],
                   ),
                 ),
               ),

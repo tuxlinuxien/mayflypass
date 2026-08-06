@@ -58,11 +58,13 @@ class _BackupSecretsState extends State<BackupSecrets> {
       final output = <String, Map<String, dynamic>>{};
       for (final item in items) {
         try {
-          output[item.id] = (await decryptDataBox(
-            kek,
-            item.encryptedDek,
-            item.encryptedPayload,
-          )).writeToJsonMap();
+          output[item.id] =
+              (await decryptDataBox(
+                    kek,
+                    item.encryptedDek,
+                    item.encryptedPayload,
+                  )).toProto3Json()
+                  as Map<String, dynamic>;
         } catch (e) {
           logger.e(e);
         }
