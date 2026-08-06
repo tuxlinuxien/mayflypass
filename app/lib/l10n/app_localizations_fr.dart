@@ -54,10 +54,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountCreatedSuccessfully => 'Compte créé avec succès';
 
   @override
-  String get accountAlreadyExists => 'Un compte avec ce nom d\'utilisateur existe déjà';
+  String get accountAlreadyExists =>
+      'Un compte avec ce nom d\'utilisateur existe déjà';
 
   @override
-  String get thereWasProblem => 'Un problème est survenu lors du traitement de votre demande';
+  String get thereWasProblem =>
+      'Un problème est survenu lors du traitement de votre demande';
 
   @override
   String get invalidCredentials => 'Identifiants invalides';
@@ -90,6 +92,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get totpSecretFormatError {
+    return 'Le secret ne supporte que les caractères A-Z, a-z';
+  }
+
+  @override
   String totpPeriodSeconds(int seconds) {
     String _temp0 = intl.Intl.pluralLogic(
       seconds,
@@ -102,7 +109,8 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get changePasswordSuccess => 'Le mot de passe principal a été mis à jour avec succès.\nVeuillez vous connecter à votre compte.';
+  String get changePasswordSuccess =>
+      'Le mot de passe principal a été mis à jour avec succès.\nVeuillez vous connecter à votre compte.';
 
   @override
   String get addAccount => 'Ajouter un compte';
@@ -114,10 +122,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scanQrCode => 'Scanner le code QR';
 
   @override
-  String get scanQrDescription => 'Pointez votre caméra vers le code QR\naffiché par le service que vous ajoutez.';
+  String get scanQrDescription =>
+      'Pointez votre caméra vers le code QR\naffiché par le service que vous ajoutez.';
 
   @override
-  String get enterSetupKeyManually => 'Saisir la clé de configuration manuellement';
+  String get enterSetupKeyManually =>
+      'Saisir la clé de configuration manuellement';
 
   @override
   String get save => 'Enregistrer';
@@ -166,7 +176,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get changePassword => 'Modifier le mot de passe';
 
   @override
-  String get changePasswordDescription => 'Modifier le mot de passe de votre compte';
+  String get changePasswordDescription =>
+      'Modifier le mot de passe de votre compte';
 
   @override
   String get securitySection => 'Sécurité';
@@ -175,7 +186,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get biometricUnlock => 'Déverrouillage biométrique';
 
   @override
-  String get biometricUnlockDescription => 'Utiliser votre empreinte digitale pour déverrouiller l\'application';
+  String get biometricUnlockDescription =>
+      'Utiliser votre empreinte digitale pour déverrouiller l\'application';
 
   @override
   String get autoLock => 'Verrouillage automatique';
@@ -190,13 +202,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get backup => 'Sauvegarde';
 
   @override
-  String get backupDescription => 'Télécharger vos clés secrètes sur votre appareil';
+  String get backupDescription =>
+      'Télécharger vos clés secrètes sur votre appareil';
 
   @override
   String get import => 'Importer';
 
   @override
-  String get importDescription => 'Importer des clés secrètes dans votre compte';
+  String get importDescription =>
+      'Importer des clés secrètes dans votre compte';
 
   @override
   String get secretsExported => 'Vos clés secrètes ont été exportées';
@@ -220,7 +234,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loginWelcomeTitle => 'Bon retour';
 
   @override
-  String get loginSubtitle => 'Connectez-vous à Mayfly Pass pour synchroniser vos codes.';
+  String get loginSubtitle =>
+      'Connectez-vous à Mayfly Pass pour synchroniser vos codes.';
 
   @override
   String get loginSubmit => 'Connexion';
@@ -235,7 +250,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get registerTitle => 'Créer un compte';
 
   @override
-  String get registerSubtitle => 'Vos codes restent chiffrés sur cet appareil.\nUn seul compte pour synchroniser et restaurer.';
+  String get registerSubtitle =>
+      'Vos codes restent chiffrés sur cet appareil.\nUn seul compte pour synchroniser et restaurer.';
 
   @override
   String get registerHaveAccountPrefix => 'Vous avez déjà un compte ? ';
@@ -262,7 +278,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get changePasswordFormNewLabel => 'Nouveau mot de passe';
 
   @override
-  String get changePasswordFormConfirmLabel => 'Confirmer le nouveau mot de passe';
+  String get changePasswordFormConfirmLabel =>
+      'Confirmer le nouveau mot de passe';
 
   @override
   String get homeFavoritesTitle => 'favoris';
@@ -289,7 +306,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirmDialogTitle => 'Supprimer l\'entrée ?';
 
   @override
-  String get confirmDialogContent => 'Cette action supprimera cette entrée TOTP.';
+  String get confirmDialogContent =>
+      'Cette action supprimera cette entrée TOTP.';
 
   @override
   String get confirmDialogCancel => 'Annuler';
@@ -304,8 +322,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsLanguageTitle => 'Langue';
 
   @override
-  String get settingsLanguageDescription => 'Changer la langue de l\'application';
+  String get settingsLanguageDescription =>
+      'Changer la langue de l\'application';
 
   @override
-  String get settingsLanguageRestartRequired => 'Vous devez redémarrer l\'application afin d\'appliquer ce paramètre';
+  String get settingsLanguageRestartRequired =>
+      'Vous devez redémarrer l\'application afin d\'appliquer ce paramètre';
 }

@@ -83,6 +83,8 @@
       }
     }
   },
+  "totpSecretFormatError": "The secret only supports A-Z, a-z",
+  "@totpSecretFormatError": {},
   "totpPeriodSeconds": "{seconds, plural, =0{0 seconds} =1{1 second} other{{seconds} seconds}}",
   "@totpPeriodSeconds": {
     "placeholders": {
@@ -91,7 +93,7 @@
       }
     }
   },
-  "changePasswordSuccess" : "The master password has been updated successfully.\nPlease login to your account.",
+  "changePasswordSuccess": "The master password has been updated successfully.\nPlease login to your account.",
   "@changePasswordSuccess": {},
   "addAccount": "Add account",
   "@addAccount": {},
@@ -177,7 +179,6 @@
   },
   "biometricUnlockReason": "Unlock",
   "@biometricUnlockReason": {},
-
   "loginWelcomeTitle": "Welcome back",
   "@loginWelcomeTitle": {},
   "loginSubtitle": "Sign in to Mayfly Pass to sync your codes.",

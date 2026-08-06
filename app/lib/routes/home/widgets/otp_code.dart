@@ -67,12 +67,17 @@ class OTPCode extends StatelessWidget {
   }
 
   String _genCode(int state) {
-    return getCode(
-      secret: secret,
-      ms: state,
-      algorithm: algorithm,
-      period: period,
-      digits: digits,
-    );
+    logger.d(secret);
+    try {
+      return getCode(
+        secret: secret,
+        ms: state,
+        algorithm: algorithm,
+        period: period,
+        digits: digits,
+      );
+    } catch (_) {
+      return '------';
+    }
   }
 }

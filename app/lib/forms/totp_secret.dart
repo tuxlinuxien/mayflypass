@@ -13,6 +13,7 @@ sealed class TotpSecretValueError {
     return switch (error) {
       TotpSecretValueErrorMin() => l10i.totpSecretTooShort(error.min),
       TotpSecretValueTooLongError(:final max) => l10i.totpSecretTooLong(max),
+      TotpSecretValueFormatError() => l10i.totpSecretFormatError,
       null => null,
     };
   }
@@ -28,6 +29,10 @@ class TotpSecretValueTooLongError extends TotpSecretValueError {
   const TotpSecretValueTooLongError(this.max);
 }
 
+class TotpSecretValueFormatError extends TotpSecretValueError {
+  const TotpSecretValueFormatError();
+}
+
 class TotpSecretValue extends FormzInput<String, TotpSecretValueError> {
   const TotpSecretValue.pure([super.value = '']) : super.pure();
   const TotpSecretValue.dirty([super.value = '']) : super.dirty();
@@ -39,6 +44,9 @@ class TotpSecretValue extends FormzInput<String, TotpSecretValueError> {
     }
     if (value.length > 64) {
       return const TotpSecretValueTooLongError(64);
+    }
+    if (!RegExp(r'^[A-Za-z]+$').hasMatch(value)) {
+      return const TotpSecretValueFormatError();
     }
     return null;
   }
