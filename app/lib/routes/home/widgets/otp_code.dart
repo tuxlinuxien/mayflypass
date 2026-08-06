@@ -67,7 +67,6 @@ class OTPCode extends StatelessWidget {
   }
 
   String _genCode(int state) {
-    logger.d(secret);
     try {
       return getCode(
         secret: secret,
