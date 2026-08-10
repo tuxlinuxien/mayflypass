@@ -112,7 +112,7 @@ To get a local copy up and running follow these steps.
    cd app
    fvm flutter pub get
    make build   # codegen, l10n, and protobuf bindings from proto/databox.proto
-   fvm flutter run
+   fvm flutter run [-D API_URL=http://<ip or domain>[:<port>] ]
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
