@@ -10,13 +10,14 @@ use axum::response::IntoResponse;
 use axum::response::Response;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, ToSchema)]
 pub struct RefreshInput {
     pub refresh_token: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, ToSchema)]
 pub struct RefreshResponse {
     pub access_token: String,
     pub refresh_token: String,
@@ -29,6 +30,16 @@ pub fn extract_refresh_token_from_cookie(headers: &http::HeaderMap) -> Option<St
         .and_then(|r| r.token().ok())
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/refresh",
+    request_body = RefreshInput,
+    responses(
+        (status = 200, description = "Token refreshed", body = RefreshResponse),
+        (status = 401, description = "Unauthorized - invalid or missing token"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn refresh(
     State(state): State<AppState>,
     headers: http::HeaderMap,

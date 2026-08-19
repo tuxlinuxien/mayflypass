@@ -6,20 +6,32 @@ use crate::{
 use axum::{Extension, extract::State};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct SelectResponse {
-    id: Uuid,
-    updated_at_ms: i64,
-    deleted: bool,
+    pub id: Uuid,
+    pub updated_at_ms: i64,
+    pub deleted: bool,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_dek: Vec<u8>,
+    pub encrypted_dek: Vec<u8>,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_payload: Vec<u8>,
+    pub encrypted_payload: Vec<u8>,
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/storage",
+    responses(
+        (status = 200, description = "Storage items", body = Vec<SelectResponse>),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn select(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,

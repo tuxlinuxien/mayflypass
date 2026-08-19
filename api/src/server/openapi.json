@@ -1,0 +1,414 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MayflyPass API",
+    "version": "1.0.0",
+    "description": "Encrypted password manager API"
+  },
+  "paths": {
+    "/api/login": {
+      "post": {
+        "operationId": "login",
+        "tags": ["auth"],
+        "summary": "Login",
+        "description": "Authenticate with username and password to receive access and refresh tokens.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful. Returns access_token and refresh_token.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing or invalid credentials."
+          },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/api/register": {
+      "get": {
+        "operationId": "challenge",
+        "tags": ["auth"],
+        "summary": "Get challenge",
+        "description": "Retrieve a proof-of-work challenge that must be solved before registration.",
+        "responses": {
+          "200": {
+            "description": "Challenge generated. Contains key, salt, and difficulty in hex format.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChallengeResult" }
+              }
+            }
+          },
+          "500": { "description": "Internal server error." }
+        }
+      },
+      "post": {
+        "operationId": "register",
+        "tags": ["auth"],
+        "summary": "Register",
+        "description": "Create a new account by solving the proof-of-work challenge.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Registration successful." },
+          "400": {
+            "description": "Bad request — invalid fields or challenge."
+          },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/api/refresh": {
+      "post": {
+        "operationId": "refresh",
+        "tags": ["auth"],
+        "summary": "Refresh token",
+        "description": "Get a new access token using either a refresh token from the JSON body or the cookie. The refresh token is rotated (single-use).",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New tokens issued.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RefreshResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — no valid refresh token found."
+          },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "operationId": "logout",
+        "tags": ["auth"],
+        "summary": "Logout",
+        "description": "Invalidate one or all refresh tokens. Tokens can be passed via JSON body or cookie.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LogoutInput" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Logout successful." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/api/account/info": {
+      "get": {
+        "operationId": "account_info",
+        "tags": ["account"],
+        "summary": "Account info",
+        "description": "Get current authenticated account information. Requires a valid access token.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Account details.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InfoResponse" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized — missing or invalid token." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/api/account/password": {
+      "post": {
+        "operationId": "update_password",
+        "tags": ["account"],
+        "summary": "Update password",
+        "description": "Change the account password. This invalidates all sessions. Storage items must be re-encrypted with the new master key before being sent.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePasswordInput" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Password updated successfully." },
+          "400": {
+            "description": "Bad request — invalid old password or fields."
+          },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/api/storage": {
+      "get": {
+        "operationId": "list_storage",
+        "tags": ["storage"],
+        "summary": "List storage items",
+        "description": "Retrieve all encrypted storage items for the current account.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of encrypted storage items.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SelectResponse" }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal server error." }
+        }
+      },
+      "post": {
+        "operationId": "upsert_storage",
+        "tags": ["storage"],
+        "summary": "Upsert storage items",
+        "description": "Insert or update encrypted storage items. Accepts either a single item or an array.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpsertInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Items upserted successfully." },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginInput": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Account email/username"
+          },
+          "password": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$",
+            "example": "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": { "type": "string" },
+          "refresh_token": { "type": "string" }
+        }
+      },
+      "RegisterInput": {
+        "type": "object",
+        "required": [
+          "username",
+          "password",
+          "challenge_key",
+          "challenge_nonce"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Account email/username"
+          },
+          "password": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$",
+            "example": "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
+          },
+          "challenge_key": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          },
+          "challenge_nonce": {
+            "type": "integer",
+            "format": "uint64",
+            "description": "Proof-of-work nonce"
+          }
+        }
+      },
+      "RefreshInput": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "nullable": true,
+            "description": "Refresh token (optional; may also be sent as a cookie)"
+          }
+        }
+      },
+      "RefreshResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": { "type": "string" },
+          "refresh_token": { "type": "string" }
+        }
+      },
+      "LogoutInput": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "nullable": true,
+            "description": "Refresh token to invalidate (optional)"
+          }
+        }
+      },
+      "ChallengeResult": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "format": "hex",
+            "description": "Proof-of-work key"
+          },
+          "salt": { "type": "string", "format": "hex", "description": "Salt" },
+          "difficulty": {
+            "type": "string",
+            "format": "hex",
+            "description": "Difficulty target"
+          }
+        }
+      },
+      "InfoResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "username": { "type": "string" }
+        }
+      },
+      "UpdatePasswordInput": {
+        "type": "object",
+        "required": ["old_password", "new_password", "storage_items"],
+        "properties": {
+          "old_password": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          },
+          "new_password": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          },
+          "storage_items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/UpsertItem" }
+          }
+        }
+      },
+      "UpsertItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "updated_at_ms",
+          "deleted",
+          "encrypted_dek",
+          "encrypted_payload"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "updated_at_ms": { "type": "integer", "format": "int64" },
+          "deleted": { "type": "boolean" },
+          "encrypted_dek": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          },
+          "encrypted_payload": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          }
+        }
+      },
+      "SelectResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "updated_at_ms": { "type": "integer", "format": "int64" },
+          "deleted": { "type": "boolean" },
+          "encrypted_dek": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          },
+          "encrypted_payload": {
+            "type": "string",
+            "format": "hex",
+            "pattern": "^[0-9a-fA-F]+$"
+          }
+        }
+      },
+      "UpsertInput": {
+        "oneOf": [
+          { "$ref": "#/components/schemas/UpsertItem" },
+          {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/UpsertItem" }
+          }
+        ],
+        "description": "Accepts either a single UpsertItem or an array of UpsertItem objects."
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT access token"
+      }
+    }
+  },
+  "tags": [
+    { "name": "auth", "description": "Authentication endpoints" },
+    { "name": "account", "description": "Account management endpoints" },
+    { "name": "storage", "description": "Storage endpoints" }
+  ]
+}

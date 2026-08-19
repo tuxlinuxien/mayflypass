@@ -3,15 +3,25 @@ use crate::server::error::{ApiError, FieldError};
 use crate::server::json::Json;
 use crate::server::state::AppState;
 use axum::extract::State;
+use serde::Deserialize;
 use serde_with::serde_as;
+use utoipa::ToSchema;
 
 #[serde_as]
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, Deserialize, ToSchema)]
 pub struct RegisterInput {
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub username: String,
+    #[schema(
+        pattern = r"^[0-9a-fA-F]+$",
+        example = "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
+    )]
     #[serde_as(as = "serde_with::hex::Hex")]
     pub password: Vec<u8>,
+    #[schema(
+        pattern = r"^[0-9a-fA-F]+$",
+        example = "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
+    )]
     #[serde_as(as = "serde_with::hex::Hex")]
     pub challenge_key: Vec<u8>,
     pub challenge_nonce: u64,
@@ -51,6 +61,16 @@ impl RegisterInput {
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/register",
+    request_body = RegisterInput,
+    responses(
+        (status = 200, description = "Registration successful"),
+        (status = 400, description = "Bad request"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 #[axum::debug_handler]
 pub async fn register(
     State(state): State<AppState>,
@@ -87,6 +107,14 @@ pub async fn register(
     Ok(())
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/register",
+    responses(
+        (status = 200, description = "Challenge generated", body = database::challenge::ChallengeResult),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn challenge(
     State(state): State<AppState>,
 ) -> Result<Json<database::challenge::ChallengeResult>, ApiError> {

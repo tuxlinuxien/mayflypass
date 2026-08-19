@@ -12,12 +12,17 @@ use axum::response::Response;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
+use utoipa::ToSchema;
 
 #[serde_as]
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, ToSchema)]
 pub struct LoginInput {
     #[serde(default, deserialize_with = "serde_trim::string_trim")]
     pub username: String,
+    #[schema(
+        pattern = r"^[0-9a-fA-F]+$",
+        example = "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
+    )]
     #[serde_as(as = "serde_with::hex::Hex")]
     pub password: Vec<u8>,
 }
@@ -39,12 +44,22 @@ impl LoginInput {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct LoginResponse {
     pub access_token: String,
     pub refresh_token: String,
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/login",
+    request_body = LoginInput,
+    responses(
+        (status = 200, description = "Login successful", body = LoginResponse),
+        (status = 400, description = "Bad request"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn login(
     State(state): State<AppState>,
     Json(mut payload): Json<LoginInput>,

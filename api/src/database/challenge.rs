@@ -66,7 +66,7 @@ impl Display for DIFFICULTY {
 }
 
 #[serde_as]
-#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize)]
+#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct ChallengeResult {
     #[serde_as(as = "serde_with::hex::Hex")]
     pub key: Vec<u8>,

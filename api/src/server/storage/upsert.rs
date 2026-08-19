@@ -5,21 +5,24 @@ use crate::{
 use axum::{Extension, extract::State};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct UpsertItem {
-    id: Uuid,
-    updated_at_ms: i64,
-    deleted: bool,
+    pub id: Uuid,
+    pub updated_at_ms: i64,
+    pub deleted: bool,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_dek: Vec<u8>,
+    pub encrypted_dek: Vec<u8>,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_payload: Vec<u8>,
+    pub encrypted_payload: Vec<u8>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 #[serde(untagged)]
 pub enum UpsertInput {
     One(UpsertItem),
@@ -38,6 +41,16 @@ impl From<UpsertItem> for database::storage::StorageUpsert {
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/storage",
+    request_body = UpsertInput,
+    responses(
+        (status = 200, description = "Upsert successful"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn upsert(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,

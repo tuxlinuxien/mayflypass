@@ -1,6 +1,7 @@
 use axum::{Extension, extract::State, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::{
@@ -14,25 +15,29 @@ use crate::{
 };
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct UpsertItem {
-    id: Uuid,
-    updated_at_ms: i64,
-    deleted: bool,
+    pub id: Uuid,
+    pub updated_at_ms: i64,
+    pub deleted: bool,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_dek: Vec<u8>,
+    pub encrypted_dek: Vec<u8>,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    encrypted_payload: Vec<u8>,
+    pub encrypted_payload: Vec<u8>,
 }
 
 #[serde_as]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdatePasswordInput {
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    old_password: Vec<u8>,
+    pub old_password: Vec<u8>,
+    #[schema(pattern = r"^[0-9a-fA-F]+$")]
     #[serde_as(as = "serde_with::hex::Hex")]
-    new_password: Vec<u8>,
-    storage_items: Vec<UpsertItem>,
+    pub new_password: Vec<u8>,
+    pub storage_items: Vec<UpsertItem>,
 }
 
 impl UpdatePasswordInput {
@@ -51,6 +56,17 @@ impl UpdatePasswordInput {
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/account/password",
+    request_body = UpdatePasswordInput,
+    responses(
+        (status = 204, description = "Password updated successfully"),
+        (status = 400, description = "Bad request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn update_password(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,

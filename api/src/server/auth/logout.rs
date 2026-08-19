@@ -8,12 +8,22 @@ use axum::http;
 use axum::response::IntoResponse;
 use axum::response::Response;
 use serde::Deserialize;
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, ToSchema)]
 pub struct LogoutInput {
     pub refresh_token: Option<String>,
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/logout",
+    request_body = LogoutInput,
+    responses(
+        (status = 204, description = "Logout successful"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn logout(
     State(state): State<AppState>,
     headers: http::HeaderMap,

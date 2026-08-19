@@ -18,8 +18,12 @@ mod lib;
 mod middleware;
 mod state;
 mod storage;
+
+mod api_doc;
 #[cfg(test)]
 mod testing;
+
+pub use api_doc::{docs_html, openapi_handler};
 
 fn fmt_bytes(bytes: u64) -> String {
     if bytes < 1_024 {
@@ -101,11 +105,15 @@ pub async fn init(
         difficulty: difficulty,
     };
     let router = create_routes(state.clone());
-    let router = router
+    let docs = Router::new()
+        .route("/docs", get(docs_html))
+        .route("/api/openapi.json", get(openapi_handler));
+    let app = docs
+        .merge(router)
         .layer(axum::middleware::from_fn(log))
         .layer(CorsLayer::permissive())
         .layer(RequestBodyLimitLayer::new(2 * 1024 * 1024))
         .with_state(state);
     let listener = tokio::net::TcpListener::bind(interface).await.unwrap();
-    axum::serve(listener, router).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }

@@ -1,6 +1,7 @@
 use axum::{Extension, Json, extract::State};
 use serde::Serialize;
 use serde_with::serde_as;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::{
@@ -9,12 +10,21 @@ use crate::{
 };
 
 #[serde_as]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct InfoResponse {
-    id: Uuid,
-    username: String,
+    pub id: Uuid,
+    pub username: String,
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/account/info",
+    responses(
+        (status = 200, description = "Account info", body = InfoResponse),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn info(
     State(state): State<AppState>,
     Extension(AuthUserId(account_id)): Extension<AuthUserId>,
