@@ -26,16 +26,21 @@ $SettingsStateCopyWith<SettingsState> get copyWith => _$SettingsStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.username, username) || other.username == username)&&(identical(other.lastSync, lastSync) || other.lastSync == lastSync)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable)&&(identical(other.lang, lang) || other.lang == lang));
+  final _this = this as SettingsState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.username, _this.username) || other.username == _this.username)&&(identical(other.lastSync, _this.lastSync) || other.lastSync == _this.lastSync)&&(identical(other.lockoutAfter, _this.lockoutAfter) || other.lockoutAfter == _this.lockoutAfter)&&(identical(other.biometricUnlock, _this.biometricUnlock) || other.biometricUnlock == _this.biometricUnlock)&&(identical(other.biometricUnlockAvailable, _this.biometricUnlockAvailable) || other.biometricUnlockAvailable == _this.biometricUnlockAvailable)&&(identical(other.lang, _this.lang) || other.lang == _this.lang));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,username,lastSync,lockoutAfter,biometricUnlock,biometricUnlockAvailable,lang);
+int get hashCode {
+  final _this = this as SettingsState;
+  return Object.hash(runtimeType,_this.status,_this.username,_this.lastSync,_this.lockoutAfter,_this.biometricUnlock,_this.biometricUnlockAvailable,_this.lang);
+}
 
 @override
 String toString() {
-  return 'SettingsState(status: $status, username: $username, lastSync: $lastSync, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable, lang: $lang)';
+  final _this = this as SettingsState;
+  return 'SettingsState(status: ${_this.status}, username: ${_this.username}, lastSync: ${_this.lastSync}, lockoutAfter: ${_this.lockoutAfter}, biometricUnlock: ${_this.biometricUnlock}, biometricUnlockAvailable: ${_this.biometricUnlockAvailable}, lang: ${_this.lang})';
 }
 
 
@@ -234,16 +239,18 @@ _$SettingsStateCopyWith<_SettingsState> get copyWith => __$SettingsStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.username, username) || other.username == username)&&(identical(other.lastSync, lastSync) || other.lastSync == lastSync)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable)&&(identical(other.lang, lang) || other.lang == lang));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingsState&&(identical(other.status, status) || other.status == status)&&(identical(other.username, username) || other.username == username)&&(identical(other.lastSync, lastSync) || other.lastSync == lastSync)&&(identical(other.lockoutAfter, lockoutAfter) || other.lockoutAfter == lockoutAfter)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.biometricUnlockAvailable, biometricUnlockAvailable) || other.biometricUnlockAvailable == biometricUnlockAvailable)&&(identical(other.lang, lang) || other.lang == lang));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,username,lastSync,lockoutAfter,biometricUnlock,biometricUnlockAvailable,lang);
+int get hashCode {
+    return Object.hash(runtimeType,status,username,lastSync,lockoutAfter,biometricUnlock,biometricUnlockAvailable,lang);
+}
 
 @override
 String toString() {
-  return 'SettingsState(status: $status, username: $username, lastSync: $lastSync, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable, lang: $lang)';
+    return 'SettingsState(status: $status, username: $username, lastSync: $lastSync, lockoutAfter: $lockoutAfter, biometricUnlock: $biometricUnlock, biometricUnlockAvailable: $biometricUnlockAvailable, lang: $lang)';
 }
 
 

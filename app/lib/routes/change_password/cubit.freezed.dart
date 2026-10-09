@@ -26,16 +26,21 @@ $ChangePasswordStateCopyWith<ChangePasswordState> get copyWith => _$ChangePasswo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChangePasswordState&&(identical(other.status, status) || other.status == status)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.oldPasswordError, oldPasswordError) || other.oldPasswordError == oldPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError));
+  final _this = this as ChangePasswordState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChangePasswordState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.oldPassword, _this.oldPassword) || other.oldPassword == _this.oldPassword)&&(identical(other.newPassword, _this.newPassword) || other.newPassword == _this.newPassword)&&(identical(other.confirmNewPassword, _this.confirmNewPassword) || other.confirmNewPassword == _this.confirmNewPassword)&&(identical(other.oldPasswordError, _this.oldPasswordError) || other.oldPasswordError == _this.oldPasswordError)&&(identical(other.newPasswordError, _this.newPasswordError) || other.newPasswordError == _this.newPasswordError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,oldPassword,newPassword,confirmNewPassword,oldPasswordError,newPasswordError);
+int get hashCode {
+  final _this = this as ChangePasswordState;
+  return Object.hash(runtimeType,_this.status,_this.oldPassword,_this.newPassword,_this.confirmNewPassword,_this.oldPasswordError,_this.newPasswordError);
+}
 
 @override
 String toString() {
-  return 'ChangePasswordState(status: $status, oldPassword: $oldPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, oldPasswordError: $oldPasswordError, newPasswordError: $newPasswordError)';
+  final _this = this as ChangePasswordState;
+  return 'ChangePasswordState(status: ${_this.status}, oldPassword: ${_this.oldPassword}, newPassword: ${_this.newPassword}, confirmNewPassword: ${_this.confirmNewPassword}, oldPasswordError: ${_this.oldPasswordError}, newPasswordError: ${_this.newPasswordError})';
 }
 
 
@@ -232,16 +237,18 @@ _$ChangePasswordStateCopyWith<_ChangePasswordState> get copyWith => __$ChangePas
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangePasswordState&&(identical(other.status, status) || other.status == status)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.oldPasswordError, oldPasswordError) || other.oldPasswordError == oldPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangePasswordState&&(identical(other.status, status) || other.status == status)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.oldPasswordError, oldPasswordError) || other.oldPasswordError == oldPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,oldPassword,newPassword,confirmNewPassword,oldPasswordError,newPasswordError);
+int get hashCode {
+    return Object.hash(runtimeType,status,oldPassword,newPassword,confirmNewPassword,oldPasswordError,newPasswordError);
+}
 
 @override
 String toString() {
-  return 'ChangePasswordState(status: $status, oldPassword: $oldPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, oldPasswordError: $oldPasswordError, newPasswordError: $newPasswordError)';
+    return 'ChangePasswordState(status: $status, oldPassword: $oldPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, oldPasswordError: $oldPasswordError, newPasswordError: $newPasswordError)';
 }
 
 

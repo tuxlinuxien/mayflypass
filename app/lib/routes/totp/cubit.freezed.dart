@@ -26,16 +26,21 @@ $TotpStateCopyWith<TotpState> get copyWith => _$TotpStateCopyWithImpl<TotpState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TotpState&&(identical(other.status, status) || other.status == status)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.account, account) || other.account == account)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.algorithm, algorithm) || other.algorithm == algorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.favorite, favorite) || other.favorite == favorite)&&const DeepCollectionEquality().equals(other.tags, tags));
+  final _this = this as TotpState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TotpState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.createdAtMs, _this.createdAtMs) || other.createdAtMs == _this.createdAtMs)&&(identical(other.issuer, _this.issuer) || other.issuer == _this.issuer)&&(identical(other.account, _this.account) || other.account == _this.account)&&(identical(other.secret, _this.secret) || other.secret == _this.secret)&&(identical(other.algorithm, _this.algorithm) || other.algorithm == _this.algorithm)&&(identical(other.digits, _this.digits) || other.digits == _this.digits)&&(identical(other.period, _this.period) || other.period == _this.period)&&(identical(other.favorite, _this.favorite) || other.favorite == _this.favorite)&&const DeepCollectionEquality().equals(other.tags, _this.tags));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,id,createdAtMs,issuer,account,secret,algorithm,digits,period,favorite,const DeepCollectionEquality().hash(tags));
+int get hashCode {
+  final _this = this as TotpState;
+  return Object.hash(runtimeType,_this.status,_this.id,_this.createdAtMs,_this.issuer,_this.account,_this.secret,_this.algorithm,_this.digits,_this.period,_this.favorite,const DeepCollectionEquality().hash(_this.tags));
+}
 
 @override
 String toString() {
-  return 'TotpState(status: $status, id: $id, createdAtMs: $createdAtMs, issuer: $issuer, account: $account, secret: $secret, algorithm: $algorithm, digits: $digits, period: $period, favorite: $favorite, tags: $tags)';
+  final _this = this as TotpState;
+  return 'TotpState(status: ${_this.status}, id: ${_this.id}, createdAtMs: ${_this.createdAtMs}, issuer: ${_this.issuer}, account: ${_this.account}, secret: ${_this.secret}, algorithm: ${_this.algorithm}, digits: ${_this.digits}, period: ${_this.period}, favorite: ${_this.favorite}, tags: ${_this.tags})';
 }
 
 
@@ -248,16 +253,18 @@ _$TotpStateCopyWith<_TotpState> get copyWith => __$TotpStateCopyWithImpl<_TotpSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TotpState&&(identical(other.status, status) || other.status == status)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.account, account) || other.account == account)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.algorithm, algorithm) || other.algorithm == algorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.favorite, favorite) || other.favorite == favorite)&&const DeepCollectionEquality().equals(other._tags, _tags));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TotpState&&(identical(other.status, status) || other.status == status)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.account, account) || other.account == account)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.algorithm, algorithm) || other.algorithm == algorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.favorite, favorite) || other.favorite == favorite)&&const DeepCollectionEquality().equals(other.tags, _tags));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,id,createdAtMs,issuer,account,secret,algorithm,digits,period,favorite,const DeepCollectionEquality().hash(_tags));
+int get hashCode {
+    return Object.hash(runtimeType,status,id,createdAtMs,issuer,account,secret,algorithm,digits,period,favorite,const DeepCollectionEquality().hash(_tags));
+}
 
 @override
 String toString() {
-  return 'TotpState(status: $status, id: $id, createdAtMs: $createdAtMs, issuer: $issuer, account: $account, secret: $secret, algorithm: $algorithm, digits: $digits, period: $period, favorite: $favorite, tags: $tags)';
+    return 'TotpState(status: $status, id: $id, createdAtMs: $createdAtMs, issuer: $issuer, account: $account, secret: $secret, algorithm: $algorithm, digits: $digits, period: $period, favorite: $favorite, tags: $tags)';
 }
 
 

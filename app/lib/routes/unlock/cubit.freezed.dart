@@ -26,16 +26,21 @@ $UnlockFormStateCopyWith<UnlockFormState> get copyWith => _$UnlockFormStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UnlockFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
+  final _this = this as UnlockFormState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UnlockFormState&&(identical(other.username, _this.username) || other.username == _this.username)&&(identical(other.biometricUnlock, _this.biometricUnlock) || other.biometricUnlock == _this.biometricUnlock)&&(identical(other.masterPassword, _this.masterPassword) || other.masterPassword == _this.masterPassword)&&(identical(other.status, _this.status) || other.status == _this.status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,biometricUnlock,masterPassword,status);
+int get hashCode {
+  final _this = this as UnlockFormState;
+  return Object.hash(runtimeType,_this.username,_this.biometricUnlock,_this.masterPassword,_this.status);
+}
 
 @override
 String toString() {
-  return 'UnlockFormState(username: $username, biometricUnlock: $biometricUnlock, masterPassword: $masterPassword, status: $status)';
+  final _this = this as UnlockFormState;
+  return 'UnlockFormState(username: ${_this.username}, biometricUnlock: ${_this.biometricUnlock}, masterPassword: ${_this.masterPassword}, status: ${_this.status})';
 }
 
 
@@ -228,16 +233,18 @@ _$UnlockFormStateCopyWith<_UnlockFormState> get copyWith => __$UnlockFormStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UnlockFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UnlockFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.biometricUnlock, biometricUnlock) || other.biometricUnlock == biometricUnlock)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,biometricUnlock,masterPassword,status);
+int get hashCode {
+    return Object.hash(runtimeType,username,biometricUnlock,masterPassword,status);
+}
 
 @override
 String toString() {
-  return 'UnlockFormState(username: $username, biometricUnlock: $biometricUnlock, masterPassword: $masterPassword, status: $status)';
+    return 'UnlockFormState(username: $username, biometricUnlock: $biometricUnlock, masterPassword: $masterPassword, status: $status)';
 }
 
 

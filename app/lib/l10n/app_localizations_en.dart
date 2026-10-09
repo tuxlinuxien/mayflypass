@@ -54,12 +54,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountCreatedSuccessfully => 'Account created successfully';
 
   @override
-  String get accountAlreadyExists =>
-      'An account with this username already exists';
+  String get accountAlreadyExists => 'An account with this username already exists';
 
   @override
-  String get thereWasProblem =>
-      'There was a problem while processing your request';
+  String get thereWasProblem => 'There was a problem while processing your request';
 
   @override
   String get invalidCredentials => 'Invalid credentials';
@@ -92,9 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get totpSecretFormatError {
-    return 'The secret only supports A-Z, a-z';
-  }
+  String get totpSecretFormatError => 'The secret only supports A-Z, a-z';
 
   @override
   String totpPeriodSeconds(int seconds) {
@@ -109,8 +105,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get changePasswordSuccess =>
-      'The master password has been updated successfully.\nPlease login to your account.';
+  String get changePasswordSuccess => 'The master password has been updated successfully.\nPlease login to your account.';
 
   @override
   String get addAccount => 'Add account';
@@ -122,8 +117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanQrCode => 'Scan QR code';
 
   @override
-  String get scanQrDescription =>
-      'Point your camera at the QR code \nshown by the service you\'re adding.';
+  String get scanQrDescription => 'Point your camera at the QR code \nshown by the service you\'re adding.';
 
   @override
   String get enterSetupKeyManually => 'Enter setup key manually';
@@ -184,8 +178,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get biometricUnlock => 'Biometric unlock';
 
   @override
-  String get biometricUnlockDescription =>
-      'Use your fingerprint to unlock the application';
+  String get biometricUnlockDescription => 'Use your fingerprint to unlock the application';
 
   @override
   String get autoLock => 'Auto-lock';
@@ -245,8 +238,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerTitle => 'Create account';
 
   @override
-  String get registerSubtitle =>
-      'Your codes stay encrypted on this device.\nOne account to sync and restore.';
+  String get registerSubtitle => 'Your codes stay encrypted on this device.\nOne account to sync and restore.';
 
   @override
   String get registerHaveAccountPrefix => 'Already have an account? ';
@@ -315,10 +307,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageTitle => 'Language';
 
   @override
-  String get settingsLanguageDescription =>
-      'Change the language of the application';
+  String get settingsLanguageDescription => 'Change the language of the application';
 
   @override
-  String get settingsLanguageRestartRequired =>
-      'You need to restart the application in order to apply this setting';
+  String get settingsLanguageRestartRequired => 'You need to restart the application in order to apply this setting';
 }

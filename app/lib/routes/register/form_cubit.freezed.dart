@@ -26,16 +26,21 @@ $RegisterFormStateCopyWith<RegisterFormState> get copyWith => _$RegisterFormStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiUsernameError, apiUsernameError) || other.apiUsernameError == apiUsernameError));
+  final _this = this as RegisterFormState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterFormState&&(identical(other.username, _this.username) || other.username == _this.username)&&(identical(other.masterPassword, _this.masterPassword) || other.masterPassword == _this.masterPassword)&&(identical(other.confirmMasterPassword, _this.confirmMasterPassword) || other.confirmMasterPassword == _this.confirmMasterPassword)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.apiError, _this.apiError) || other.apiError == _this.apiError)&&(identical(other.apiUsernameError, _this.apiUsernameError) || other.apiUsernameError == _this.apiUsernameError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,masterPassword,confirmMasterPassword,status,apiError,apiUsernameError);
+int get hashCode {
+  final _this = this as RegisterFormState;
+  return Object.hash(runtimeType,_this.username,_this.masterPassword,_this.confirmMasterPassword,_this.status,_this.apiError,_this.apiUsernameError);
+}
 
 @override
 String toString() {
-  return 'RegisterFormState(username: $username, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiUsernameError: $apiUsernameError)';
+  final _this = this as RegisterFormState;
+  return 'RegisterFormState(username: ${_this.username}, masterPassword: ${_this.masterPassword}, confirmMasterPassword: ${_this.confirmMasterPassword}, status: ${_this.status}, apiError: ${_this.apiError}, apiUsernameError: ${_this.apiUsernameError})';
 }
 
 
@@ -232,16 +237,18 @@ _$RegisterFormStateCopyWith<_RegisterFormState> get copyWith => __$RegisterFormS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiUsernameError, apiUsernameError) || other.apiUsernameError == apiUsernameError));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.confirmMasterPassword, confirmMasterPassword) || other.confirmMasterPassword == confirmMasterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.apiError, apiError) || other.apiError == apiError)&&(identical(other.apiUsernameError, apiUsernameError) || other.apiUsernameError == apiUsernameError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,masterPassword,confirmMasterPassword,status,apiError,apiUsernameError);
+int get hashCode {
+    return Object.hash(runtimeType,username,masterPassword,confirmMasterPassword,status,apiError,apiUsernameError);
+}
 
 @override
 String toString() {
-  return 'RegisterFormState(username: $username, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiUsernameError: $apiUsernameError)';
+    return 'RegisterFormState(username: $username, masterPassword: $masterPassword, confirmMasterPassword: $confirmMasterPassword, status: $status, apiError: $apiError, apiUsernameError: $apiUsernameError)';
 }
 
 

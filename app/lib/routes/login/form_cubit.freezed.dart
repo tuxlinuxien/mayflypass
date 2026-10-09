@@ -26,16 +26,21 @@ $LoginFormStateCopyWith<LoginFormState> get copyWith => _$LoginFormStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.usernameError, usernameError) || other.usernameError == usernameError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
+  final _this = this as LoginFormState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginFormState&&(identical(other.username, _this.username) || other.username == _this.username)&&(identical(other.masterPassword, _this.masterPassword) || other.masterPassword == _this.masterPassword)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.usernameError, _this.usernameError) || other.usernameError == _this.usernameError)&&(identical(other.apiError, _this.apiError) || other.apiError == _this.apiError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,masterPassword,status,usernameError,apiError);
+int get hashCode {
+  final _this = this as LoginFormState;
+  return Object.hash(runtimeType,_this.username,_this.masterPassword,_this.status,_this.usernameError,_this.apiError);
+}
 
 @override
 String toString() {
-  return 'LoginFormState(username: $username, masterPassword: $masterPassword, status: $status, usernameError: $usernameError, apiError: $apiError)';
+  final _this = this as LoginFormState;
+  return 'LoginFormState(username: ${_this.username}, masterPassword: ${_this.masterPassword}, status: ${_this.status}, usernameError: ${_this.usernameError}, apiError: ${_this.apiError})';
 }
 
 
@@ -230,16 +235,18 @@ _$LoginFormStateCopyWith<_LoginFormState> get copyWith => __$LoginFormStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.usernameError, usernameError) || other.usernameError == usernameError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginFormState&&(identical(other.username, username) || other.username == username)&&(identical(other.masterPassword, masterPassword) || other.masterPassword == masterPassword)&&(identical(other.status, status) || other.status == status)&&(identical(other.usernameError, usernameError) || other.usernameError == usernameError)&&(identical(other.apiError, apiError) || other.apiError == apiError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,masterPassword,status,usernameError,apiError);
+int get hashCode {
+    return Object.hash(runtimeType,username,masterPassword,status,usernameError,apiError);
+}
 
 @override
 String toString() {
-  return 'LoginFormState(username: $username, masterPassword: $masterPassword, status: $status, usernameError: $usernameError, apiError: $apiError)';
+    return 'LoginFormState(username: $username, masterPassword: $masterPassword, status: $status, usernameError: $usernameError, apiError: $apiError)';
 }
 
 

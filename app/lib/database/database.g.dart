@@ -590,7 +590,16 @@ class $$LocalStorageTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<$LocalStorageTable, LocalStorageData>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalStorageTable,
+                    LocalStorageData
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
         ),

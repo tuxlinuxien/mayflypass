@@ -26,16 +26,21 @@ $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.totps, totps)&&(identical(other.query, query) || other.query == query));
+  final _this = this as HomeState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.totps, _this.totps)&&(identical(other.query, _this.query) || other.query == _this.query));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(totps),query);
+int get hashCode {
+  final _this = this as HomeState;
+  return Object.hash(runtimeType,_this.status,const DeepCollectionEquality().hash(_this.totps),_this.query);
+}
 
 @override
 String toString() {
-  return 'HomeState(status: $status, totps: $totps, query: $query)';
+  final _this = this as HomeState;
+  return 'HomeState(status: ${_this.status}, totps: ${_this.totps}, query: ${_this.query})';
 }
 
 
@@ -232,16 +237,18 @@ _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._totps, _totps)&&(identical(other.query, query) || other.query == query));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.totps, _totps)&&(identical(other.query, query) || other.query == query));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_totps),query);
+int get hashCode {
+    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_totps),query);
+}
 
 @override
 String toString() {
-  return 'HomeState(status: $status, totps: $totps, query: $query)';
+    return 'HomeState(status: $status, totps: $totps, query: $query)';
 }
 
 
