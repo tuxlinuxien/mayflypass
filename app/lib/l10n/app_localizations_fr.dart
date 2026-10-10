@@ -90,7 +90,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get totpSecretFormatError => 'Le secret ne supporte que les caractères A-Z, a-z';
+  String get totpSecretFormatError => 'Le secret ne supporte que les caractères A-Z, a-z et 0-9';
 
   @override
   String totpPeriodSeconds(int seconds) {

@@ -83,7 +83,7 @@
       }
     }
   },
-  "totpSecretFormatError": "Le secret ne supporte que les caractères A-Z, a-z",
+  "totpSecretFormatError": "Le secret ne supporte que les caractères A-Z, a-z et 0-9",
   "@totpSecretFormatError": {},
   "totpPeriodSeconds": "{seconds, plural, =0{0 seconde} =1{1 seconde} other{{seconds} secondes}}",
   "@totpPeriodSeconds": {

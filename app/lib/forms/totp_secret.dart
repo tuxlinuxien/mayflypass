@@ -45,7 +45,7 @@ class TotpSecretValue extends FormzInput<String, TotpSecretValueError> {
     if (value.length > 64) {
       return const TotpSecretValueTooLongError(64);
     }
-    if (!RegExp(r'^[A-Za-z]+$').hasMatch(value)) {
+    if (!RegExp(r'^[A-Za-z0-9]+$').hasMatch(value)) {
       return const TotpSecretValueFormatError();
     }
     return null;

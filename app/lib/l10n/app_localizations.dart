@@ -236,7 +236,7 @@ abstract class AppLocalizations {
   /// No description provided for @totpSecretFormatError.
   ///
   /// In en, this message translates to:
-  /// **'The secret only supports A-Z, a-z'**
+  /// **'The secret only supports A-Z, a-z and 0-9'**
   String get totpSecretFormatError;
 
   /// No description provided for @totpPeriodSeconds.
