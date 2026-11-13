@@ -3,7 +3,7 @@ description: "E2EE TOTP manager."
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.2.2
+version: 1.2.3
 
 environment:
   sdk: ^3.13.5
@@ -39,6 +39,8 @@ dependencies:
   intl: ^0.20.2
   local_auth: ^3.0.2
   file_picker: ^13.1.0
+  native_dio_adapter: ^1.8.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

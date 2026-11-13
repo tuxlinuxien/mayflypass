@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'package:http/http.dart' show ClientException;
 import 'package:mayflypass/api/errors.dart';
 import 'package:mayflypass/core/auth.dart';
 import 'package:mayflypass/core/core.dart';
+import 'package:native_dio_adapter/native_dio_adapter.dart';
 import 'logger_interceptor.dart';
 import 'models.dart';
 export 'models.dart';
@@ -31,7 +35,13 @@ class API extends _API {
       receiveTimeout: Duration(seconds: 10),
       validateStatus: (status) => true,
     ),
-  )..interceptors.addAll([LoggerInterceptor()]);
+  )
+    // Cronet honours network_security_config.xml (user installed CAs), which
+    // the dart TLS stack ignores.
+    ..httpClientAdapter = Platform.isAndroid
+        ? NativeAdapter(createFallbackAdapter: (_, _) => IOHttpClientAdapter())
+        : IOHttpClientAdapter()
+    ..interceptors.addAll([LoggerInterceptor()]);
   static String? accessToken;
 
   API();
@@ -56,7 +66,9 @@ class API extends _API {
       rethrow;
     } on DioException catch (e) {
       logger.e(e);
-      if (e.type == DioExceptionType.connectionError ||
+      // cronet reports connection failures as ClientException
+      if (e.error is ClientException ||
+          e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
