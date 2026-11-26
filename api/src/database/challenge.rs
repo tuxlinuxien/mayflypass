@@ -23,7 +23,7 @@ impl DIFFICULTY {
                 0xff, 0xff, 0xff, 0xff,
             ],
             DIFFICULTY::EASY => [
-                0x00, 0x00, 0x08, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                0x00, 0x00, 0x3f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                 0xff, 0xff, 0xff, 0xff,
             ],
@@ -195,6 +195,18 @@ mod tests {
             &expected[..],
             "difficulty bytes should match the DIFFICULTY enum value"
         );
+    }
+
+    #[test]
+    fn test_difficulty_ordering() {
+        // A smaller target is harder to hit: NONE > EASY > MEDIUM > HARD.
+        let none = DIFFICULTY::NONE.to_bytes();
+        let easy = DIFFICULTY::EASY.to_bytes();
+        let medium = DIFFICULTY::MEDIUM.to_bytes();
+        let hard = DIFFICULTY::HARD.to_bytes();
+        assert!(none > easy, "NONE must be easier than EASY");
+        assert!(easy > medium, "EASY must be easier than MEDIUM");
+        assert!(medium > hard, "MEDIUM must be easier than HARD");
     }
 
     #[tokio::test]
